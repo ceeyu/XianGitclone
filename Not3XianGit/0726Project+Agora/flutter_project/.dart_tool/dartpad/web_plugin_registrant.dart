@@ -8,6 +8,7 @@
 
 import 'package:fluttertoast/fluttertoast_web.dart';
 import 'package:image_picker_for_web/image_picker_for_web.dart';
+import 'package:rive_common/rive_web.dart';
 import 'package:video_player_web/video_player_web.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
@@ -15,6 +16,7 @@ void registerPlugins([final Registrar? pluginRegistrar]) {
   final Registrar registrar = pluginRegistrar ?? webPluginRegistrar;
   FluttertoastWebPlugin.registerWith(registrar);
   ImagePickerPlugin.registerWith(registrar);
+  RivePlugin.registerWith(registrar);
   VideoPlayerPlugin.registerWith(registrar);
   registrar.registerMessageHandler();
 }
