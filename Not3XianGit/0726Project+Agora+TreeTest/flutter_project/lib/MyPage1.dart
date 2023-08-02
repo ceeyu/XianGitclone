@@ -198,7 +198,7 @@ class _MyPage1State extends State<MyPage1> {
                               // This is called when the user toggles the switch.
                               setState(() {
                                 switchValue_Volume = value ?? false;
-                                controlVolume();
+                                controlVolume(switchValue_Volume);
                               });
                             },
                           ),
@@ -241,7 +241,7 @@ class _MyPage1State extends State<MyPage1> {
                               // This is called when the user toggles the switch.
                               setState(() {
                                 switchValue_Camera = value ?? false;
-                                controlCamera(switchValue_Camera);
+                                controlCamera();
                               });
                             },
                           ),
@@ -284,7 +284,7 @@ class _MyPage1State extends State<MyPage1> {
                               // This is called when the user toggles the switch.
                               setState(() {
                                 switchValue_Mic = value ?? false;
-                                controlMicrophone(switchValue_Mic);
+                                controlMicrophone();
                               });
                             },
                           ),
@@ -365,7 +365,7 @@ class _MyPage1State extends State<MyPage1> {
   }
 
   // 控制音量開關
-void controlVolume() async {
+void controlVolume(switchValue_Volume) async {
   if (switchValue_Volume) {
     // 開啟音量
     await VolumeControl.setVolume(0.5); // 設定音量為0.5
@@ -376,12 +376,12 @@ void controlVolume() async {
 }
 
 // 控制鏡頭開關
-void controlCamera(bool? value) async {
-  if (value!) {
+void controlCamera() async {
+  if (switchValue_Camera) {
     // 開啟相機
     try {
       List<CameraDescription> cameras = await availableCameras();
-      controller = CameraController(cameras[0], ResolutionPreset.medium);
+      controller = CameraController(cameras[0], ResolutionPreset.medium,imageFormatGroup: ImageFormatGroup.yuv420,);
       await controller!.initialize();
       controller!.startImageStream((image) {
         // 在這裡處理相機預覽圖像，例如顯示在UI上
@@ -400,8 +400,8 @@ void controlCamera(bool? value) async {
 }
 
 // 控制麥克風開關
-void controlMicrophone(bool? value) async {
-  if (value!) {
+void controlMicrophone() async {
+  if (switchValue_Mic) {
     // 開啟麥克風
     try {
       const MethodChannel _channel = MethodChannel('mic_stream');
