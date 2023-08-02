@@ -35,12 +35,72 @@ class QuickStartBody extends StatefulWidget {
 class QuickStartBodyState extends State<QuickStartBody> {
   Completer<FastRoomController> completerController = Completer();
 
+  bool _is_videio_on = false;
+  bool _is_message_on = false; //xian0519
+  // ignore: non_constant_identifier_names
+  bool switchValue_Volume = true;
+  // ignore: non_constant_identifier_names
+  bool switchValue_Mic = true;
+  // ignore: non_constant_identifier_names
+  bool switchValue_Camera = true;
+  // ignore: non_constant_identifier_names
+  bool switchValue_Notify = true;
   // 這是應用程序的根節點小工具。
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quick Start'), // 快速啟動標題
+        title: const Center(
+          child: Text('葉子名稱'),
+        ),
+        actions: <Widget>[
+          //越後面的button越右，由左往右的方向
+
+          IconButton(
+            tooltip: "彈幕",
+            icon: _is_message_on
+                ? const Icon(Icons.message)
+                : const Icon(
+                    Icons.speaker_notes_off,
+                  ),
+            onPressed: () {
+              // do something
+              setState(() {
+                // Here we changing the icon.
+                _is_message_on = !_is_message_on;
+              });
+            },
+          ),
+          IconButton(
+            tooltip: "錄影",
+            icon: _is_videio_on
+                ? const Icon(Icons.videocam)
+                : const Icon(
+                    Icons.videocam_off,
+                  ),
+            onPressed: () {
+              // do something
+              setState(() {
+                // Here we changing the icon.
+                _is_videio_on = !_is_videio_on;
+              });
+            },
+          ),
+          IconButton(
+            tooltip: "離開/結束",
+            //最右邊
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // do something
+            },
+          ),
+        ],
+        backgroundColor: Colors.green,
+        elevation: 0.0,
       ),
       body: Stack(
         children: [
@@ -73,13 +133,13 @@ class QuickStartBodyState extends State<QuickStartBody> {
           ),
           Positioned(
             child: InkWell(
-              child: Icon(Icons.arrow_back_ios),
+              child: Icon(Icons.face),
               onTap: () {
-                Navigator.of(context).pop(); // 點擊返回按鈕時，返回前一頁
+               // 點擊返回按鈕時，動作
               },
             ),
-            left: 24,
-            top: 24,
+            left: 30,
+            top: 30,
           ),
         ],
       ),
@@ -121,11 +181,4 @@ class QuickStartBodyState extends State<QuickStartBody> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // 隱藏系統UI元素（例如狀態欄和導航欄）
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    // SystemChrome.setPreferredOrientations([
-    //   DeviceOrientation.portraitUp,
-    // ]);
-  }
 }
