@@ -82,7 +82,6 @@ class CloudTestWidgetState extends State<CloudTestWidget> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 var item = items[index];
-
                 return SizedBox(
                   height: 50,
                   child: InkWell(
@@ -134,6 +133,7 @@ class CloudTestWidgetState extends State<CloudTestWidget> {
       case "mp4":
         widget.controller.insertVideo(item.url, item.name); // 插入影片到白板中
         break;
+        
       case "ppt":
       case "pptx":
         widget.controller.insertDoc(InsertDocParams(

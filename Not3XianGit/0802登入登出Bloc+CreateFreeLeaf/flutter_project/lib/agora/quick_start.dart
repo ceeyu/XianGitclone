@@ -96,6 +96,8 @@ class QuickStartBodyState extends State<QuickStartBody> {
             ),
             onPressed: () {
               // do something
+              
+              
             },
           ),
         ],
@@ -135,7 +137,8 @@ class QuickStartBodyState extends State<QuickStartBody> {
             child: InkWell(
               child: Icon(Icons.face),
               onTap: () {
-               // 點擊返回按鈕時，動作
+                // 點擊face 按鈕時，動作
+                  
               },
             ),
             left: 30,
@@ -178,7 +181,7 @@ class QuickStartBodyState extends State<QuickStartBody> {
       DeviceOrientation.portraitDown,
       DeviceOrientation.portraitUp,
     ]); // 設置首選方向（支持橫屏和豎屏）
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // 隱藏系統UI元素（例如狀態欄和導航欄）
+    SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.immersiveSticky); // 隱藏系統UI元素（例如狀態欄和導航欄）
   }
-
 }
