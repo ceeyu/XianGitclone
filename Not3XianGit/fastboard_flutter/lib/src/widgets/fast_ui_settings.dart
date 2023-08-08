@@ -26,7 +26,7 @@ class FastUiSettings {
   }
 
   static List<Color> strokeColors = [
-    Color(0xFFEC3455),
+    Color.fromARGB(255, 255, 255, 255),
     Color(0xFFF5AD46),
     Color(0xFF68AB5D),
     Color(0xFF32C5FF),
