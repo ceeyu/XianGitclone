@@ -201,6 +201,20 @@ class FastRoomController extends ValueNotifier<FastRoomValue> {
     return joinRoom();
   }
 
+    /// 斷開白板房間的連接。 0808
+    Future<void> disconnect() async {
+    try {
+      if (whiteRoom != null) {
+        await whiteRoom?.disconnect();
+      }
+      whiteRoom = null;
+      whiteSdk = null;
+      value = FastRoomValue.uninitialized(fastRoomOptions.writable);
+    } catch (e) {
+      debugPrint("disconnect error: $e");
+    }
+  }
+
   /// 在白板上插入一個圖片。
   /// - [url]: 圖片的 URL。
   /// - [width]: 圖片的寬度。

@@ -180,10 +180,11 @@ packages:
   fastboard_flutter:
     dependency: "direct main"
     description:
-      name: fastboard_flutter
-      sha256: "191fd99ea0c63fd2277e9e3172b5fcf77a35f14c91ae11f9e458cfe1d2c467ed"
-      url: "https://pub.dev"
-    source: hosted
+      path: "Not3XianGit/fastboard_flutter"
+      ref: HEAD
+      resolved-ref: "51741116334c3481ec567e51ebc786c64aa3e824"
+      url: "https://github.com/ceeyu/XianGitclone.git"
+    source: git
     version: "0.1.2"
   ffi:
     dependency: transitive
