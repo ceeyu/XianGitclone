@@ -1,5 +1,5 @@
 import 'dart:async';
-
+//import 'package:whiteboard_sdk_flutter/whiteboard_sdk_flutter.dart';
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,7 +45,8 @@ class QuickStartBodyState extends State<QuickStartBody> {
   bool switchValue_Camera = true;
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
-  // 這是應用程序的根節點小工具。
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +97,9 @@ class QuickStartBodyState extends State<QuickStartBody> {
             ),
             onPressed: () {
               // do something
-              
+             // 检查whiteboardController是否为null
+               
+        
               
             },
           ),
@@ -168,6 +171,7 @@ class QuickStartBodyState extends State<QuickStartBody> {
     );
   }
 
+  //Fastborad創建的地方
   Future<void> onFastRoomCreated(FastRoomController controller) async {
     completerController.complete(controller);
   }

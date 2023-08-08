@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'test_data.dart';
 
 class CloudTestWidget extends StatefulWidget {
-  final FastRoomController controller;
+  final FastRoomController controller; 
 
   CloudTestWidget({
     required this.controller,
