@@ -91,7 +91,10 @@ flutter:
     - assets/images/normal_leaf2.png
     - assets/images/Drawers.gif
     - assets/images/eraser.png
-    - assets/
+    - assets/images/Greentree.png
+    - assets/images/marigold.png
+    - assets/images/SunFlower.png
+
 
 
   fonts:
