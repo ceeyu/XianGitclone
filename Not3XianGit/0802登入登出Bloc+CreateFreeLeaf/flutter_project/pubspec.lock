@@ -182,7 +182,7 @@ packages:
     description:
       path: "Not3XianGit/fastboard_flutter"
       ref: HEAD
-      resolved-ref: "9b0dbc636003bb6e479036941d5de41e9ae99b36"
+      resolved-ref: "19c7c8e5776f92e529b15357f7bd38b71f40aab2"
       url: "https://github.com/ceeyu/XianGitclone.git"
     source: git
     version: "0.1.2"
