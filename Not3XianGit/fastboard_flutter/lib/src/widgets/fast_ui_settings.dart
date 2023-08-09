@@ -26,7 +26,7 @@ class FastUiSettings {
   }
 
   static List<Color> strokeColors = [
-    Color.fromARGB(255, 255, 255, 255),
+    Color.fromARGB(255, 255, 0, 0),
     Color(0xFFF5AD46),
     Color(0xFF68AB5D),
     Color(0xFF32C5FF),
@@ -41,7 +41,7 @@ class FastUiSettings {
     ToolboxItem(appliances: [FastAppliance.selector]),
     ToolboxItem(appliances: [FastAppliance.pencil]),
     // not support text
-    // ToolboxItem(appliances: [FastAppliance.text]),
+    ToolboxItem(appliances: [FastAppliance.text]),
     ToolboxItem(appliances: [FastAppliance.eraser]),
     ToolboxItem(appliances: [
       FastAppliance.rectangle,

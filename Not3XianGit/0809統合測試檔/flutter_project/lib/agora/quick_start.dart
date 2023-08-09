@@ -160,13 +160,13 @@ class QuickStartBodyState extends State<QuickStartBody> {
       alignment: Alignment.center,
       children: [
         FastOverlayHandlerView(controller),
-        Positioned(
+        Positioned( //頁數增加
           child: FastPageIndicator(controller),
           bottom: FastGap.gap_3,
           right: FastGap.gap_3,
         ),
-        FastToolBoxExpand(controller),
-        FastStateHandlerView(controller),
+        FastToolBoxExpand(controller),//工具箱
+        FastStateHandlerView(controller),//工具箱縮放
       ],
     );
   }

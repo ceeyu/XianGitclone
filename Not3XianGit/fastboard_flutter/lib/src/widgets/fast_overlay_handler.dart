@@ -4,7 +4,7 @@ import '../controller.dart';
 import '../types/types.dart';
 import 'widgets.dart';
 
-/// handle overlay when toolbox extension displayed
+/// 處理工具箱的擴展行為
 class FastOverlayHandlerView extends FastRoomControllerWidget {
   const FastOverlayHandlerView(
     FastRoomController controller, {
