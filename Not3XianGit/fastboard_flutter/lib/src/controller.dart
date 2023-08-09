@@ -201,7 +201,7 @@ class FastRoomController extends ValueNotifier<FastRoomValue> {
     return joinRoom();
   }
 
-    /// 斷開白板房間的連接。 0808
+    /// 斷開白板房間的連接。 0808新增
     Future<void> disconnect() async {
     try {
       if (whiteRoom != null) {

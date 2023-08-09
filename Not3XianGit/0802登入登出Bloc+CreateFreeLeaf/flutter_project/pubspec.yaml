@@ -58,7 +58,7 @@ dependencies:
   fastboard_flutter:
     git:
       url: https://github.com/ceeyu/XianGitclone.git
-      path: Not3XianGit/fastboard_flutter
+      path: Not3XianGit/fastboard_flutter 
 dev_dependencies:
   flutter_test:
     sdk: flutter

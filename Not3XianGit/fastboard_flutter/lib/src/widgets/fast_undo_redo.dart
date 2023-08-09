@@ -39,6 +39,7 @@ class FastRedoUndoState extends FastRoomControllerState<FastRedoUndoView> {
           child: FastIcon(FastIcons.redo),
           onTap: redoUndoCount.redo != 0 ? _onRedoTap : null,
         ),
+        
       ],
     ));
   }

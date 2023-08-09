@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-
+import 'package:flutter/material.dart'; 
 // 引入 controller.dart 檔案中的定義
 import '../controller.dart';
 
@@ -32,6 +32,19 @@ Widget defaultControllerBuilder(
       ),
       FastToolBoxExpand(controller), // 使用 FastToolBoxExpand Widget，傳入控制器
       FastStateHandlerView(controller), // 使用 FastStateHandlerView Widget，傳入控制器
+      Positioned(
+        child: InkWell(
+          child: Icon(Icons.power_settings_new), // 自訂斷開連接的按鈕圖示
+          onTap: () {
+            // 點擊按鈕時，執行斷開連接的操作
+            if (controller != null) {
+              controller.disconnect(); // 執行斷開連接的函式
+            }
+          },
+        ),
+        bottom: FastGap.gap_3,
+        right: FastGap.gap_3,
+      ),
     ],
   );
 }

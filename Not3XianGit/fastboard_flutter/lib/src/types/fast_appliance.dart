@@ -104,7 +104,7 @@ class FastAppliance {
         return arrow;
       case ApplianceName.straight:
         return straight;
-      case ApplianceName.shape:
+      case ApplianceName.shape: //特殊形狀
         switch (shapeType) {
           case ShapeType.pentagram:
             return pentagram;
