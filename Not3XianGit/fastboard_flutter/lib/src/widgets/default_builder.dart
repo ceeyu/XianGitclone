@@ -30,6 +30,7 @@ Widget defaultControllerBuilder(
         bottom: FastGap.gap_3, // 設定整個 Row Widget 與底部的間距
         left: FastGap.gap_3, // 設定整個 Row Widget 與左側的間距
       ),
+      //0809新增
       FastToolBoxExpand(controller), // 使用 FastToolBoxExpand Widget，傳入控制器
       FastStateHandlerView(controller), // 使用 FastStateHandlerView Widget，傳入控制器
       Positioned(
@@ -39,12 +40,14 @@ Widget defaultControllerBuilder(
             // 點擊按鈕時，執行斷開連接的操作
             if (controller != null) {
               controller.disconnect(); // 執行斷開連接的函式
+              Navigator.pop(context); // 回到上一頁
             }
           },
         ),
         bottom: FastGap.gap_3,
         right: FastGap.gap_3,
       ),
+      
     ],
   );
 }
