@@ -6,6 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_project/agora/constants.dart';
 import 'package:flutter_project/agora/quick_start.dart'; // 引入QuickStartPage
 
+  String chatroomUUID = '';
+  String chatroomToken = '';
+  String chatappID = '';
+  
 class ChatTest extends StatefulWidget {
   const ChatTest({Key? key}) : super(key: key);
 
@@ -48,9 +52,7 @@ class _ChatTestState extends State<ChatTest> {
   final TextEditingController _textFieldController =
       TextEditingController(); // 新增控制器
   
-  String chatroomUUID = '';
-  String chatroomToken = '';
-  String chatappID = '';
+
 
   Future<String?> getAccessToken() async {
     // 從 flutter_secure_storage 取得 access_token
@@ -184,9 +186,12 @@ class _ChatTestState extends State<ChatTest> {
                     if (responseData.isNotEmpty) 
                     {
 
-                      final chatroomUUID = responseData[0]['roomUUID'];
-                      final chatroomToken = responseData[0]['roomToken'];
-                      final chatappID = responseData[0]['appID'];
+                      setState(() {
+                        chatroomUUID = responseData[0]['roomUUID'];
+                        chatroomToken = responseData[0]['roomToken'];
+                        chatappID = responseData[0]['appID'];
+                      });
+                      
                       final chatTestModel = ChatTestModel(
                         roomToken: chatroomToken,
                         appIdentifier: chatappID,
