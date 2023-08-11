@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 //import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_project/models/ChatPageUsersModel.dart';
 import 'package:flutter_project/components/ConversationList.dart';
+import 'chattest.dart';
 class ChatPage extends StatefulWidget 
 {
   const ChatPage({super.key});
@@ -129,6 +130,29 @@ class _ChatPageState extends State<ChatPage>
                       ),
                     ],
                   ),
+                  Column
+                  (
+                    children: <Widget>
+                    [
+                      Padding
+                      (
+                        padding:const EdgeInsets.only(top:25,left:20),
+                        child:MaterialButton
+                        (
+                          onPressed: ()
+                          {
+                            Navigator.push
+                            (
+                              context,MaterialPageRoute(builder:(context)=> const ChatTest())
+                            );
+                          },
+                          color:const Color.fromARGB(255,0,158,71),
+                          child: const Text('測試',style:TextStyle(color:Colors.white))
+                        ),
+                      ),
+                    ],
+                  ),
+
                 ],
               ),
               ListView.builder

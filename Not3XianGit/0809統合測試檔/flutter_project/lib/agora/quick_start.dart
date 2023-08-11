@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pdf/widgets.dart' as pdfWidgets;
+import 'package:path_provider/path_provider.dart';
 
 import 'constants.dart';
 import 'page.dart';
 import 'widgets.dart';
 import 'package:flutter_project/agora/agora_service.dart'; // 引入LoginPage
+
 
 // 定義快速啟動頁面
 class QuickStartPage extends FastExamplePage {
@@ -147,6 +150,7 @@ class QuickStartBodyState extends State<QuickStartBody> {
             left: 30,
             top: 30,
           ),
+          
         ],
       ),
     );

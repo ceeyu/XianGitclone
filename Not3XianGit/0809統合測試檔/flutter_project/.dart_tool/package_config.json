@@ -14,6 +14,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "archive",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/archive-3.3.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "args",
       "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/args-2.4.2",
       "packageUri": "lib/",
@@ -24,6 +30,18 @@
       "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/async-2.11.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
+    },
+    {
+      "name": "barcode",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/barcode-2.2.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "bidi",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/bidi-2.0.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "bloc",
@@ -141,7 +159,7 @@
     },
     {
       "name": "fastboard_flutter",
-      "rootUri": "file:///Users/widelab/.pub-cache/git/XianGitclone-01ff3eab0032814a111af52923d2e04d1899c68d/Not3XianGit/fastboard_flutter",
+      "rootUri": "file:///Users/widelab/.pub-cache/git/XianGitclone-b28c2adc27662bfbf44670a5765c2224ebed7c7d/Not3XianGit/fastboard_flutter",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -332,6 +350,12 @@
       "languageVersion": "2.15"
     },
     {
+      "name": "image",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/image-4.0.17",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "image_picker",
       "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/image_picker-0.8.9",
       "packageUri": "lib/",
@@ -494,6 +518,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "pdf",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/pdf-3.10.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "permission_handler",
       "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/permission_handler-10.4.3",
       "packageUri": "lib/",
@@ -542,6 +572,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "pointycastle",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/pointycastle-3.7.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "process",
       "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/process-4.2.4",
       "packageUri": "lib/",
@@ -558,6 +594,12 @@
       "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/pub_semver-2.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.17"
+    },
+    {
+      "name": "qr",
+      "rootUri": "file:///Users/widelab/.pub-cache/hosted/pub.dev/qr-3.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.16"
     },
     {
       "name": "quiver",
@@ -752,7 +794,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2023-08-09T03:32:32.668269Z",
+  "generated": "2023-08-09T05:47:31.453452Z",
   "generator": "pub",
   "generatorVersion": "3.0.5"
 }
