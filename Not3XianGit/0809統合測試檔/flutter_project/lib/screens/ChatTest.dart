@@ -84,66 +84,7 @@ class _ChatTestState extends State<ChatTest> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        SizedBox(
-          width: 150,
-          height: 48,
-          child: ElevatedButton(
-            onPressed: () async {
-              final savedAccessToken = await getAccessToken();
-              if (savedAccessToken != null) {
-                try {
-                  final response = await http.post(
-                    Uri.parse('http://120.126.16.222/leafs/create-white-leaf'),
-                    headers: <String, String>{
-                      'Content-Type': 'application/json',
-                      'Authorization': 'Bearer $savedAccessToken',
-                    },
-                    body: jsonEncode(<String, dynamic>{
-                      'region': 'cn-hz',
-                      //'region': 'en-us',
-                    }),
-                  );
-
-                  if (response.statusCode >= 200 && response.statusCode < 300) {
-                    final responseData = jsonDecode(response.body);
-
-                    if (responseData.isNotEmpty &&
-                        responseData[0]['roomData'] != null &&
-                        responseData[0]['roomToken'] != null) {
-                      final roomData = responseData[0]['roomData'];
-                      final roomToken = responseData[0]['roomToken'];
-                      final appIdentifier = responseData[0]['appIdentifier'];
-                      final uuid = roomData['uuid'];
-                      final freeLeafModel = ChatTestModel(
-                        roomToken: roomToken,
-                        appIdentifier: appIdentifier,
-                        uuid: uuid,
-                      );
-                      print('FreeLeafModel: $freeLeafModel');
-
-                      // 跳轉至 QuickStartPage
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => QuickStartPage(),
-                        ),
-                      );
-                    } else {
-                      print('API response is missing required data');
-                    }
-                  } else {
-                    throw Exception(
-                        '${response.reasonPhrase},${response.statusCode}');
-                  }
-                } catch (e) {
-                  print('Error: $e');
-                }
-              } else {
-                print('API response is empty');
-              }
-            },
-            child: const Text('Show'),
-          ),
-        ),
+        
 
         SizedBox(height: 16), // Adding spacing between buttons
 
@@ -201,6 +142,13 @@ class _ChatTestState extends State<ChatTest> {
                     } else {
                       print('API response is missing required data');
                     }
+
+                    // 更新 constant.dart 的變數值
+                            APP_ID = '2z_FcDpIEe6Kl1cgr87Xbw/efXTp3d7xPV6_g';//等等改回chatappID
+                            ROOM_UUID = chatroomUUID;
+                            ROOM_TOKEN = chatroomToken;
+
+                            
                   } else {
                     throw Exception(
                         '${response.reasonPhrase},${response.statusCode}');
@@ -209,9 +157,72 @@ class _ChatTestState extends State<ChatTest> {
                 child: const Text('取得link'),
               ),
             ),
-            
+            SizedBox(width: 16),
+
+            SizedBox(
+              width: 150,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final savedAccessToken = await getAccessToken();
+                  if (savedAccessToken != null) {
+                    try {
+                      final response = await http.post(
+                        Uri.parse('http://120.126.16.222/leafs/create-white-leaf'),
+                        headers: <String, String>{
+                          'Content-Type': 'application/json',
+                          'Authorization': 'Bearer $savedAccessToken',
+                        },
+                        body: jsonEncode(<String, dynamic>{
+                          'region': 'cn-hz',
+                        }),
+                      );
+
+                      if (response.statusCode >= 200 && response.statusCode < 300) {
+                        final responseData = jsonDecode(response.body);
+
+                        if (responseData.isNotEmpty &&
+                            responseData[0]['roomData'] != null &&
+                            responseData[0]['roomToken'] != null) {
+                          final roomData = responseData[0]['roomData'];
+                          final roomToken = responseData[0]['roomToken'];
+                          final appIdentifier = responseData[0]['appIdentifier'];
+                          final uuid = roomData['uuid'];
+                          final freeLeafModel = ChatTestModel(
+                            roomToken: roomToken,
+                            appIdentifier: appIdentifier,
+                            uuid: uuid,
+                          );
+                          print('FreeLeafModel: $freeLeafModel');
+
+                           
+
+                          // 跳轉至 QuickStartPage
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => QuickStartPage(),
+                            ),
+                          );
+                        } else {
+                          print('API response is missing required data');
+                        }
+                      } else {
+                        throw Exception(
+                            '${response.reasonPhrase},${response.statusCode}');
+                      }
+                    } catch (e) {
+                      print('Error: $e');
+                    }
+                  } else {
+                    print('API response is empty');
+                  }
+                },
+                child: const Text('Show'),
+              ),
+            ),
           ],
         ),
+        
         SizedBox(height: 16), // Adding spacing
 
            Column(
@@ -222,6 +233,8 @@ class _ChatTestState extends State<ChatTest> {
             Text('Chat App ID: $chatappID'),
           ],
         ),
+
+        
       ],
     );
   }
