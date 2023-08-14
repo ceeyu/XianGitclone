@@ -10,7 +10,7 @@ import 'constants.dart';
 import 'page.dart';
 import 'widgets.dart';
 import 'package:flutter_project/agora/agora_service.dart'; // 引入LoginPage
-
+String link='123';//連結測試，0814
 
 // 定義快速啟動頁面
 class QuickStartPage extends FastExamplePage {
@@ -49,7 +49,6 @@ class QuickStartBodyState extends State<QuickStartBody> {
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
   
-
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +99,7 @@ class QuickStartBodyState extends State<QuickStartBody> {
             ),
             onPressed: () {
               // do something
-             // 检查whiteboardController是否为null
-               
-        
-              
+              // 检查whiteboardController是否为null
             },
           ),
         ],
@@ -141,16 +137,45 @@ class QuickStartBodyState extends State<QuickStartBody> {
           ),
           Positioned(
             child: InkWell(
-              child: Icon(Icons.face),
+              child: const Icon(Icons.face),
               onTap: () {
                 // 點擊face 按鈕時，動作
-                  
-              },
+                showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          String textToCopy = 'Someone sent you a link : ';
+
+          return AlertDialog(
+            title: const Text('複製連結'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: TextEditingController(text: textToCopy),
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '複製連結',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: textToCopy));
+                    Navigator.of(context).pop(); // 關閉警示框
+                  },
+                  child: Text('複製連結'),
+                ),
+              ],
             ),
+          );
+        },
+      );
+    },
+  ),
             left: 30,
             top: 30,
           ),
-          
         ],
       ),
     );
@@ -164,13 +189,14 @@ class QuickStartBodyState extends State<QuickStartBody> {
       alignment: Alignment.center,
       children: [
         FastOverlayHandlerView(controller),
-        Positioned( //頁數增加
+        Positioned(
+          //頁數增加
           child: FastPageIndicator(controller),
           bottom: FastGap.gap_3,
           right: FastGap.gap_3,
         ),
-        FastToolBoxExpand(controller),//工具箱
-        FastStateHandlerView(controller),//工具箱縮放
+        FastToolBoxExpand(controller), //工具箱
+        FastStateHandlerView(controller), //工具箱縮放
       ],
     );
   }
