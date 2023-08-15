@@ -1,16 +1,21 @@
 import 'dart:async';
 //import 'package:whiteboard_sdk_flutter/whiteboard_sdk_flutter.dart';
 import 'package:fastboard_flutter/fastboard_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_project/HomePage.dart';
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
+import 'dart:io';
+import 'dart:convert';
 import 'constants.dart';
 import 'page.dart';
 import 'widgets.dart';
 import 'package:flutter_project/agora/agora_service.dart'; // 引入LoginPage
-
 
 // 定義快速啟動頁面
 class QuickStartPage extends FastExamplePage {
@@ -38,6 +43,41 @@ class QuickStartBody extends StatefulWidget {
 class QuickStartBodyState extends State<QuickStartBody> {
   Completer<FastRoomController> completerController = Completer();
 
+  final _storage = FlutterSecureStorage(); // 用於存儲 access_token
+  Future<String?> getAccessToken() async {
+    // 從 flutter_secure_storage 取得 access_token
+    String? accessToken = await _storage.read(key: 'access_token');
+    print('Access Token: $accessToken');
+    return accessToken;
+  }
+
+  Future<void> showBanRoomResultDialog(String message) async {
+    //Ban房間對話框
+    // 顯示Ban房間 API 回傳的結果
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text
+        (
+          message,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+        actions: 
+        [
+          TextButton
+          (
+            onPressed: () 
+            {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   bool _is_videio_on = false;
   bool _is_message_on = false; //xian0519
   // ignore: non_constant_identifier_names
@@ -48,8 +88,7 @@ class QuickStartBodyState extends State<QuickStartBody> {
   bool switchValue_Camera = true;
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
-  
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,9 +136,66 @@ class QuickStartBodyState extends State<QuickStartBody> {
               Icons.logout,
               color: Colors.white,
             ),
-            onPressed: () {
-              // do something
-              // 检查whiteboardController是否为null
+
+            // do something 0815修改ban房間
+            onPressed: () async 
+            {
+              final savedAccessToken = await getAccessToken();
+              if (savedAccessToken != null) 
+              {
+                // 呼叫登出 API
+                try 
+                {
+                  final response = await http.patch(
+                    Uri.parse('http://120.126.16.222/leafs/disable-room'),
+                    headers: <String, String>{
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer $savedAccessToken',
+                    },
+                    body: jsonEncode(<String, String>{
+                      //'account': account,
+                      'region': 'cn-hz',
+                      'uuid': ROOM_UUID,
+                    }),
+                  );
+
+                  if (response.statusCode >= 200&&response.statusCode<300) 
+                  {
+                    final body = jsonDecode(response.body);
+                    if(kDebugMode)
+                    {
+                      print('GetBanRoom API Response $body');
+                    }
+                    // 輸出ban房間成功的回傳資料
+                    if (body=='房間不存在'||body=='不是此房間創始人，不能關閉房間') 
+                    {
+                      await showBanRoomResultDialog(body);
+
+                    }
+                    else
+                    {
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(); //跳回上一步驟
+                    }
+                  } 
+                  else 
+                  {
+                    // 失敗
+                    final errorMessage = response.body;
+                    await showBanRoomResultDialog(errorMessage);
+                  }
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('登出失敗：$e');
+                  }
+                  final errorMessage = '登出失敗：$e';
+                  await showBanRoomResultDialog(errorMessage);
+                }
+              } else {
+                // 沒有保存的 access_token，直接顯示錯誤訊息
+                const errorMessage = '尚未登入，無法進行登出。';
+                await showBanRoomResultDialog(errorMessage);
+              }
             },
           ),
         ],
@@ -136,45 +232,46 @@ class QuickStartBodyState extends State<QuickStartBody> {
             },
           ),
           Positioned(
+            left: 30,
+            top: 30,
             child: InkWell(
-              child: const Icon(Icons.face), 
+              child: const Icon(Icons.face),
               onTap: () {
                 // 點擊face 按鈕時，動作
                 showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          String textToCopy = 'Someone sent you a link : $LINK';
+                  context: context,
+                  builder: (BuildContext context) {
+                    String textToCopy = 'Someone sent you a link : $LINK';
 
-          return AlertDialog(
-            title: const Text('複製連結'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: TextEditingController(text: textToCopy),
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: '複製連結',
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: textToCopy));
-                    Navigator.of(context).pop(); // 關閉警示框
+                    return AlertDialog(
+                      title: const Text('複製連結'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: TextEditingController(text: textToCopy),
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: '複製連結',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: textToCopy));
+                              Navigator.of(context).pop(); // 關閉警示框
+                            },
+                            child: Text('複製連結'),
+                          ),
+                        ],
+                      ),
+                    );
                   },
-                  child: Text('複製連結'),
-                ),
-              ],
+                );
+              },
             ),
-          );
-        },
-      );
-    },
-  ),
-            left: 30,
-            top: 30,
           ),
         ],
       ),
@@ -197,6 +294,21 @@ class QuickStartBodyState extends State<QuickStartBody> {
         ),
         FastToolBoxExpand(controller), //工具箱
         FastStateHandlerView(controller), //工具箱縮放
+        Positioned(
+          child: InkWell(
+            //0815
+            child: Icon(Icons.power_settings_new), // 自訂斷開連接的按鈕圖示
+            onTap: () {
+              // 點擊按鈕時，執行斷開連接的操作
+              if (controller != null) {
+                controller.disconnect(); // 執行斷開連接的函式
+                Navigator.pop(context); // 回到上一頁
+              }
+            },
+          ),
+          bottom: FastGap.gap_3,
+          right: FastGap.gap_3,
+        ),
       ],
     );
   }
@@ -204,6 +316,26 @@ class QuickStartBodyState extends State<QuickStartBody> {
   //Fastborad創建的地方
   Future<void> onFastRoomCreated(FastRoomController controller) async {
     completerController.complete(controller);
+  }
+
+  void startMonitoringTerminalOutput() {
+    //0815離開葉子要抓terminal
+    Process.start('flutter:', []).then((process) {
+      process.stdout.transform(utf8.decoder).listen((data) {
+        if (data.contains(' _firePhaseChanged disconnected')) {
+          delete();
+        }
+      });
+
+      process.stderr.transform(utf8.decoder).listen((data) {
+        // 處理終端機錯誤输出
+      });
+    });
+  }
+
+  void delete() {
+    //呼叫API
+    print('關键字出现，調用 delete() 函式');
   }
 
   @override
@@ -217,5 +349,6 @@ class QuickStartBodyState extends State<QuickStartBody> {
     ]); // 設置首選方向（支持橫屏和豎屏）
     SystemChrome.setEnabledSystemUIMode(
         SystemUiMode.immersiveSticky); // 隱藏系統UI元素（例如狀態欄和導航欄）
+    startMonitoringTerminalOutput(); // 在本頁面初始化時抓terminal
   }
 }
