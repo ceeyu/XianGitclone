@@ -42,7 +42,6 @@ class QuickStartBody extends StatefulWidget {
 
 class QuickStartBodyState extends State<QuickStartBody> {
   Completer<FastRoomController> completerController = Completer();
-
   final _storage = FlutterSecureStorage(); // 用於存儲 access_token
   Future<String?> getAccessToken() async {
     // 從 flutter_secure_storage 取得 access_token
@@ -51,24 +50,21 @@ class QuickStartBodyState extends State<QuickStartBody> {
     return accessToken;
   }
 
-  Future<void> showBanRoomResultDialog(String message) async {
+  Future<void> showBanRoomResultDialog(
+      BuildContext context, String message) async {
     //Ban房間對話框
     // 顯示Ban房間 API 回傳的結果
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text
-        (
+        content: Text(
           message,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
           textAlign: TextAlign.center,
         ),
-        actions: 
-        [
-          TextButton
-          (
-            onPressed: () 
-            {
+        actions: [
+          TextButton(
+            onPressed: () {
               Navigator.of(context).pop();
             },
             child: const Text('OK'),
@@ -138,15 +134,12 @@ class QuickStartBodyState extends State<QuickStartBody> {
             ),
 
             // do something 0815修改ban房間
-            onPressed: () async 
-            {
+            onPressed: () async {
               final savedAccessToken = await getAccessToken();
-              if (savedAccessToken != null) 
-              {
+              if (savedAccessToken != null) {
                 // 呼叫登出 API
-                try 
-                {
-                  final response = await http.patch(
+                try {
+                  final response = await http.post(
                     Uri.parse('http://120.126.16.222/leafs/disable-room'),
                     headers: <String, String>{
                       'Content-Type': 'application/json',
@@ -159,42 +152,38 @@ class QuickStartBodyState extends State<QuickStartBody> {
                     }),
                   );
 
-                  if (response.statusCode >= 200&&response.statusCode<300) 
-                  {
+                  if (response.statusCode >= 200 && response.statusCode < 300) {
                     final body = jsonDecode(response.body);
-                    if(kDebugMode)
-                    {
-                      print('GetBanRoom API Response $body');
+
+                    if (kDebugMode) {
+                      print('GetBanRoom API Response: $body');
                     }
                     // 輸出ban房間成功的回傳資料
-                    if (body=='房間不存在'||body=='不是此房間創始人，不能關閉房間') 
-                    {
-                      await showBanRoomResultDialog(body);
-
-                    }
-                    else
-                    {
+                    // ignore: non_constant_identifier_names
+                    final Message = body[0]['error_message'];
+                    if (Message == '房間不存在' || Message == '不是此房間創始人，不能關閉房間') {
+                      // ignore: use_build_context_synchronously
+                      await showBanRoomResultDialog(context, Message);
+                    } else {
                       // ignore: use_build_context_synchronously
                       Navigator.of(context).pop(); //跳回上一步驟
                     }
-                  } 
-                  else 
-                  {
+                  } else {
                     // 失敗
                     final errorMessage = response.body;
-                    await showBanRoomResultDialog(errorMessage);
+                    await showBanRoomResultDialog(context, errorMessage);
                   }
                 } catch (e) {
                   if (kDebugMode) {
-                    print('登出失敗：$e');
+                    print('Ban房失敗：$e');
                   }
-                  final errorMessage = '登出失敗：$e';
-                  await showBanRoomResultDialog(errorMessage);
+                  final errorMessage = 'Ban房失敗：$e';
+                  await showBanRoomResultDialog(context, errorMessage);
                 }
               } else {
                 // 沒有保存的 access_token，直接顯示錯誤訊息
                 const errorMessage = '尚未登入，無法進行登出。';
-                await showBanRoomResultDialog(errorMessage);
+                await showBanRoomResultDialog(context, errorMessage);
               }
             },
           ),
