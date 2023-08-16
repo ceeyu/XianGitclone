@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage>
   Future<List<dynamic>>? _futureLogin;
   final LoginRepository _loginRepository=LoginRepository();
   bool _showSignUpButton=false;//showsignupbutton controller
-  final _storage = FlutterSecureStorage(); // 用於存儲 access_token
+  final _storage =const FlutterSecureStorage(); // 用於存儲 access_token
 
   @override
   Widget build(BuildContext context)
@@ -58,14 +58,6 @@ class _LoginPageState extends State<LoginPage>
     {
       _futureLogin=_loginRepository.login(account,password);
     });
-    // _futureLogin?.then((data)
-    // {
-    //   if(data.isNotEmpty&&data[0]['access_token']!=null)
-    //   {
-    //     String accessToken=data[0]['access_token'];
-    //     saveAccessToken(accessToken);
-    //   }
-    // });
   }
   Column buildColumn()
   {
@@ -78,7 +70,7 @@ class _LoginPageState extends State<LoginPage>
         (
           width: 300,
           height: 80,
-          child:TextField
+          child:TextFormField
           (
             controller: _accountcontroller,
             decoration: const InputDecoration
@@ -93,7 +85,7 @@ class _LoginPageState extends State<LoginPage>
         (
           width: 300,
           height: 80,
-          child:TextField
+          child:TextFormField
           (
             controller: _passwordcontroller,
             obscureText: true,
@@ -285,9 +277,9 @@ class _LoginPageState extends State<LoginPage>
               onPressed: ()
               {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(builder:(_)=>const MyPage1()));
+                Navigator.of(context).pop();
               }, 
-              child: const Text("Go to Home "),
+              child: const Text("請先在原裝置上先登出"),
             ),
         ],
       ),

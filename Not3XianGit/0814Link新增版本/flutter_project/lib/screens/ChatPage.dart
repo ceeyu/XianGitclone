@@ -77,23 +77,73 @@ class _ChatPageState extends State<ChatPage>
           {
             // 解析API回傳的JSON數據
             final  userInfo = json.decode(response.body);
-            setState(() 
-            {
-              searchResults = userInfo.map((item) => item['first_names']).toList();
-              searchAccounts=userInfo.map((item)=>item['account']).toList();
-              selectedResult=searchResults.isNotEmpty?searchResults[0]:null;
-              selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] : null;
-
-            });
             if(kDebugMode)
             {
-              print('API 回傳姓名: $userInfo');
-              print('所找的帳號: $searchAccounts');
-              print('所找的姓名: $searchResults');
-              print('selectedResult內容: $selectedResult');
-              print('selectedAccount內容:$selectedAccount');
+              print('Search API回傳資料:$userInfo');
             }
-            //await getAvatar();//取得頭像圖檔
+            if(userInfo.isNotEmpty)
+            {
+              if(userInfo[0]['error_message']=='搜尋不到資料')
+              {
+                setState(() 
+                {
+                  searchResults = userInfo.map((item) => item['error_message']).toList();
+                  searchAccounts=userInfo.map((item)=>item['error_message']).toList();
+                  selectedResult=searchResults.isNotEmpty?searchResults[0]:'搜尋不到資料';
+                  selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] :'搜尋不到資料';
+                });
+                if(kDebugMode)
+                {
+                  print('所找的帳號: $searchAccounts');
+                  print('所找的姓名: $searchResults');
+                  print('selectedResult內容: $selectedResult');
+                  print('selectedAccount內容:$selectedAccount');
+                }
+                // ignore: use_build_context_synchronously
+                showDialog
+                (
+                  context: context,
+                  builder: (BuildContext context) 
+                  {
+                    return AlertDialog
+                    (
+                      title: const Text('搜尋結果'),
+                      content: Text(userInfo[0]['error_message']),
+                      actions: <Widget>
+                      [
+                        ElevatedButton
+                        (
+                          child: const Text('重新搜尋'),
+                          onPressed: () 
+                          {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+              else
+              {
+                setState(() 
+                {
+                  searchResults = userInfo.map((item) => item['first_names']).toList();
+                  searchAccounts=userInfo.map((item)=>item['account']).toList();
+                  selectedResult=searchResults.isNotEmpty?searchResults[0]:'搜尋不到資料';
+                  selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] :'搜尋不到資料';
+
+                });
+                if(kDebugMode)
+                {
+                  print('API 回傳姓名: $userInfo');
+                  print('所找的帳號: $searchAccounts');
+                  print('所找的姓名: $searchResults');
+                  print('selectedResult內容: $selectedResult');
+                  print('selectedAccount內容:$selectedAccount');
+                }
+              }
+            }
           } 
         } 
         catch (e) 
@@ -144,14 +194,14 @@ class _ChatPageState extends State<ChatPage>
           receiverFirstName=responseData.map((item) => item['receiver_firstname']).toList();
           sendTime=responseData.map((item) => item['send_time']).toList();
           chatData=responseData.map((item) => item['chat_data']).toList();
-          if(kDebugMode)
-          {
-            print('ChatPage API 回傳資料: $responseData');
-            print('傳送方名字: $senderFirstName');
-            print('接收方名字: $receiverFirstName');
-            print('傳送時間: $sendTime');
-            print('所找的聊天內容: $chatData');
-          }
+          // if(kDebugMode)
+          // {
+          //   print('ChatPage API 回傳資料: $responseData');
+          //   print('傳送方名字: $senderFirstName');
+          //   print('接收方名字: $receiverFirstName');
+          //   print('傳送時間: $sendTime');
+          //   print('所找的聊天內容: $chatData');
+          // }
         }
         else
         {
@@ -326,25 +376,56 @@ class _ChatPageState extends State<ChatPage>
                           onPressed: ()async
                           {
                             final savedAccessToken = await getAccessToken();
+                            // ignore: unrelated_type_equality_checks
                             if (savedAccessToken != null) 
                             {
                               try 
                               {
-                                // 觸發 API 請求
-                                await showChatData();
-                                // ignore: use_build_context_synchronously
-                                Navigator.push
-                                (
-                                  context,
-                                  MaterialPageRoute
+                                if(selectedResult=='搜尋不到資料')
+                                {
+                                  // ignore: use_build_context_synchronously
+                                  showDialog
                                   (
-                                    builder: (context)=>ChatingPage
+                                    context: context,
+                                    builder: (BuildContext context) 
+                                    {
+                                      return AlertDialog
+                                      (
+                                        title: const Text('搜尋結果'),
+                                        content: const Text('搜尋不到資料'),
+                                        actions: <Widget>
+                                        [
+                                          ElevatedButton
+                                          (
+                                            child: const Text('確定'),
+                                            onPressed: () 
+                                            {
+                                              Navigator.of(context).pop();
+                                            }
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                  );
+                                }
+                                else
+                                {
+                                  // 觸發 API 請求
+                                  await showChatData();
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.push
+                                  (
+                                    context,
+                                    MaterialPageRoute
                                     (
-                                      selectedName: selectedResult,
-                                      selectedAccount: selectedAccount,//seach得到的account
+                                      builder: (context)=>ChatingPage
+                                      (
+                                        selectedName: selectedResult,
+                                        selectedAccount: selectedAccount,//seach得到的account
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               } 
                               catch (error) 
                               {

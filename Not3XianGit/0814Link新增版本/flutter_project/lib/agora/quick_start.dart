@@ -307,29 +307,11 @@ class QuickStartBodyState extends State<QuickStartBody> {
     completerController.complete(controller);
   }
 
-  void startMonitoringTerminalOutput() {
-    //0815離開葉子要抓terminal
-    Process.start('flutter:', []).then((process) {
-      process.stdout.transform(utf8.decoder).listen((data) {
-        if (data.contains(' _firePhaseChanged disconnected')) {
-          delete();
-        }
-      });
-
-      process.stderr.transform(utf8.decoder).listen((data) {
-        // 處理終端機錯誤输出
-      });
-    });
-  }
-
-  void delete() {
-    //呼叫API
-    print('關键字出现，調用 delete() 函式');
-  }
 
   @override
   void initState() {
     super.initState();
+   
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -338,6 +320,5 @@ class QuickStartBodyState extends State<QuickStartBody> {
     ]); // 設置首選方向（支持橫屏和豎屏）
     SystemChrome.setEnabledSystemUIMode(
         SystemUiMode.immersiveSticky); // 隱藏系統UI元素（例如狀態欄和導航欄）
-    startMonitoringTerminalOutput(); // 在本頁面初始化時抓terminal
   }
 }
