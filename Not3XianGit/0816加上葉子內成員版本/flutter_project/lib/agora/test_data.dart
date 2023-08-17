@@ -66,9 +66,15 @@ class TestData {
             "url": "https://flat-storage.oss-accelerate.aliyuncs.com/cloud-storage/2022-02/15/8d487d84-e527-4760-aeb6-e13235fd541f/8d487d84-e527-4760-aeb6-e13235fd541f.png",
             "width": 512,
             "height": 512
-        }]
+        }, {
+            "type": "leave", 
+            "name": "點選離開葉子",
+            "url": "",
+            "taskUUID": "",
+            "taskToken": ""
+        } ]
         ''';
-
+  //最後一筆資料暫時當作離開葉子測試
   // 解析JSON資料為List<CloudFile>
   static List<CloudFile> kCloudFiles = (jsonDecode(kCloudJson) as List)
       .map((e) => CloudFile.fromJson(e))

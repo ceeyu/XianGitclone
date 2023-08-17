@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'test_data.dart';
 
 class CloudTestWidget extends StatefulWidget {
-  final FastRoomController controller; 
+  final FastRoomController controller;
 
   CloudTestWidget({
     required this.controller,
@@ -26,10 +26,11 @@ class CloudTestWidgetState extends State<CloudTestWidget> {
       constraints: const BoxConstraints.expand(),
       child: Stack(
         children: [
-          if (showCloud) Positioned(
-            right: 56.0,
-            child: buildCloudLayout(context),
-          ),
+          if (showCloud)
+            Positioned(
+              right: 56.0,
+              child: buildCloudLayout(context),
+            ),
           Positioned(
             right: 12.0,
             child: InkWell(
@@ -128,13 +129,18 @@ class CloudTestWidgetState extends State<CloudTestWidget> {
     switch (item.type) {
       case "png":
       case "jpg":
-        widget.controller.insertImage(item.url, item.width!, item.height!); // 插入圖片到白板中
+        widget.controller
+            .insertImage(item.url, item.width!, item.height!); // 插入圖片到白板中
         break;
       case "mp4":
         widget.controller.insertVideo(item.url, item.name); // 插入影片到白板中
         break;
+
+      case "leave": //暫放離開葉子
+        widget.controller.disconnect();
         
-      case "ppt":
+        Navigator.pop(context);
+        break;
       case "pptx":
         widget.controller.insertDoc(InsertDocParams(
           taskUUID: item.taskUUID!,
