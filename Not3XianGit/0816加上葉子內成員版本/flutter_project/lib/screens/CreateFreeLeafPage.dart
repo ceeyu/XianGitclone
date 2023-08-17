@@ -8,12 +8,50 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_project/agora/agora_service.dart';
 
+import 'package:flutter_project/agora/constants.dart';
+import 'package:flutter_project/agora/quick_start.dart'; // 引入QuickStartPage
+
 class CreateFreeLeafPage extends StatefulWidget 
 {
   const CreateFreeLeafPage({super.key});
   @override
   // ignore: library_private_types_in_public_api
   _CreateFreeLeafPageState createState() => _CreateFreeLeafPageState();
+}
+
+class FreeLeafModel {
+  final String uuid;
+  final String roomToken;
+  final String appIdentifier;
+  final String link;
+
+  const FreeLeafModel({
+    required this.roomToken,
+    required this.appIdentifier,
+    required this.uuid,
+    required this.link,
+  });
+
+  factory FreeLeafModel.fromJson(Map<String, dynamic> json) {
+    final roomData = json['roomData'];
+    final leafData = json['leafData'];
+    final roomToken = json['roomToken'];
+    final appIdentifier = roomData['appIdentifier'];
+    final link = leafData['link'];
+    final uuid = roomData['uuid'];
+
+    return FreeLeafModel(
+      roomToken: roomToken,
+      appIdentifier: appIdentifier,
+      uuid: uuid,
+      link: link,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'FreeLeafModel{uuid: $uuid, roomToken: $roomToken, appIdentifier: $appIdentifier}';
+  }
 }
 
 class _CreateFreeLeafPageState extends State<CreateFreeLeafPage> 
@@ -781,13 +819,70 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             [
               ElevatedButton
               (
-                onPressed: () 
-                {
-                  Navigator.push
-                  (
-                    context,MaterialPageRoute(builder:(context)=> const FreeLeafExample())
+                onPressed: () async {
+              final savedAccessToken = await getAccessToken();
+              if (savedAccessToken != null) {
+                try {
+                  final response = await http.post(
+                    Uri.parse('http://120.126.16.222/leafs/create-white-leaf'),
+                    headers: <String, String>{
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer $savedAccessToken',
+                    },
+                    body: jsonEncode(<String, dynamic>{
+                      'region': 'cn-hz',
+                      //'region': 'en-us',
+                    }),
                   );
-                },
+
+                  if (response.statusCode >= 200 && response.statusCode < 300) {
+                    final responseData = jsonDecode(response.body);
+
+                    if (responseData.isNotEmpty &&
+                        responseData[0]['roomData'] != null &&
+                        responseData[0]['roomToken'] != null &&
+                        responseData[0]['leafData'] != null) {
+                      final leafData = responseData[0]['leafData'];
+                      final link = leafData['link']; // 獲取 leafData 內的 link 變數
+                      final roomData = responseData[0]['roomData'];
+                      final roomToken = responseData[0]['roomToken'];
+                      final appIdentifier = responseData[0]['appIdentifier'];
+                      final uuid = roomData['uuid'];
+                      final freeLeafModel = FreeLeafModel(
+                        roomToken: roomToken,
+                        appIdentifier: appIdentifier,
+                        uuid: uuid,
+                        link: link,
+                      );
+                      print('FreeLeafModel: $freeLeafModel');
+                      print('Link: $link'); // 印出 link 變數的值
+
+                      // 更新 constant.dart 的變數值
+                      APP_ID = appIdentifier;
+                      ROOM_UUID = uuid;
+                      ROOM_TOKEN = roomToken;
+                      LINK = link;
+
+                      // 跳轉至 QuickStartPage
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => QuickStartPage(),
+                        ),
+                      );
+                    } else {
+                      print('API response is missing required data');
+                    }
+                  } else {
+                    throw Exception(
+                        '${response.reasonPhrase},${response.statusCode}');
+                  }
+                } catch (e) {
+                  print('Error: $e');
+                }
+              } else {
+                print('API response is empty');
+              }
+            },
                 style: ElevatedButton.styleFrom
                 (
                   foregroundColor: Colors.white, //text

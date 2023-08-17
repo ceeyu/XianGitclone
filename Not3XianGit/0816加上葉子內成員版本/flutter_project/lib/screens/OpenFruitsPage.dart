@@ -41,11 +41,11 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
   String? account;
   String? avatarFileName;
   Uint8List? avatarImageBytes;
-  final List<String> _pageData=<String>// 定義頁面視圖數據
+  final List<String> _pageData=<String>// 定義頁面視圖數據 
   [
-    'assets/images/marigold.png',
-    'assets/images/SunFlower.png',
-    'assets/images/Greentree.png',
+     'assets/images/marigold.png|金盞花',    // 添加金盞花對應的名稱
+  'assets/images/SunFlower.png|太陽花',  // 添加太陽花對應的名稱
+  'assets/images/Greentree.png|綠樹',    // 添加綠樹對應的名稱
   ];
   Future<String?> getAccessToken()async
   {
@@ -733,38 +733,34 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
               [
                 Expanded
                 (
-                  child: CarouselSlider
-                  (
-                    items: _pageData.map((page) 
-                    {
-                      return Builder
-                      (
-                        builder: (BuildContext context) 
-                        {
-                          return Container
-                          (
-                            padding: const EdgeInsets.all(0),
-                            child:Align
-                            (
-                              alignment: Alignment.center,
-                              child: Column
-                              (
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: 
-                                [
-                                  Image.asset
-                                  (
-                                    page,
-                                    width:200,
-                                    height: 200,
-                                  ),
-                                ],
+                  child: CarouselSlider(
+                  items: _pageData.map((page) {
+                    var parts = page.split('|');
+                    var imagePath = parts[0];//取得樹或花朵圖片
+                    var imageName = parts[1];//取得樹或花朵名字
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Container(
+                          padding: const EdgeInsets.all(0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                imagePath,
+                                width: 200,
+                                height: 200,
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
+                              const SizedBox(height: 10), // 添加間距
+                              Text(
+                                imageName,
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
                     options: CarouselOptions
                     (
                       // PageView左右滑動切換時的回調
@@ -806,7 +802,7 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
               (
                 onPressed: () 
                 {
-                  Navigator.pop(context);
+                  //Navigator.pop(context);
                 },
                 child: const Text('Submit'),
               ),

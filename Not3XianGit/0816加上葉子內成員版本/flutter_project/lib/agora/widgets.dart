@@ -147,7 +147,7 @@ class CloudTestWidgetState extends State<CloudTestWidget> {
             Navigator.of(context).pop();
             Navigator.of(context).pop();
           } else if (Message == '成功離開' && lastOneUser == 'last one') {
-            print("請按上方按鈕關閉葉子");
+            print("最後一人所以直接關葉子");
             //Navigator.of(context).pop();
             _handleBanRoomButton();
           } else {
