@@ -289,7 +289,7 @@ class QuickStartBodyState extends State<QuickStartBody> {
             onPressed: () async {
               final savedAccessToken = await getAccessToken();
               if (savedAccessToken != null) {
-                // 呼叫登出 API
+                // 呼叫關閉房間 API
                 try {
                   final response = await http.post(
                     Uri.parse('http://120.126.16.222/leafs/disable-room'),

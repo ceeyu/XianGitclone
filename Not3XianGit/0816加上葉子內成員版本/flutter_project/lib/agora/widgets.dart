@@ -1,7 +1,15 @@
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'test_data.dart';
+
+import 'dart:io';
+import 'dart:convert';
+import 'constants.dart';
 
 class CloudTestWidget extends StatefulWidget {
   final FastRoomController controller;
@@ -19,6 +27,143 @@ class CloudTestWidget extends StatefulWidget {
 
 class CloudTestWidgetState extends State<CloudTestWidget> {
   var showCloud = false;
+  final _storage = FlutterSecureStorage(); // 用於存儲 access_token
+  Future<String?> getAccessToken() async {
+    // 從 flutter_secure_storage 取得 access_token
+    String? accessToken = await _storage.read(key: 'access_token');
+    print('Access Token: $accessToken');
+    return accessToken; //得到accessToken值
+  }
+
+  Future<void> showBanRoomResultDialog(
+      BuildContext context, String message) async {
+    //Ban房間對話框
+    // 顯示Ban房間 API 回傳的結果
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(
+          message,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> showDisconnectResultDialog(
+      BuildContext context, String message) async {
+    //Ban房間對話框
+    // 顯示Ban房間 API 回傳的結果
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(
+          message,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleBanRoomButton() async {
+    final savedAccessToken = await getAccessToken();
+    if (savedAccessToken != null) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://120.126.16.222/leafs/disable-room'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>{
+            'region': 'cn-hz',
+            'uuid': ROOM_UUID, // 假設這是你的 ROOM_UUID
+          }),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final body = jsonDecode(response.body);
+          final Message = body[0]['error_message'];
+          if (Message == '房間不存在' || Message == '不是此房間創始人，不能關閉房間') {
+            await showBanRoomResultDialog(context, Message);
+          } else {
+            Navigator.of(context).pop();
+          }
+        } else {
+          final errorMessage = response.body;
+          await showBanRoomResultDialog(context, errorMessage);
+        }
+      } catch (e) {
+        final errorMessage = 'Ban房失敗：$e';
+        await showBanRoomResultDialog(context, errorMessage);
+      }
+    } else {
+      const errorMessage = '尚未登入，無法進行登出。';
+      await showBanRoomResultDialog(context, errorMessage);
+    }
+  }
+
+  void _handleLeaveButton() async {
+    final savedAccessToken = await getAccessToken();
+    if (savedAccessToken != null) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://120.126.16.222/gardenerofleafs/delete-gardener'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>{
+            'uuid': ROOM_UUID, // 假設這是你的 ROOM_UUID
+          }),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final body = jsonDecode(response.body);
+          final Message = body[0]['message'];
+          final lastOneUser = body[0]['who'];
+
+          if (Message == '成功離開' && lastOneUser == 'ordinary') {
+            await showDisconnectResultDialog(context, Message);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          } else if (Message == '成功離開' && lastOneUser == 'last one') {
+            print("請按上方按鈕關閉葉子");
+            //Navigator.of(context).pop();
+            _handleBanRoomButton();
+          } else {
+            final errorMessage = response.body;
+            await showDisconnectResultDialog(context, errorMessage);
+          }
+        } else {
+          final errorMessage = response.body;
+          await showDisconnectResultDialog(context, errorMessage);
+        }
+      } catch (e) {
+        final errorMessage = '離開失敗：$e';
+        await showDisconnectResultDialog(context, errorMessage);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,9 +282,8 @@ class CloudTestWidgetState extends State<CloudTestWidget> {
         break;
 
       case "leave": //暫放離開葉子
+        _handleLeaveButton(); // 呼叫API
         widget.controller.disconnect();
-        
-        Navigator.pop(context);
         break;
       case "pptx":
         widget.controller.insertDoc(InsertDocParams(
