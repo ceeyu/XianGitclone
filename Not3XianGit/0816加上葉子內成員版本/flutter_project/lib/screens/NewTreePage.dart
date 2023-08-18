@@ -21,9 +21,9 @@ class _NewTreePageState extends State<NewTreePage>
         backgroundColor: Colors.green,
         elevation: 0.0, //陰影
       ),
-      body:SingleChildScrollView
+      body:const SingleChildScrollView
       (
-        physics: const BouncingScrollPhysics(),
+        physics: BouncingScrollPhysics(),
         child:Column
         (
           mainAxisAlignment: MainAxisAlignment.start,
@@ -33,12 +33,12 @@ class _NewTreePageState extends State<NewTreePage>
             (
               child:Padding
               (
-                padding:const EdgeInsets.only(left:16,right:16,top:10),
+                padding:EdgeInsets.only(left:16,right:16,top:10),
                 child:Row
                 (
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const <Widget>
+                  children: <Widget>
                   [
                     Text
                     (

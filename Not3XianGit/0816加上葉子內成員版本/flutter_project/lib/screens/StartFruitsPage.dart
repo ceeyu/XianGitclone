@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_project/screens/ShowTreeInfoPage.dart';
 class StartFruitsPage extends StatefulWidget 
 {
   const StartFruitsPage({super.key});
@@ -13,6 +14,7 @@ class StartFruitsPage extends StatefulWidget
   _StartFruitsPageState createState()=>_StartFruitsPageState();
 }
 class _StartFruitsPageState extends State<StartFruitsPage>
+
 {
   int pageIndex=0;
   List<Widget> pageItem=[];
@@ -29,6 +31,8 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   String? account;
   String? avatarFileName;
   Uint8List? avatarImageBytes;
+  List<dynamic> plantNames = []; // 存植物名稱列表
+
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -209,6 +213,88 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       ),
     );
   }
+ 
+ Future<void> showFruitDialog(
+      BuildContext context, String message) async 
+      {
+    //創植物對話框
+    // 創植物 API 回傳的結果
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(
+          message,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+ Future<void> showPlant() async {
+
+    final savedAccessToken = await getAccessToken();
+    if (savedAccessToken != null && avatarFileName != null) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://120.126.16.222/plants/show-all-plants'),
+          headers: <String, String>{
+            'Authorization': 'Bearer $savedAccessToken',
+            //'Content-Type': 'application/json',
+          },
+          body: jsonEncode(<String, String>{
+
+          }),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) 
+        {
+          
+          final responseData = jsonDecode(response.body);
+          if (kDebugMode) 
+          {
+            print('CreatePlant API回傳資料: $responseData');
+          }
+
+            setState(() {
+              plantNames = responseData[0]['plant_name'] as List<dynamic>;
+            });
+          final plantCount = responseData[0]['plant_num'] as String;
+          
+          if (plantNames.isNotEmpty) {
+          final message = '植物名稱: ${plantNames.join(", ")}\n總數量: $plantCount';
+            if (kDebugMode) {
+              print('成功取得植物資訊: $message');
+              
+            }
+            await showFruitDialog(context, message);
+            } else {
+              final errorMsg = '未找到植物資訊';
+              await showFruitDialog(context, errorMsg);
+            }
+            
+         } else {
+        if (kDebugMode) {
+          print('Error: show all plants請求失敗\n$response\nStatusCode: ${response.statusCode}');
+        }
+      }
+      } catch (e) {
+        if (kDebugMode) {
+           print('show all plants Catch Error: $e');
+          await showFruitDialog(context, 'Catch Error: $e');
+        }
+      }
+    }
+  }
+ 
   @override
   void initState()
   {
@@ -216,59 +302,100 @@ class _StartFruitsPageState extends State<StartFruitsPage>
     //pageItem=[const ChatPage(),const StartLeafPage(),const OpenFruitsPage()];
     getUserInfo();
   }
-  @override
-  Widget build(BuildContext context) 
-  {
-    return Scaffold
-    (
-      body:Column
-      (
-        mainAxisAlignment:MainAxisAlignment.center,
+
+  Widget buildPlantButtons(List<dynamic> plantNames) {
+  return Column(
+    children: plantNames.map<Widget>((plantName) {
+      return ElevatedButton(
+        onPressed: () {
+          // TODO: 根据植物名稱做相应的操作
+          // 例如，显示特定植物的信息或导航到相关页面等
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text('你點擊了 $plantName 按紐'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('關閉'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Text(plantName.toString()),
+      );
+    }).toList(),
+  );
+}
+
+
+@override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>
-        [
-          const Center
-          (
-            child:Text("透過創建Tree來分類您的葉子們優",style: TextStyle(color: Colors.black45,fontSize: 20,fontWeight: FontWeight.bold)),
-          ),
-          Center
-          (
-            child:Container
-            (
-              alignment: Alignment.topCenter,
-              child:Image.asset('assets/images/StartFruits_2.png',width: 150,height: 150),
+        children: <Widget>[
+          const Center(
+            child: Text(
+              "透過創建Tree來分類您的葉子們優",
+              style: TextStyle(
+                  color: Colors.black45,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             ),
           ),
-          Center
-          (
-            child:Container
-            (
+          const SizedBox(height: 20), // 添加空白
+          Center(
+            child: Container(
+              alignment: Alignment.topCenter,
+              child: Image.asset('assets/images/StartFruits_2.png',
+                  width: 150, height: 150),
+            ),
+          ),
+          const SizedBox(height: 20), // 添加空白
+          Center(
+            child: Container(
               height: 60,
               width: 150,
-              alignment:Alignment.center,
-              decoration: BoxDecoration
-              (
-                color: const Color.fromARGB(222, 5, 202, 169), borderRadius: BorderRadius.circular(0),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(222, 5, 202, 169),
+                borderRadius: BorderRadius.circular(0),
               ),
               padding: const EdgeInsets.all(8.0),
-              child: TextButton
-              (
-                onPressed: () 
-                {
-                  Navigator.push
-                  (
-                    context,MaterialPageRoute(builder:(_)=> const OpenFruitsPage())
-                  );
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const OpenFruitsPage()));
                 },
-                child: const Text
-                (
+                child: const Text(
                   '創建我的Tree',
                   style: TextStyle(color: Colors.white, fontSize: 15),
                 ),
               ),
             ),
-            // ignore: avoid_unnecessary_containers
           ),
+          const SizedBox(height: 20), // 添加空白
+          ElevatedButton(
+            onPressed: () async {
+              // Navigator.push(context,
+              //     MaterialPageRoute(builder: (_) => const ShowTreeInfoPage()));
+              await showPlant();
+            },
+            child: const Text('查看Tree信息'),
+          ),
+          const SizedBox(height: 20), // 添加空白
+          // 在这里根据植物名稱生成按鈕
+          if (firstName != null && plantNames != null)
+            buildPlantButtons(plantNames),
         ],
       ),
     );
