@@ -294,44 +294,56 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       }
     }
   }
- 
-  @override
-  void initState()
-  {
-    super.initState();
-    //pageItem=[const ChatPage(),const StartLeafPage(),const OpenFruitsPage()];
-    getUserInfo();
-  }
 
-  Widget buildPlantButtons(List<dynamic> plantNames) {
-  return Column(
-    children: plantNames.map<Widget>((plantName) {
-      return ElevatedButton(
-        onPressed: () {
-          // TODO: 根据植物名稱做相应的操作
-          // 例如，显示特定植物的信息或导航到相关页面等
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: Text('你點擊了 $plantName 按紐'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('關閉'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        child: Text(plantName.toString()),
-      );
-    }).toList(),
+ 
+
+ Widget buildPlantButtons(List<dynamic> plantNames) {
+  return Container(
+    width: 600.0, // Set the desired width of the Container
+    child: Wrap(
+      alignment: WrapAlignment.center, // Align the buttons at the center
+      spacing: 10.0, // Set the horizontal spacing between buttons
+      runSpacing: 10.0, // Set the vertical spacing between buttons
+      children: plantNames.map<Widget>((plantName) {
+        return TextButton(
+          onPressed: () {
+            // TODO: Perform actions based on the plant name
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Text('You clicked the button for $plantName'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Close'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: Column(
+            children: [
+              Image.asset(
+                'assets/images/Greentree.png', // Replace with your image path
+                width:  150, // Set the desired width of the image
+                height: 150, // Set the desired height of the image
+              ),
+              SizedBox(height: 8), // Add some spacing between image and text
+              Text(plantName.toString()),
+            ],
+          ),
+        );
+      }).toList(),
+    ),
   );
 }
+
+
+
 
 
 @override
@@ -389,6 +401,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
               // Navigator.push(context,
               //     MaterialPageRoute(builder: (_) => const ShowTreeInfoPage()));
               await showPlant();
+
             },
             child: const Text('查看Tree信息'),
           ),
@@ -396,6 +409,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
           // 在这里根据植物名稱生成按鈕
           if (firstName != null && plantNames != null)
             buildPlantButtons(plantNames),
+            
         ],
       ),
     );
