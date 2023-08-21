@@ -832,6 +832,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                     body: jsonEncode(<String, dynamic>{
                       'region': 'cn-hz',
                       //'region': 'en-us',
+                      "leaf_name":"0820測試",//暫時寫死
                     }),
                   );
 
