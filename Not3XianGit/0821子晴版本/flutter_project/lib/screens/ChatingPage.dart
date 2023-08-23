@@ -627,6 +627,31 @@ class _ChatingPageState extends State<ChatingPage>
         if(response.statusCode>=200&&response.statusCode<300)
         {
           final responseData=jsonDecode(response.body);
+          if(responseData[0]['error_message']=='error_message: Room not found !')
+          {
+            // ignore: use_build_context_synchronously
+            showDialog
+            (
+              context: context, 
+              builder: (context)=>AlertDialog
+              (
+                title: const Text('加入葉子失敗'),
+                content: const Text('此房間不存在'),
+                actions: 
+                [
+                  ElevatedButton
+                  (
+                    onPressed: ()
+                    {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    }, 
+                    child:const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
           setState(() 
           {
             joinDataList=List<Map<String,dynamic>>.from(responseData);

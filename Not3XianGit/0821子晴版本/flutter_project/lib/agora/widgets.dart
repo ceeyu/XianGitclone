@@ -1,5 +1,6 @@
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/MyPage1.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -37,6 +38,11 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       print('Access Token: $accessToken');
     }
     return accessToken; //得到accessToken值
+  }
+  Future<void> deleteAccessToken() async 
+  {
+    // 從 flutter_secure_storage 刪除 access_token
+    await _storage.delete(key: 'access_token');
   }
   Future<void> showBanRoomResultDialog(BuildContext context, String message) async 
   {
@@ -121,15 +127,18 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           final body = jsonDecode(response.body);
           // ignore: non_constant_identifier_names
           final Message = body[0]['error_message'];
-          if (Message == '房間不存在' || Message == '不是此房間創始人，不能關閉房間') 
+          if (Message == '房間不存在' || Message == '不是此房間創始人，不能關閉房間'|| Message == '沒有權限關閉房間') 
           {
             // ignore: use_build_context_synchronously
             await showBanRoomResultDialog(context, Message);
           } 
           else 
           {
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
+            //await logOut();
+            if(kDebugMode)
+            {
+              print('BanRoomButton已成功關閉會議！');
+            }
           }
         } 
         else 
@@ -191,13 +200,17 @@ class CloudTestWidgetState extends State<CloudTestWidget>
               print("最後一人所以直接關葉子");
             }
             _handleBanRoomButton();
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop();
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop();
           } 
           //isFounder&&isLastOne
           else if(body[0]['message'] == '成功離開' &&body[0]['isFounder'] == 'true'&&body[0]['isLast']=='true')
           {
             if (kDebugMode) 
             {
-              print("is Founder but also 最後一人所以直接關葉子");
+              print("is Founder but also 最後一人所以可直接關閉葉子");
             }
             _handleBanRoomButton();
           }
@@ -206,9 +219,46 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           {
             if (kDebugMode) 
             {
-              print("is Founder所以可直接關葉子");
+              print("is Founder所以可選擇關閉或離開葉子");
             }
-            _handleBanRoomButton();
+            // ignore: use_build_context_synchronously
+            showDialog
+            (
+              context: context, 
+              builder: (context)=>AlertDialog
+              (
+                title: const Text('選擇關閉或離開'),
+                content: const Text('您是創建葉子者，可選擇關閉或離開葉子\n離開：還能通過連結再加入噢\n關閉：直接結束這會議(不是創建者或會議最後使用者只能離開)'),
+                actions: 
+                [
+                  ElevatedButton
+                  (
+                    onPressed: ()async
+                    {
+                      await _handleBanRoomButton();
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                    }, 
+                    child:const Text('關閉會議'),
+                  ),
+                  ElevatedButton
+                  (
+                    onPressed: ()async
+                    {
+                      await showDisconnectResultDialog(context, '成功離開');
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                    }, 
+                    child:const Text('離開會議'),
+                  ),
+
+                ],
+              ),
+            );
           }
           else 
           {
@@ -235,6 +285,107 @@ class CloudTestWidgetState extends State<CloudTestWidget>
   Future<void> _handleDownLoadButton()async
   {
     
+  }
+  Future<void> banRoomAndLeaveRoom()async 
+  {
+    // ignore: use_build_context_synchronously
+    showDialog
+    (
+      context: context, 
+      builder: (context)=>AlertDialog
+      (
+        title: const Text('離開/關閉葉子'),
+        content: const Text
+        (
+          '離開：還能通過連結再加入噢\n關閉：直接結束這會議(不是創建者或會議最後使用者只能離開)'
+        ),
+        actions: 
+        [
+          ElevatedButton
+          (
+            onPressed: ()async
+            {
+              await _handleLeaveButton();
+            }, 
+            child:const Text('關閉會議'),
+          ),
+          ElevatedButton
+          (
+            onPressed: () async 
+            {
+              await _handleLeaveButton();
+            },
+            child: const Text('離開會議'),
+          ),
+        ],
+      ),
+    );
+  }
+  Future<void> logOut()async
+  {
+    final savedAccessToken=await getAccessToken();
+    if (savedAccessToken != null) 
+    {
+      // 呼叫登出 API
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/logout'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>
+          {
+            'access_token': savedAccessToken,
+          }),
+        );
+        if (response.statusCode == 200) 
+        {
+          // 輸出登出成功的回傳資料
+          final body = jsonDecode(response.body);
+          // ignore: use_build_context_synchronously
+          Navigator.pushAndRemoveUntil
+          (
+            context,MaterialPageRoute(builder:(_)=>const MyPage1()),
+            (route)=>false,
+          );
+          if(kDebugMode)
+          {
+            print('After BanRoom Logout Successful!\n$body');
+          }
+          await deleteAccessToken(); // 登出後刪除保存的 access_token
+        } 
+        else 
+        {
+          // 登出失敗
+          final errorMessage = response.body;
+          if(kDebugMode)
+          {
+            print('After BanRoom Logout Failed!\n$errorMessage');
+          }
+
+        }
+      } 
+      catch (e) 
+      {
+        if (kDebugMode) 
+        {
+          print('Catch Error登出失敗:$e');
+        }
+      }
+    } 
+    else 
+    {
+      // 沒有保存的 access_token，直接顯示錯誤訊息
+      const errorMessage = '尚未登入，無法進行登出。';
+      if (kDebugMode) 
+      {
+        print(errorMessage);
+      }
+    }
   }
   @override
   Widget build(BuildContext context) 
@@ -384,8 +535,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
         widget.controller.insertVideo(item.url, item.name); // 插入影片到白板中
         break;
       case "leave": //離開葉子
-        await _handleLeaveButton(); // 呼叫API
-        widget.controller.disconnect();
+        await banRoomAndLeaveRoom(); // 呼叫API
         break;
       case "download": //下載檔案
         await _handleDownLoadButton(); // 呼叫API

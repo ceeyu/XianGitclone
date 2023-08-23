@@ -224,6 +224,59 @@ class _MyPage1State extends State<MyPage1>
       ),
     );
   }
+  Future<void> logOut()async
+  {
+    final savedAccessToken=await getAccessToken();
+    if (savedAccessToken != null) 
+    {
+      // 呼叫登出 API
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/logout?timestamp=${DateTime.now().millisecondsSinceEpoch}'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>
+          {
+            'access_token': savedAccessToken,
+          }),
+        );
+        if (response.statusCode == 200) 
+        {
+          // 輸出登出成功的回傳資料
+          //final body = jsonDecode(response.body);
+          const message = '登出成功\n';
+          await showLogoutResultDialog(message);
+          await deleteAccessToken(); // 登出後刪除保存的 access_token
+        } 
+        else 
+        {
+          // 登出失敗
+          final errorMessage = response.body;
+          await showLogoutResultDialog(errorMessage);
+        }
+      } 
+      catch (e) 
+      {
+        if (kDebugMode) 
+        {
+          print('登出失敗：$e');
+        }
+        final errorMessage = '登出失敗：$e';
+        await showLogoutResultDialog(errorMessage);
+      }
+    } 
+    else 
+    {
+      // 沒有保存的 access_token，直接顯示錯誤訊息
+      const errorMessage = '尚未登入，無法進行登出。';
+      await showLogoutResultDialog(errorMessage);
+    }
+  }
   @override
   void initState()
   {
@@ -627,59 +680,7 @@ class _MyPage1State extends State<MyPage1>
               (
                 onPressed: ()async
                 {
-                  final savedAccessToken=await getAccessToken();
-                  if (savedAccessToken != null) 
-                  {
-                    // 呼叫登出 API
-                    try 
-                    {
-                      final response = await http.post
-                      (
-                          Uri.parse('http://120.126.16.222/gardeners/logout?timestamp=${DateTime.now().millisecondsSinceEpoch}'),
-                          headers: <String, String>
-                          {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer $savedAccessToken',
-                          },
-                          body: jsonEncode(<String, String>
-                          {
-                            //'account': account,
-                            'access_token': savedAccessToken,
-                          }),
-                        );
-
-                        if (response.statusCode == 200) 
-                        {
-                          // 輸出登出成功的回傳資料
-                          //final body = jsonDecode(response.body);
-                          const message = '登出成功\n';
-                          await showLogoutResultDialog(message);
-                          await deleteAccessToken(); // 登出後刪除保存的 access_token
-                        } 
-                        else 
-                        {
-                          // 登出失敗
-                          final errorMessage = response.body;
-                          await showLogoutResultDialog(errorMessage);
-                        }
-                      } 
-                      catch (e) 
-                      {
-                        if (kDebugMode) 
-                        {
-                          print('登出失敗：$e');
-                        }
-                        final errorMessage = '登出失敗：$e';
-                        await showLogoutResultDialog(errorMessage);
-                      }
-                    } 
-                    else 
-                    {
-                      // 沒有保存的 access_token，直接顯示錯誤訊息
-                      const errorMessage = '尚未登入，無法進行登出。';
-                      await showLogoutResultDialog(errorMessage);
-                    }
-
+                  await logOut();
                 }, 
                 child: const Text('Logout'),
               ),            
