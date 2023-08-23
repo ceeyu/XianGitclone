@@ -1,12 +1,7 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:flutter_project/MyPage1.dart';
-// import 'package:flutter_project/MyPage2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/screens/GardenerSettingPage.dart';
-
 class CreateOverLappingLeafPage extends StatefulWidget 
 {
   const CreateOverLappingLeafPage({super.key});
@@ -14,7 +9,6 @@ class CreateOverLappingLeafPage extends StatefulWidget
   //ignore: library_private_types_in_public_api
   _CreateOverLappingLeafPageState createState() => _CreateOverLappingLeafPageState();
 }
-
 class _CreateOverLappingLeafPageState extends State<CreateOverLappingLeafPage> 
 {
   // ignore: non_constant_identifier_names
@@ -57,10 +51,9 @@ class _CreateOverLappingLeafPageState extends State<CreateOverLappingLeafPage>
               (
                 height: 100,
                 color: Colors.green,
-                child: Row
+                child: const Row
                 (
-                  // ignore: prefer_const_literals_to_create_immutables
-                  children: const 
+                  children:
                   [
                     SizedBox(width: 20),
                     CircleAvatar
@@ -147,10 +140,10 @@ class _CreateOverLappingLeafPageState extends State<CreateOverLappingLeafPage>
               ExpansionTile
               (
                 //下拉式
-                title: Row
+                title: const Row
                 (
                   // ignore: prefer_const_literals_to_create_immutables
-                  children: const 
+                  children:  
                   [
                     Icon(CupertinoIcons.settings),
                     SizedBox

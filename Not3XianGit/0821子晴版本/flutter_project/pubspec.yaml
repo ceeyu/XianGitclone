@@ -62,6 +62,10 @@ dependencies:
       path: Not3XianGit/fastboard_flutter 
   pdf: ^3.10.4
   chat_bubbles: ^1.4.0
+  screenshot: ^2.1.0
+  file_saver: ^0.2.6
+  archive: ^3.3.7
+  html: ^0.15.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -97,8 +101,14 @@ flutter:
     - assets/images/marigold.png
     - assets/images/SunFlower.png
     - assets/tree_demo.riv
-
-
+    - assets/images/twoside_leaf.png
+    - assets/images/Lily.png
+    - assets/images/FruitsTree.png
+    - assets/images/Rose.png
+    - assets/images/Sakura.png
+    - assets/images/whitejasmine.png
+    - assets/images/peony.png
+    - assets/images/blueorchid.png
 
   fonts:
     - family: Raleway

@@ -1,7 +1,5 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_project/screens/StartFruitsPage.dart';
-import 'package:flutter_project/screens/NewTreePage.dart';
 class FruitsTreePage extends StatefulWidget 
 {
   const FruitsTreePage({super.key});
@@ -63,10 +61,10 @@ class _FruitsTreePageState extends State<FruitsTreePage>
       (
         onPressed:()
         {
-          Navigator.push
-          (
-            context,MaterialPageRoute(builder:(context)=> const NewTreePage())
-          );
+          // Navigator.push
+          // (
+          //   context,MaterialPageRoute(builder:(context)=> const NewTreePage())
+          // );
         },
         tooltip: '創建Tree',
         backgroundColor: Colors.greenAccent,

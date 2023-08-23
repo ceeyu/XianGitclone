@@ -249,7 +249,12 @@ class _MyPage1State extends State<MyPage1>
           child:Text
           (
             'Not3',
-            style:TextStyle(color:Colors.white),
+            style:TextStyle
+            (
+              color:Colors.white,
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         backgroundColor: Colors.green,

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/models/ChatPageUsersModel.dart';
-import 'package:flutter_project/components/ConversationList.dart';
 import 'package:flutter_project/screens/ChatingPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -29,12 +27,6 @@ class _ChatPageState extends State<ChatPage>
   List<dynamic> chatData=[];
   static String? selectedResult;
   String? selectedAccount;
-  List<ChatPageUsersModel> chatPageUsersModel=
-  [
-    ChatPageUsersModel(name:'Xian',messageText:'Set',imageURL:'assets/images/twoside_leaf.png',time:'Now'),
-    ChatPageUsersModel(name:'Ting',messageText:'Hi',imageURL:'assets/images/maple_leaf2.png',time:'Now'),
-    ChatPageUsersModel(name:'Ping',messageText:'Bye',imageURL:'assets/images/normal_leaf2.png',time:'Now'),
-  ];
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -253,7 +245,7 @@ class _ChatPageState extends State<ChatPage>
                         [
                           SizedBox
                           (
-                            width: 270,
+                            width: 470,
                             height:100,
                             child:Padding
                             (
@@ -269,7 +261,7 @@ class _ChatPageState extends State<ChatPage>
                                 (
                                   hintText:  "搜尋名字",
                                   hintStyle: TextStyle(color:Colors.grey.shade600),
-                                  prefixIcon: Icon(Icons.search,color:Colors.grey.shade600,size:20),
+                                  prefixIcon: Icon(Icons.search,color:Colors.grey.shade600,size:50),
                                   suffixIcon:IconButton
                                   (
                                     onPressed: ()
@@ -280,7 +272,7 @@ class _ChatPageState extends State<ChatPage>
                                   ),
                                   filled:true,
                                   fillColor: Colors.grey.shade100,
-                                  contentPadding: const EdgeInsets.all(8),
+                                  contentPadding: const EdgeInsets.all(20),
                                   enabledBorder: OutlineInputBorder
                                   (
                                     borderRadius: BorderRadius.circular(20),
@@ -298,21 +290,27 @@ class _ChatPageState extends State<ChatPage>
                   (
                     children: <Widget>
                     [
-                      Padding
+                      SizedBox
                       (
-                        padding:const EdgeInsets.only(top:25,left:20),
-                        child:MaterialButton
+                        width: 120,
+                        height: 80,
+                        child:Padding
                         (
-                          onPressed: ()
-                          {
-                            setState(()
+                          padding:const EdgeInsets.only(top:25,left:20),
+                          child:MaterialButton
+                          (
+                            onPressed: ()
                             {
-                              searchName(_enterfirstnameController.text);
-                            });
-                          },
-                          color:const Color.fromARGB(255,0,158,71),
-                          child: const Text('搜尋',style:TextStyle(color:Colors.white))
+                              setState(()
+                              {
+                                searchName(_enterfirstnameController.text);
+                              });
+                            },
+                            color:const Color.fromARGB(255,0,158,71),
+                            child: const Text('搜尋',style:TextStyle(color:Colors.white,fontSize: 30))
+                          ),
                         ),
+
                       ),
                     ],
                   ),
@@ -326,7 +324,7 @@ class _ChatPageState extends State<ChatPage>
                 [
                   SizedBox
                   (
-                    width: 270,
+                    width: 470,
                     height:50,
                     child:DropdownButtonHideUnderline
                     (
@@ -368,99 +366,111 @@ class _ChatPageState extends State<ChatPage>
                   (
                     children: <Widget>
                     [
-                      Padding
+                      SizedBox
                       (
-                        padding:const EdgeInsets.only(top:25,left:20),
-                        child:MaterialButton
+                        width: 180,
+                        height: 80,
+                        child:Padding
                         (
-                          onPressed: ()async
-                          {
-                            final savedAccessToken = await getAccessToken();
-                            // ignore: unrelated_type_equality_checks
-                            if (savedAccessToken != null) 
+                          padding:const EdgeInsets.only(top:25,left:20),
+                          child:MaterialButton
+                          (
+                            onPressed: ()async
                             {
-                              try 
+                              final savedAccessToken = await getAccessToken();
+                              // ignore: unrelated_type_equality_checks
+                              if (savedAccessToken != null) 
                               {
-                                if(selectedResult=='搜尋不到資料')
+                                try 
                                 {
-                                  // ignore: use_build_context_synchronously
-                                  showDialog
-                                  (
-                                    context: context,
-                                    builder: (BuildContext context) 
-                                    {
-                                      return AlertDialog
-                                      (
-                                        title: const Text('搜尋結果'),
-                                        content: const Text('搜尋不到資料'),
-                                        actions: <Widget>
-                                        [
-                                          ElevatedButton
-                                          (
-                                            child: const Text('確定'),
-                                            onPressed: () 
-                                            {
-                                              Navigator.of(context).pop();
-                                            }
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                  );
-                                }
-                                else
-                                {
-                                  // 觸發 API 請求
-                                  await showChatData();
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.push
-                                  (
-                                    context,
-                                    MaterialPageRoute
+                                  if(selectedResult=='搜尋不到資料')
+                                  {
+                                    // ignore: use_build_context_synchronously
+                                    showDialog
                                     (
-                                      builder: (context)=>ChatingPage
+                                      context: context,
+                                      builder: (BuildContext context) 
+                                      {
+                                        return AlertDialog
+                                        (
+                                          title: const Text('搜尋結果'),
+                                          content: const Text('搜尋不到資料'),
+                                          actions: <Widget>
+                                          [
+                                            ElevatedButton
+                                            (
+                                              child: const Text('確定'),
+                                              onPressed: () 
+                                              {
+                                                Navigator.of(context).pop();
+                                              }
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    );
+                                  }
+                                  else
+                                  {
+                                    // 觸發 API 請求
+                                    await showChatData();
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.push
+                                    (
+                                      context,
+                                      MaterialPageRoute
                                       (
-                                        selectedName: selectedResult,
-                                        selectedAccount: selectedAccount,//seach得到的account
+                                        builder: (context)=>ChatingPage
+                                        (
+                                          selectedName: selectedResult,
+                                          selectedAccount: selectedAccount,//seach得到的account
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
-                              } 
-                              catch (error) 
-                              {
-                                if (kDebugMode) 
+                                    );
+                                  }
+                                } 
+                                catch (error) 
                                 {
-                                  print('Catch Error: $error');
+                                  if (kDebugMode) 
+                                  {
+                                    print('Catch Error: $error');
+                                  }
                                 }
-                              }
-                            }                          
-                          },
-                          color:const Color.fromARGB(255,0,158,71),
-                          child: const Text('傳送訊息',style:TextStyle(color:Colors.white))
+                              }                          
+                            },
+                            color:const Color.fromARGB(255,0,158,71),
+                            child: const Text('傳送訊息',style:TextStyle(color:Colors.white,fontSize: 30))
+                          ),
                         ),
+
                       ),
                     ],
                   ),
                 ],
               ),
-              ListView.builder
+              const SizedBox(height: 50),
+              const SizedBox(height: 50),
+              const SizedBox(height: 50),
+              const SizedBox(height: 50),
+              const SizedBox(height: 50),
+              Center
               (
-                itemCount: chatPageUsersModel.length,
-                shrinkWrap: true,
-                padding:const EdgeInsets.only(top:16),
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context,index)
-                {
-                  return ConversationList
-                  (
-                    name:chatPageUsersModel[index].name,
-                    messageText:chatPageUsersModel[index].messageText,
-                    imageUrl:chatPageUsersModel[index].imageURL,
-                    time:chatPageUsersModel[index].time,
-                    isMessageRead:(index==0||index==3)?true:false
-                  );
-                },
+                child: Column
+                (
+                  children: 
+                  [
+                    const Text
+                    (
+                      '請搜尋其他使用者進行交流',
+                      style: TextStyle
+                      (
+                        fontSize: 70,
+                        color: Colors.blueGrey,
+                      ),
+                    ),
+                    Image.asset('assets/images/StartFruits_2.png',width: 300,height: 300),                      
+                  ],
+                ),
               ),
             ],
           ),

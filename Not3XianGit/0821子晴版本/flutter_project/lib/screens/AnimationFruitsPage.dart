@@ -65,6 +65,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   @override
   Widget build(BuildContext context) 
   {
+    // ignore: unused_local_variable
     double treeWidth = MediaQuery.of(context).size.width - 40;
     return Scaffold
     (

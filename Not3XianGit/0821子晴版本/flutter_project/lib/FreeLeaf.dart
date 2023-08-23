@@ -109,10 +109,9 @@ class _FreeLeafState extends State<FreeLeaf>
                 (
                   height: 100,
                   color: Colors.green,
-                  child: Row
+                  child: const Row
                   (
-                    // ignore: prefer_const_literals_to_create_immutables
-                    children: const 
+                    children: 
                     [
                       SizedBox(width: 20),
                       CircleAvatar

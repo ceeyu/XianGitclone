@@ -60,7 +60,6 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
     super.initState();
     getUserInfo();
   }
-
   Future<void> getUserInfo() async//顯示drawer的user資料
   {
     final savedAccessToken=await getAccessToken();
@@ -191,6 +190,97 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
         print('沒有保存的access_token或沒有取得圖檔名');
       }
     }      
+  }
+  Future<void> logOut()async
+  {
+    final savedAccessToken=await getAccessToken();
+    if (savedAccessToken != null) 
+    {
+      // 呼叫登出 API
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/logout'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>
+          {
+            'access_token': savedAccessToken,
+          }),
+        );
+        if (response.statusCode == 200) 
+        {
+          // 輸出登出成功的回傳資料
+          //final body = jsonDecode(response.body);
+          const message = '登出成功\n';
+          await showLogoutResultDialog(message);
+          await deleteAccessToken(); // 登出後刪除保存的 access_token
+        } 
+        else 
+        {
+          // 登出失敗
+          final errorMessage = response.body;
+          await showLogoutResultDialog(errorMessage);
+        }
+      } 
+      catch (e) 
+      {
+        if (kDebugMode) 
+        {
+          print('登出失敗：$e');
+        }
+        final errorMessage = '登出失敗：$e';
+        await showLogoutResultDialog(errorMessage);
+      }
+    } 
+    else 
+    {
+      // 沒有保存的 access_token，直接顯示錯誤訊息
+      const errorMessage = '尚未登入，無法進行登出。';
+      await showLogoutResultDialog(errorMessage);
+    }
+  }
+  Future<void> showLogoutResultDialog(String message) async//登出
+  {
+    // 顯示登出 API 回傳的結果
+    await showDialog
+    (
+      context: context,
+      builder: (context) => AlertDialog
+      (
+        //title: const Text('登出結果'),
+        content: 
+        Text
+        (
+          message,
+          style: const TextStyle(fontWeight:FontWeight.bold,fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+        actions:
+        [
+          TextButton
+          (
+            onPressed: () 
+            {
+              Navigator.of(context).pop();
+              if(message.contains('登出成功'))
+              {
+                Navigator.pushAndRemoveUntil
+                (
+                  context,MaterialPageRoute(builder:(_)=>const HomePage()),
+                  (route)=>false,
+                );
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
   @override
   Widget build(BuildContext context) //UI
@@ -556,58 +646,7 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
               (
                 onPressed: ()async
                 {
-                  final savedAccessToken=await getAccessToken();
-                  if (savedAccessToken != null) 
-                  {
-                    // 呼叫登出 API
-                    try 
-                    {
-                      final response = await http.post
-                      (
-                        Uri.parse('http://120.126.16.222/gardeners/logout'),
-                        headers: <String, String>
-                        {
-                          'Content-Type': 'application/json',
-                          'Authorization': 'Bearer $savedAccessToken',
-                        },
-                        body: jsonEncode(<String, String>
-                        {
-                          //'account': account,
-                          'access_token': savedAccessToken,
-                        }),
-                      );
-
-                      if (response.statusCode == 200) 
-                      {
-                        // 輸出登出成功的回傳資料
-                        //final body = jsonDecode(response.body);
-                        const message = '登出成功\n';
-                        await showLogoutResultDialog(message);
-                        await deleteAccessToken(); // 登出後刪除保存的 access_token
-                      } 
-                      else 
-                      {
-                        // 登出失敗
-                        final errorMessage = response.body;
-                        await showLogoutResultDialog(errorMessage);
-                      }
-                    } 
-                    catch (e) 
-                    {
-                      if (kDebugMode) 
-                      {
-                        print('登出失敗：$e');
-                      }
-                      final errorMessage = '登出失敗：$e';
-                      await showLogoutResultDialog(errorMessage);
-                    }
-                  } 
-                  else 
-                  {
-                    // 沒有保存的 access_token，直接顯示錯誤訊息
-                    const errorMessage = '尚未登入，無法進行登出。';
-                    await showLogoutResultDialog(errorMessage);
-                  }
+                  await logOut();
                 }, 
                 child: const Text('Logout'),
               ),            
@@ -616,44 +655,6 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
         ),
       ),
       body:const Setting(),
-    );
-  }
-  Future<void> showLogoutResultDialog(String message) async//登出
-  {
-    // 顯示登出 API 回傳的結果
-    await showDialog
-    (
-      context: context,
-      builder: (context) => AlertDialog
-      (
-        //title: const Text('登出結果'),
-        content: 
-        Text
-        (
-          message,
-          style: const TextStyle(fontWeight:FontWeight.bold,fontSize: 24),
-          textAlign: TextAlign.center,
-        ),
-        actions:
-        [
-          TextButton
-          (
-            onPressed: () 
-            {
-              Navigator.of(context).pop();
-              if(message.contains('登出成功'))
-              {
-                Navigator.pushAndRemoveUntil
-                (
-                  context,MaterialPageRoute(builder:(_)=>const HomePage()),
-                  (route)=>false,
-                );
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -781,6 +782,72 @@ class _SettingState extends State<Setting>
     }      
 
   }
+  Future<void> logOut()async
+  {
+    final savedAccessToken=await getAccessToken();
+    if (savedAccessToken != null) 
+    {
+      // 呼叫登出 API
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/logout'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>
+          {
+            'access_token': savedAccessToken,
+          }),
+        );
+        if (response.statusCode == 200) 
+        {
+          // 輸出登出成功的回傳資料
+          //final body = jsonDecode(response.body);
+          const message = '登出成功\n';
+          if (kDebugMode) 
+          {
+            print(message);
+          }
+          setState(() 
+          {
+            Navigator.pushAndRemoveUntil
+            (
+              context,MaterialPageRoute(builder:(_)=>const HomePage()),
+              (route)=>false,
+            );
+          });
+          await deleteAccessToken(); // 登出後刪除保存的 access_token
+        } 
+        else 
+        {
+          // 登出失敗
+          if (kDebugMode) 
+          {
+            print('登出失敗$response.body');
+          }
+        }
+      } 
+      catch (error) 
+      {
+        if (kDebugMode) 
+        {
+          print('Catch Error: $error');
+        }
+      }
+    } 
+    else 
+    {
+      // 沒有保存的 access_token，直接顯示錯誤訊息
+      if (kDebugMode) 
+      {
+        print('尚未登入，無法進行登出。');
+      }
+    }
+  }
   Future<void> updateUserInfo()async
   {
     final savePassword=await getPassword();
@@ -857,17 +924,17 @@ class _SettingState extends State<Setting>
                   title: const Text('編輯資料'),
                   content: Text
                   (
-                    '資料(姓名、密碼)$message ! 請登出及重新登入來查看',
+                    '資料(姓名、密碼)$message ! 請重新登入來查看',
                   ),
                   actions: 
                   [
                     ElevatedButton
                     (
-                      onPressed: ()
+                      onPressed: ()async
                       {
-                        Navigator.of(context).pop();
+                        await logOut();
                       }, 
-                      child: const Text("確定資料"),
+                      child: const Text("OK"),
                     )
                   ],
                 );
@@ -1161,15 +1228,15 @@ class _SettingState extends State<Setting>
                       title: const Text('編輯頭像'),
                       content: const Text
                       (
-                        '頭像上傳成功! \n 圖檔已更新，請登出及重新登入來查看'
+                        '頭像上傳成功! \n 圖檔已更新，請重新登入來查看'
                       ),
                       actions: 
                       [
                         ElevatedButton
                         (
-                          onPressed: ()
+                          onPressed: ()async
                           {
-                            Navigator.of(context).pop();
+                            await logOut();
                           }, 
                           child: const Text('OK'),
                         ),

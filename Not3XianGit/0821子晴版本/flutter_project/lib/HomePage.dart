@@ -1,12 +1,6 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_project/Login.dart';
 import 'package:flutter_project/SignUp.dart';
-import 'package:flutter_project/MyPage1.dart';
-// import 'package:flutter_project/blocs/Login_bloc.dart';
-// import 'package:flutter_project/blocs/Login_event.dart';
-// import 'package:flutter_project/blocs/Login_state.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
 class HomePage extends StatelessWidget 
 {
   const HomePage({super.key});
@@ -129,10 +123,10 @@ class HomePage extends StatelessWidget
                       child: const Text("查看登錄後進去的頁面"),
                       onPressed: ()
                       {
-                        Navigator.push
-                        (
-                          context,MaterialPageRoute(builder:(context)=>const MyPage1())
-                        );
+                        // Navigator.push
+                        // (
+                        //   context,MaterialPageRoute(builder:(context)=>const MyPage1())
+                        // );
                       },
                     ),
                   ),

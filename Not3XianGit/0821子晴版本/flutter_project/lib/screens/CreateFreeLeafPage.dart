@@ -6,11 +6,8 @@ import 'package:flutter_project/HomePage.dart';
 import 'package:flutter_project/screens/GardenerSettingPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_project/agora/agora_service.dart';
-
 import 'package:flutter_project/agora/constants.dart';
 import 'package:flutter_project/agora/quick_start.dart'; // 引入QuickStartPage
-
 class CreateFreeLeafPage extends StatefulWidget 
 {
   const CreateFreeLeafPage({super.key});
@@ -18,42 +15,43 @@ class CreateFreeLeafPage extends StatefulWidget
   // ignore: library_private_types_in_public_api
   _CreateFreeLeafPageState createState() => _CreateFreeLeafPageState();
 }
-
-class FreeLeafModel {
+class FreeLeafModel 
+{
   final String uuid;
   final String roomToken;
   final String appIdentifier;
   final String link;
-
-  const FreeLeafModel({
+  const FreeLeafModel
+  (
+    {
     required this.roomToken,
     required this.appIdentifier,
     required this.uuid,
     required this.link,
-  });
-
-  factory FreeLeafModel.fromJson(Map<String, dynamic> json) {
+    }
+  );
+  factory FreeLeafModel.fromJson(Map<String, dynamic> json) 
+  {
     final roomData = json['roomData'];
     final leafData = json['leafData'];
     final roomToken = json['roomToken'];
     final appIdentifier = roomData['appIdentifier'];
     final link = leafData['link'];
     final uuid = roomData['uuid'];
-
-    return FreeLeafModel(
+    return FreeLeafModel
+    (
       roomToken: roomToken,
       appIdentifier: appIdentifier,
       uuid: uuid,
       link: link,
     );
   }
-
   @override
-  String toString() {
+  String toString() 
+  {
     return 'FreeLeafModel{uuid: $uuid, roomToken: $roomToken, appIdentifier: $appIdentifier}';
   }
 }
-
 class _CreateFreeLeafPageState extends State<CreateFreeLeafPage> 
 {
   // ignore: non_constant_identifier_names
@@ -64,7 +62,8 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
   bool switchValue_Camera = true;
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
-  final _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _leafNameController=TextEditingController();
   // ignore: non_constant_identifier_names
   String PostSeach = '';
   final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
@@ -72,6 +71,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
   String? account;
   String? avatarFileName;
   Uint8List? avatarImageBytes;
+  String? passLeafName;
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -81,6 +81,15 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
       print('Access Token: $accessToken');
     }
     return accessToken;
+  }
+  Future<String?> getLeafName()async
+  {
+    String? leafName=await _storage.read(key:'leaf_name');
+    if (kDebugMode) 
+    {
+      print('leafName: $leafName');
+    }
+    return leafName;
   }
   Future<void> deleteAccessToken() async 
   {
@@ -261,6 +270,106 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
         ],
       ),
     );
+  }
+  Future<void> joinIntoRoom()async
+  {
+    final savedAccessToken = await getAccessToken();
+    final leafName=_leafNameController.text;
+    await _storage.write(key: 'leaf_name', value: leafName);
+    final savedLeafName=await getLeafName();
+    passLeafName=savedLeafName;
+    if(kDebugMode)
+    {
+      print('SavedLeafName: $savedLeafName');
+    }
+    if (savedAccessToken != null) 
+    {
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/leafs/create-white-leaf'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, dynamic>
+          {
+            'region': 'cn-hz',
+            'leaf_name':savedLeafName!,
+          }),
+        );
+        if (response.statusCode >= 200 && response.statusCode < 300)
+        {
+          final responseData = jsonDecode(response.body);
+          if (responseData.isNotEmpty &&responseData[0]['roomData'] != null &&responseData[0]['roomToken'] != null &&responseData[0]['leafData'] != null) 
+          {
+            final leafData = responseData[0]['leafData'];
+            final link = leafData['link']; // 獲取 leafData 內的 link 變數
+            final roomData = responseData[0]['roomData'];
+            final roomToken = responseData[0]['roomToken'];
+            final appIdentifier = responseData[0]['appIdentifier'];
+            final uuid = roomData['uuid'];
+
+            final freeLeafModel = FreeLeafModel
+            (
+              roomToken: roomToken,
+              appIdentifier: appIdentifier,
+              uuid: uuid,
+              link: link,
+            );
+            if (kDebugMode) 
+            {
+              print('FreeLeafModel: $freeLeafModel');
+            }
+            if (kDebugMode) 
+            {
+              print('Link: $link');
+            } // 印出 link 變數的值
+            // 更新 constant.dart 的變數值
+            APP_ID = appIdentifier;
+            ROOM_UUID = uuid;
+            ROOM_TOKEN = roomToken;
+            LINK = link;
+            // 跳轉至 QuickStartPage
+            setState(() // 在這裡傳遞給另一個Dart檔
+            {
+              Navigator.of(context).push
+              (
+                MaterialPageRoute(builder:(context)=>QuickStartBody(leafName:passLeafName))
+              );
+            });
+          } 
+          else 
+          {
+            if (kDebugMode) 
+            {
+              print('API response is missing required data');
+            }
+          }
+        } 
+        else 
+        {
+          throw Exception('${response.reasonPhrase},${response.statusCode}');
+        }
+      } 
+      catch (e) 
+      {
+        if (kDebugMode) 
+        {
+          print('Error: $e');
+        }
+      }
+    }
+    else 
+    {
+      if (kDebugMode) 
+      {
+        print('API response is empty');
+      }
+    }
+
   }
   @override
   Widget build(BuildContext context) 
@@ -731,13 +840,14 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                       color: Colors.grey,
                       offset: Offset.fromDirection(1, 10)
                     ),
-                  ]),
+                  ]
+              ),
               child: Row
               (
                   //mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>
                   [
-                    const Column
+                    Column
                     (
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>
@@ -748,11 +858,12 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                           height: 100,
                           child: Padding
                           (
-                            padding: EdgeInsets.only(left: 30, top: 40),
+                            padding: const EdgeInsets.only(left: 30, top: 40),
                             child: TextField
                             (
+                              controller: _leafNameController,
                               obscureText: false,
-                              decoration: InputDecoration
+                              decoration: const InputDecoration
                               (
                                 prefixIcon: Icon(Icons.eco),
                                 hintText: '輸入葉子名稱',
@@ -760,7 +871,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                             ),
                           ),
                         ),
-                        SizedBox
+                        const SizedBox
                         (
                           width: 250, //width:350
                           height: 100,
@@ -819,71 +930,10 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             [
               ElevatedButton
               (
-                onPressed: () async {
-              final savedAccessToken = await getAccessToken();
-              if (savedAccessToken != null) {
-                try {
-                  final response = await http.post(
-                    Uri.parse('http://120.126.16.222/leafs/create-white-leaf'),
-                    headers: <String, String>{
-                      'Content-Type': 'application/json',
-                      'Authorization': 'Bearer $savedAccessToken',
-                    },
-                    body: jsonEncode(<String, dynamic>{
-                      'region': 'cn-hz',
-                      //'region': 'en-us',
-                      "leaf_name":"0820測試",//暫時寫死
-                    }),
-                  );
-
-                  if (response.statusCode >= 200 && response.statusCode < 300) {
-                    final responseData = jsonDecode(response.body);
-
-                    if (responseData.isNotEmpty &&
-                        responseData[0]['roomData'] != null &&
-                        responseData[0]['roomToken'] != null &&
-                        responseData[0]['leafData'] != null) {
-                      final leafData = responseData[0]['leafData'];
-                      final link = leafData['link']; // 獲取 leafData 內的 link 變數
-                      final roomData = responseData[0]['roomData'];
-                      final roomToken = responseData[0]['roomToken'];
-                      final appIdentifier = responseData[0]['appIdentifier'];
-                      final uuid = roomData['uuid'];
-                      final freeLeafModel = FreeLeafModel(
-                        roomToken: roomToken,
-                        appIdentifier: appIdentifier,
-                        uuid: uuid,
-                        link: link,
-                      );
-                      print('FreeLeafModel: $freeLeafModel');
-                      print('Link: $link'); // 印出 link 變數的值
-
-                      // 更新 constant.dart 的變數值
-                      APP_ID = appIdentifier;
-                      ROOM_UUID = uuid;
-                      ROOM_TOKEN = roomToken;
-                      LINK = link;
-
-                      // 跳轉至 QuickStartPage
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => QuickStartPage(),
-                        ),
-                      );
-                    } else {
-                      print('API response is missing required data');
-                    }
-                  } else {
-                    throw Exception(
-                        '${response.reasonPhrase},${response.statusCode}');
-                  }
-                } catch (e) {
-                  print('Error: $e');
-                }
-              } else {
-                print('API response is empty');
-              }
-            },
+                onPressed: () async 
+                {
+                  await joinIntoRoom();
+                },
                 style: ElevatedButton.styleFrom
                 (
                   foregroundColor: Colors.white, //text

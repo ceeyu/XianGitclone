@@ -1,9 +1,13 @@
 import 'dart:convert';
-// ignore: unnecessary_import
-import 'package:chat_bubbles/message_bars/message_bar.dart';
+// import 'dart:html'as html;
+// ignore: depend_on_referenced_packages
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_project/HomePage.dart';
 import 'package:flutter_project/screens/GardenerSettingPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,7 +15,8 @@ import 'package:http/http.dart' as http;
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter_project/agora/quick_start.dart'; // 引入QuickStartPage
 import 'package:flutter_project/agora/constants.dart';
-
+import 'package:screenshot/screenshot.dart';
+import 'package:file_saver/file_saver.dart';
 class ChatingPage extends StatefulWidget 
 {
   final String? selectedName;
@@ -46,11 +51,14 @@ class _ChatingPageState extends State<ChatingPage>
   Uint8List? otheravatarImageBytes;
   String? selectedName;
   String? selectedAccount;
+  File? file;//目前web端要用html,移動端要用io//File file;
   List<Map<String, dynamic>> chatDataList = [];
   bool isLinkMessage=false;
   List<Map<String,dynamic>> linkDataList=[];
   List<Map<String,dynamic>> joinDataList=[];
   final TextEditingController _messageController=TextEditingController();
+  List<Map<String,dynamic>> whitepptDataList=[];
+  final ScreenshotController _screenshotController = ScreenshotController();
   @override
   void initState()
   {
@@ -90,6 +98,15 @@ class _ChatingPageState extends State<ChatingPage>
       print('RoomUUID: $roomUUID');
     }
     return roomUUID;
+  }
+  Future<String?> getFileName() async
+  {
+    String? fileName = await _storage.read(key:'file_name');
+    if (kDebugMode) 
+    {
+      print('FileName: $fileName');
+    }
+    return fileName;
   }
   Future<void> deleteAccessToken() async 
   {
@@ -489,13 +506,18 @@ class _ChatingPageState extends State<ChatingPage>
           ),
           ElevatedButton
           (
-            onPressed: () async {
-              // ignore: use_build_context_synchronously
-              await joinRoom(); //加入葉子
-              // ignore: use_build_context_synchronously
-              Navigator.push(
+            onPressed: () async 
+            {
+              await joinRoom();//加入葉子
+              await createPPT();//創空白ppt檔
+              await getFile();//取得空白檔案
+              captureScreenshotMobile();
+              //ignore: use_build_context_synchronously
+              Navigator.push
+              (
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute
+                (
                   builder: (context) => const QuickStartPage(),
                 ),
               );
@@ -536,7 +558,7 @@ class _ChatingPageState extends State<ChatingPage>
           final roomToken=responseData[0]['roomToken'];
           final appID=responseData[0]['appID'];
           const storage=FlutterSecureStorage();
-          await storage.write(key:'roomUUID',value:roomUUID);
+          await storage.write(key:'roomUUID',value:roomUUID);//add_roomUUID
           await storage.write(key: 'roomToken', value: roomToken);
           await storage.write(key: 'appID', value: appID);
           // 更新 constant.dart 的變數值
@@ -684,6 +706,278 @@ class _ChatingPageState extends State<ChatingPage>
         print('沒有保存的access_token或沒有取得圖檔名');
       }
     }      
+  }
+  Future<void> createPPT()async//創空白ppt檔
+  {
+    final savedAccessToken=await getAccessToken();
+    final savedRoomUUID=await getRoomUUID();
+    if(savedAccessToken!=null)
+    {
+      try
+      {
+        final response=await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardenerofleafs/add-ppt-data'),
+          headers:<String,String>
+          {
+            'Content-Type':'application/json',
+            'Authorization':'Bearer $savedAccessToken',
+          },
+          body:jsonEncode(<String,String>
+          {
+            "uuid":savedRoomUUID!,
+          }),
+        );
+        if(response.statusCode>=200&&response.statusCode<300)
+        {
+          final responseData=jsonDecode(response.body);
+          final fileName=responseData[0]['file_name'];
+          final filePath=responseData[0]['file_path'];
+          await _storage.write(key: 'file_name', value: fileName);
+          await _storage.write(key: 'file_path', value: filePath);
+          if (kDebugMode) 
+          {
+            print('請求之後fileName:$fileName');
+            print('請求之後filePath:$filePath');
+          }
+          setState(()
+          {
+            whitepptDataList=List<Map<String,dynamic>>.from(responseData);
+            if (kDebugMode) 
+            {
+              print('請求之後whitepptDataList:$whitepptDataList');
+            }
+
+          });
+          if(kDebugMode)
+          {
+            print('createPPT回傳資料: $responseData');
+          }
+        }
+        else
+        {
+          final responseData = jsonDecode(response.body);
+          final errorMessage=responseData[0]['error_message'];
+          if(errorMessage=='此房間不存在'||errorMessage=='此園丁不在房間裡')
+          {
+            // ignore: use_build_context_synchronously
+            showDialog
+            (
+              context: context, 
+              builder: (context)=>AlertDialog
+              (
+                title: const Text('創空白檔案失敗'),
+                content: Text(errorMessage),
+                actions: 
+                [
+                  ElevatedButton
+                  (
+                    onPressed: ()
+                    {
+                      Navigator.of(context).pop();
+                    }, 
+                    child:const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+          else if(errorMessage=='修改失敗，資料庫沒修改')
+          {
+            // ignore: use_build_context_synchronously
+            showDialog
+            (
+              context: context, 
+              builder: (context)=>AlertDialog
+              (
+                title: const Text('創空白檔案失敗'),
+                content: Text('$errorMessage \n 代表已創建過空白檔案'),
+                actions: 
+                [
+                  ElevatedButton
+                  (
+                    onPressed: ()
+                    {
+                      Navigator.of(context).pop();
+                    }, 
+                    child:const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      }
+      catch(error)
+      {
+        if(kDebugMode)
+        {
+          print('Catch Error: $error');
+        }
+      }
+    }
+  }
+  Future<void> getFile()async//取得file
+  {
+    final savedAccessToken = await getAccessToken();
+    final savedRoomUUID = await getRoomUUID();
+    final fileName = await getFileName();
+    final savedZipFileName='${fileName!.split('.').first}_pptx';
+    final savedFileName=fileName.split('.').first;
+    if(kDebugMode)
+    {
+      print('SavedZipFileName: $savedZipFileName');
+      print('SavedFileName: $savedFileName');
+    }
+    if (savedAccessToken != null) 
+    {
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardenerofleafs/add-ppt-file'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>
+          {
+            'uuid': savedRoomUUID!, 
+          }),
+        );
+        if (response.statusCode >= 200 && response.statusCode < 300) 
+        {
+          final pptxBytes = response.bodyBytes;
+          if(!kIsWeb)
+          {
+            final docDir = await getApplicationDocumentsDirectory();
+            final pptxFilePath = '${docDir.path}/$savedFileName.pptx';
+            final pptxFile = File(pptxFilePath);
+            await pptxFile.writeAsBytes(pptxBytes);
+            if(kDebugMode)
+            {
+              print('PPTX文件已保存在:$pptxFilePath');
+            }
+          }
+          // else if(kIsWeb)//web
+          // {
+          //   final archive=ZipDecoder().decodeBytes(fileDataBytes);
+          //   for (final file in archive) 
+          //   {
+          //     if (!file.isFile) continue;
+          //     if (file.name == '[Content_Types].xml') 
+          //     {
+          //       // Handle content types or any other specific files
+          //       final content = utf8.decode(file.content);
+          //       if (kDebugMode) 
+          //       {
+          //         print('Content of [Content_Types].xml:');
+          //         print(content);
+          //       }
+          //     }
+          //   }
+          //   final blob = html.Blob([Uint8List.fromList(fileDataBytes)]);
+          //   final url = html.Url.createObjectUrlFromBlob(blob);
+          //   //window.open(url,'_blank');//網頁顯示
+          //   final anchor=html.AnchorElement(href:url)
+          //   ..target='blank'
+          //   ..download='$savedFileName';
+          //   anchor.click();
+          //   if(kDebugMode)
+          //   {
+          //     print('檔案已下載！');
+          //   }        
+          // }
+          else 
+          {
+            final responseData = jsonDecode(response.body);
+            final errorMessage=responseData[0]['error_message'];
+            if (kDebugMode) 
+            {
+              print('請求getFile失敗: $errorMessage');
+            }
+          }
+        } 
+        else
+        {
+          final responseData = jsonDecode(response.body);
+          final errorMessage=responseData[0]['error_message'];
+          if(errorMessage=='此房間不存在'||errorMessage=='此園丁不在房間裡')
+          {
+            // ignore: use_build_context_synchronously
+            showDialog
+            (
+              context: context, 
+              builder: (context)=>AlertDialog
+              (
+                title: const Text('下載空白檔案失敗'),
+                content: Text(errorMessage),
+                actions: 
+                [
+                  ElevatedButton
+                  (
+                    onPressed: ()
+                    {
+                      Navigator.of(context).pop();
+                    }, 
+                    child:const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      }
+      catch (error) 
+      {
+        if (kDebugMode) 
+        {
+          print('Catch Error 請求File失敗:$error');
+        }
+      }
+    }
+  }
+  void captureScreenshotMobile() async //移動端截圖
+  {
+    _screenshotController.capture().then((Uint8List? image)
+    {
+      FileSaver.instance.saveFile
+      (
+        name: 'test.jpg',
+        bytes: image!,
+        mimeType:MimeType.jpeg, 
+      );
+    });
+    //getSavedScreenshot();
+    if(kDebugMode)
+    {
+      print('截圖成功!');
+    }
+  }
+  void getSavedScreenshot() async 
+  {
+    try 
+    {
+      final appDir = await getApplicationDocumentsDirectory();
+      final filePath = '${appDir.path}/test.jpg'; // 检查实际的文件名和路径
+      final savedScreenshotFile = File(filePath);
+      if (await savedScreenshotFile.exists()) 
+      {
+        // 文件存在，你可以使用 savedScreenshotFile 进行操作，例如显示、分享等
+        if (kDebugMode) {
+          print('找到并操作保存的截图文件');
+        }
+      } else {
+        if (kDebugMode) {
+          print('截图文件不存在');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('获取截图文件时出现错误: $e');
+      }
+    }
   }
   @override
   Widget build(BuildContext context)
