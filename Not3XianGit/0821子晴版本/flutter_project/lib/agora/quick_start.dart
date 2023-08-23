@@ -202,102 +202,6 @@ class QuickStartBodyState extends State<QuickStartBody>
       },
     );
   }
-  Future<void> showBanRoomResultDialog(BuildContext context, String message) async 
-  {
-    await showDialog
-    (
-      context: context,
-      builder: (context) => AlertDialog
-      (
-        content: Text
-        (
-          message,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-          textAlign: TextAlign.center,
-        ),
-        actions: 
-        [
-          TextButton
-          (
-            onPressed: () 
-            {
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-  // Future<void> disableRoom()async
-  // {
-  //   final savedAccessToken = await getAccessToken();
-  //   if (savedAccessToken != null) 
-  //   {
-  //     // 呼叫關閉房間 API
-  //     try 
-  //     {
-  //       final response = await http.post
-  //       (
-  //         Uri.parse('http://120.126.16.222/leafs/disable-room'),
-  //         headers: <String, String>
-  //         {
-  //           'Content-Type': 'application/json',
-  //           'Authorization': 'Bearer $savedAccessToken',
-  //         },
-  //         body: jsonEncode(<String, String>
-  //         {
-  //           'region': 'cn-hz',
-  //           'uuid': ROOM_UUID,
-  //         }),
-  //       );
-  //       if (response.statusCode >= 200 && response.statusCode < 300) 
-  //       {
-  //         final body = jsonDecode(response.body);
-  //         if (kDebugMode) 
-  //         {
-  //           print('GetBanRoom API Response: $body');
-  //         }
-  //         // ignore: non_constant_identifier_names
-  //         final Message = body[0]['error_message'];
-  //         if (Message == '房間不存在' || Message == '不是此房間創始人，不能關閉房間') 
-  //         {
-  //           // ignore: use_build_context_synchronously
-  //           await showBanRoomResultDialog(context, Message);
-  //         } 
-  //         else 
-  //         {
-  //           // ignore: use_build_context_synchronously
-  //           Navigator.of(context).pop(); //跳回上一步驟
-  //         }
-  //       } 
-  //       else 
-  //       {
-  //         // 失敗
-  //         final errorMessage = response.body;
-  //         // ignore: use_build_context_synchronously
-  //         await showBanRoomResultDialog(context, errorMessage);
-  //       }
-  //     } 
-  //     catch (e) 
-  //     {
-  //       if (kDebugMode) 
-  //       {
-  //         print('Ban房失敗：$e');
-  //       }
-  //       final errorMessage = 'Ban房失敗：$e';
-  //       // ignore: use_build_context_synchronously
-  //       await showBanRoomResultDialog(context, errorMessage);
-  //     }
-  //   } 
-  //   else 
-  //   {
-  //     // 沒有保存的 access_token，直接顯示錯誤訊息
-  //     const errorMessage = '尚未登入，無法進行登出。';
-  //     // ignore: use_build_context_synchronously
-  //     await showBanRoomResultDialog(context, errorMessage);
-  //   }
-  // }
   bool _is_videio_on = false;
   bool _is_message_on = false; //xian0519
   // ignore: non_constant_identifier_names
@@ -374,22 +278,6 @@ class QuickStartBodyState extends State<QuickStartBody>
               });
             },
           ),
-          // IconButton
-          // (
-          //   tooltip: "離開/結束",
-          //   //最右邊
-          //   icon: const Icon
-          //   (
-          //     Icons.logout,
-          //     color: Colors.white,
-          //   ),
-
-          //   // do something 0815修改ban房間
-          //   onPressed: () async 
-          //   {
-          //     await disableRoom();
-          //   },
-          // ),
         ],
         backgroundColor: Colors.green,
         elevation: 0.0,
@@ -513,22 +401,6 @@ class QuickStartBodyState extends State<QuickStartBody>
         ),
         FastToolBoxExpand(controller), //工具箱
         FastStateHandlerView(controller), //工具箱縮放
-        // Positioned
-        // (
-        //   bottom: FastGap.gap_3,
-        //   right: FastGap.gap_3,
-        //   child: InkWell
-        //   (
-        //     //0815
-        //     child: const Icon(Icons.power_settings_new), // 自訂斷開連接的按鈕圖示
-        //     onTap: () 
-        //     {
-        //       // 點擊按鈕時，執行斷開連接的操作
-        //       controller.disconnect(); // 執行斷開連接的函式
-        //       Navigator.pop(context); 
-        //     },
-        //   ),
-        // ),
       ],
     );
   }

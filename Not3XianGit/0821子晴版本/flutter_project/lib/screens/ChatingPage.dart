@@ -849,6 +849,7 @@ class _ChatingPageState extends State<ChatingPage>
     final fileName = await getFileName();
     final savedZipFileName='${fileName!.split('.').first}_pptx';
     final savedFileName=fileName.split('.').first;
+    await _storage.write(key: 'downloadfile_name', value: savedFileName);
     if(kDebugMode)
     {
       print('SavedZipFileName: $savedZipFileName');

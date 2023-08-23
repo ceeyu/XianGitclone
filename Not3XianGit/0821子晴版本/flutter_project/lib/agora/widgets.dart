@@ -1,6 +1,6 @@
+import 'dart:io';
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/MyPage1.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -8,6 +8,9 @@ import 'dart:async';
 import 'test_data.dart';
 import 'dart:convert';
 import 'constants.dart';
+// ignore: depend_on_referenced_packages
+import 'package:path_provider/path_provider.dart';
+
 class CloudTestWidget extends StatefulWidget 
 {
   final FastRoomController controller;
@@ -29,6 +32,17 @@ class CloudTestWidgetState extends State<CloudTestWidget>
 {
   var showCloud = false;
   final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
+  final TextEditingController _downloadFileNameController=TextEditingController();
+  List<dynamic> plantNameList=[];
+  List<dynamic> whitepptDataList=[];
+  File? newPptxFile;
+  String? selectedPlantName;
+  @override
+  void initState()
+  {
+    super.initState();
+    showAllPlant();
+  }
   Future<String?> getAccessToken() async 
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -38,6 +52,15 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       print('Access Token: $accessToken');
     }
     return accessToken; //得到accessToken值
+  }
+  Future<String?> getPptFileName() async 
+  {
+    String? pptFileName = await _storage.read(key: 'downloadfile_name');
+    if (kDebugMode) 
+    {
+      print('PptFileName: $pptFileName');
+    }
+    return pptFileName; //得到accessToken值
   }
   Future<void> deleteAccessToken() async 
   {
@@ -134,7 +157,12 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           } 
           else 
           {
-            //await logOut();
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop();
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop();
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pop();
             if(kDebugMode)
             {
               print('BanRoomButton已成功關閉會議！');
@@ -200,10 +228,6 @@ class CloudTestWidgetState extends State<CloudTestWidget>
               print("最後一人所以直接關葉子");
             }
             _handleBanRoomButton();
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
           } 
           //isFounder&&isLastOne
           else if(body[0]['message'] == '成功離開' &&body[0]['isFounder'] == 'true'&&body[0]['isLast']=='true')
@@ -282,10 +306,6 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       }
     }
   }
-  Future<void> _handleDownLoadButton()async
-  {
-    
-  }
   Future<void> banRoomAndLeaveRoom()async 
   {
     // ignore: use_build_context_synchronously
@@ -321,72 +341,347 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       ),
     );
   }
-  Future<void> logOut()async
+  Future<void> showAllPlant()async
   {
     final savedAccessToken=await getAccessToken();
-    if (savedAccessToken != null) 
+    if(savedAccessToken!=null)
     {
-      // 呼叫登出 API
-      try 
+      try
       {
-        final response = await http.post
+        final response=await http.post
         (
-          Uri.parse('http://120.126.16.222/gardeners/logout'),
-          headers: <String, String>
+          Uri.parse('http://120.126.16.222/plants/show-all-plants'),
+          headers: <String,String>
           {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $savedAccessToken',
+            'Authorization':'Bearer $savedAccessToken',
           },
-          body: jsonEncode(<String, String>
+          body: jsonEncode(<String,String>
           {
-            'access_token': savedAccessToken,
+            'access_token':savedAccessToken,
           }),
         );
-        if (response.statusCode == 200) 
+        if(response.statusCode>=200&&response.statusCode<405)
         {
-          // 輸出登出成功的回傳資料
-          final body = jsonDecode(response.body);
-          // ignore: use_build_context_synchronously
-          Navigator.pushAndRemoveUntil
-          (
-            context,MaterialPageRoute(builder:(_)=>const MyPage1()),
-            (route)=>false,
-          );
+          final responseData=jsonDecode(response.body);
           if(kDebugMode)
           {
-            print('After BanRoom Logout Successful!\n$body');
+            print('ShowAllPlant API :$responseData');
           }
-          await deleteAccessToken(); // 登出後刪除保存的 access_token
-        } 
-        else 
-        {
-          // 登出失敗
-          final errorMessage = response.body;
-          if(kDebugMode)
+          if(responseData[0]['plant_name']!=null&&responseData[0]['plant_num']!=null)
           {
-            print('After BanRoom Logout Failed!\n$errorMessage');
+            plantNameList=List<dynamic>.from(responseData[0]['plant_name']);
+            selectedPlantName=plantNameList.isNotEmpty?plantNameList[0]:'沒有資料夾';
+            final plantNumber=responseData[0]['plant_num'];
+            await _storage.write(key: 'plant_num', value: plantNumber);
+            if(kDebugMode)
+            {
+              print('取得所有資料夾名稱 :$plantNameList');
+              print('取得資料夾總數量 :$plantNumber');
+              print('ShowAllPlant的selectedPlantName內容: $selectedPlantName');
+            }
           }
-
+          else
+          {
+            final responseData=jsonDecode(response.body);
+            final errorMessage=responseData[0]['error_message'];
+            if (kDebugMode) 
+            {
+              print('ErrorMessage目前沒有樹: $errorMessage');
+            }
+          }
         }
-      } 
-      catch (e) 
+        else
+        {
+          if(kDebugMode)
+          {
+            print('Error:請求失敗,$response,${response.statusCode}');
+          }
+        }
+      }
+      catch(error)
+      {
+        if(kDebugMode)
+        {
+          print('Error:請求出錯,$error');
+        }
+      }
+    }
+    else 
+    {
+      if(kDebugMode)
+      {
+        print('沒有保存的access_token');
+      }
+    }      
+  } 
+  Future<void> updatePptFile()async//form-data
+  {
+    final savedAccessToken = await getAccessToken();
+    final savedPptFileName = await getPptFileName();
+    final newPptFileName=_downloadFileNameController.text;
+    final appDocumentsDir=await getApplicationDocumentsDirectory();
+    final oldFilePath='${appDocumentsDir.path}/$savedPptFileName.pptx';
+    if(kDebugMode)
+    {
+      print('原本PPTX檔案路徑: $oldFilePath');
+    }
+    final newPptxFile=File(oldFilePath);
+    try
+    {
+      if(savedAccessToken!=null)
+      {
+        var uri=Uri.parse('http://120.126.16.222/gardenerofleafs/update-ppt');
+        var request=http.MultipartRequest('POST',uri);
+        request.headers['Authorization']='Bearer $savedAccessToken';
+        request.fields['uuid']=ROOM_UUID;
+        if(!kIsWeb)
+        {
+          if(newPptxFile.existsSync())
+          {
+            final fileStream=http.ByteStream(Stream.castFrom(newPptxFile.openRead()));
+            final fileLength=await newPptxFile.length();
+            final multipartFile=http.MultipartFile
+            (
+              'file',
+              fileStream,
+              fileLength,
+              filename:'$newPptFileName.pptx'//pptFileName
+            );
+            request.files.add(multipartFile);
+            final response=await http.Response.fromStream(await request.send());
+            if(response.statusCode<=200&&response.statusCode<300)
+            {
+              final responseData=response.bodyBytes;//回傳該檔案
+              if (responseData.isNotEmpty) 
+              {
+                if(kDebugMode)
+                {
+                  print('update-ppt API: $responseData');
+                  print("成功上傳共筆檔案");
+                }
+                else
+                {
+                  if(kDebugMode)
+                  {
+                    print("Error: 共筆檔案上傳失敗, ${response.statusCode}");
+                  }
+                }
+              }    
+            }
+          }
+        }
+      }
+    }
+    catch(error)
+    {
+      if(kDebugMode)
+      {
+        print("共筆檔案上傳失敗:$error");
+      }
+      else
       {
         if (kDebugMode) 
         {
-          print('Catch Error登出失敗:$e');
+          print("無法取得Access Token");
         }
-      }
-    } 
-    else 
-    {
-      // 沒有保存的 access_token，直接顯示錯誤訊息
-      const errorMessage = '尚未登入，無法進行登出。';
-      if (kDebugMode) 
-      {
-        print(errorMessage);
       }
     }
   }
+  Future<void> uploadFileToPlant()async//採收果實
+  {
+    final savedAccessToken=await getAccessToken();
+    if(savedAccessToken!=null)
+    {
+      try
+      {
+        final response=await http.post
+        (
+          Uri.parse('http://120.126.16.222/plants/harvest-fruit'),
+          headers: <String,String>
+          {
+            'Authorization':'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String,String>
+          {
+            'uuid':ROOM_UUID,
+            'plant_name':selectedPlantName!,//dropdownmenu
+          }),
+        );
+        if(response.statusCode>=200&&response.statusCode<405)
+        {
+          final responseData=jsonDecode(response.body);
+          if(kDebugMode)
+          {
+            print('uploadFileToPlant API :$responseData');
+          }
+          if(responseData[0]['message']!=null)
+          {
+            if(kDebugMode)
+            {
+              print('請求uploadFileToPlant成功 : ${responseData[0]['message']}');
+            }
+          }
+          else
+          {
+            final responseData=jsonDecode(response.body);
+            final errorMessage=responseData[0]['error_message'];
+            if (kDebugMode) 
+            {
+              print('uploadFileToPlant ErrorMessage: $errorMessage');
+            }
+          }
+        }
+        else
+        {
+          if(kDebugMode)
+          {
+            print('uploadFileToPlant Error:請求失敗,$response,${response.statusCode}');
+          }
+        }
+      }
+      catch(error)
+      {
+        if(kDebugMode)
+        {
+          print('uploadFileToPlant Catch Error:請求出錯,$error');
+        }
+      }
+    }
+    else 
+    {
+      if(kDebugMode)
+      {
+        print('沒有保存的access_token');
+      }
+    }      
+  }
+  Future<void> downloadInfo()async//輸入上傳
+  {
+    // ignore: use_build_context_synchronously
+    showDialog
+    (
+      context: context, 
+      builder: (context)=>AlertDialog
+      (
+        title: const Text('下載檔案資訊',style: TextStyle(fontSize: 30)),
+        content: Column
+        (
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: 
+          [
+            TextField
+            (
+              controller:_downloadFileNameController,
+              decoration: const InputDecoration
+              (
+                labelText: '請取檔名',
+                border: OutlineInputBorder(),
+                hintText: '取得PPTX檔'
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('請選擇要存放的資料夾',style: TextStyle(fontSize: 25),),
+            const SizedBox(height: 20),
+            SizedBox
+            (
+              width: 300,
+              height: 50,
+              child: DropdownButtonHideUnderline
+              (
+                child:DropdownButton<String>
+                (
+                  borderRadius: BorderRadius.circular(20),
+                  value:selectedPlantName,
+                  isExpanded: true,
+                  onChanged: (newValue)
+                  {
+                    selectedPlantName=newValue;
+                  },
+                  items: plantNameList.map<DropdownMenuItem<String>>((dynamic value)
+                  {
+                    return DropdownMenuItem<String>
+                    (
+                      value: value,
+                      child: Center
+                      (
+                        child:Text
+                        (
+                          value,
+                          style: const TextStyle
+                          (
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(), 
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: 
+        [
+          ElevatedButton
+          (
+            onPressed: ()async
+            {
+              Navigator.of(context).pop();
+            }, 
+            child:const Text('取消下載'),
+          ),
+          ElevatedButton
+          (
+            onPressed: () async 
+            {
+              await updatePptFile();
+              await uploadFileToPlant();
+            },
+            child: const Text('確定下載'),
+          ),
+        ],
+      ),
+    );
+  }
+  Future<void> _handleDownLoadButton()async//還差screenshot
+  {
+    // ignore: use_build_context_synchronously
+    showDialog
+    (
+      context: context, 
+      builder: (context)=>AlertDialog
+      (
+        title: const Text('下載檔案'),
+        content: const Text
+        (
+          '是否要下載共同筆記檔案？'
+        ),
+        actions: 
+        [
+          ElevatedButton
+          (
+            onPressed: ()async
+            {
+              Navigator.of(context).pop();
+            }, 
+            child:const Text('取消下載'),
+          ),
+          ElevatedButton
+          (
+            onPressed: () async 
+            {
+              //await doScreenshot();
+              await downloadInfo();
+            },
+            child: const Text('確定下載'),
+          ),
+        ],
+      ),
+    );
+  }
+  Future<void> doScreenshot()async{}
+
   @override
   Widget build(BuildContext context) 
   {

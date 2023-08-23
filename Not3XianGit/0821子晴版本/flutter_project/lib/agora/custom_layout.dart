@@ -68,14 +68,14 @@ class CustomLayoutBodyState extends State<CustomLayoutBody> {
           },
         ),
         Positioned(
+          left: 24,
+          top: 24,
           child: InkWell(
-            child: Icon(Icons.arrow_back_ios),
+            child: const Icon(Icons.arrow_back_ios),
             onTap: () {
               Navigator.of(context).pop();
             },
           ),
-          left: 24,
-          top: 24,
         ),
       ],
     );
@@ -91,9 +91,9 @@ class CustomLayoutBodyState extends State<CustomLayoutBody> {
       children: [
         FastOverlayHandlerView(controller), // 覆蓋處理元素的視圖
         Positioned(
-          child: FastPageIndicator(controller), // 頁面指示器
           bottom: FastGap.gap_3,
           right: FastGap.gap_3,
+          child: FastPageIndicator(controller),
         ),
         FastToolBoxExpand(controller), // 工具箱展開按鈕
         FastStateHandlerView(controller), // 狀態處理元素的視圖
