@@ -51,6 +51,7 @@ class _ChatingPageState extends State<ChatingPage>
   Uint8List? otheravatarImageBytes;
   String? selectedName;
   String? selectedAccount;
+  String? passLeafName;
   File? file;//目前web端要用html,移動端要用io//File file;
   List<Map<String, dynamic>> chatDataList = [];
   bool isLinkMessage=false;
@@ -513,12 +514,11 @@ class _ChatingPageState extends State<ChatingPage>
               await getFile();//取得空白檔案
               captureScreenshotMobile();
               //ignore: use_build_context_synchronously
-              Navigator.push
+              Navigator.of(context).push
               (
-                context,
                 MaterialPageRoute
                 (
-                  builder: (context) => const QuickStartPage(),
+                  builder: (context) => QuickStartBody(leafName:passLeafName),
                 ),
               );
             },
@@ -557,10 +557,13 @@ class _ChatingPageState extends State<ChatingPage>
           final roomUUID=responseData[0]['roomUUID'];
           final roomToken=responseData[0]['roomToken'];
           final appID=responseData[0]['appID'];
+          final leafName=responseData[0]['leaf_name'];
           const storage=FlutterSecureStorage();
           await storage.write(key:'roomUUID',value:roomUUID);//add_roomUUID
           await storage.write(key: 'roomToken', value: roomToken);
           await storage.write(key: 'appID', value: appID);
+          await storage.write(key: 'leaf_name', value: leafName);
+          passLeafName=leafName;
           // 更新 constant.dart 的變數值
           APP_ID = appID;
           ROOM_UUID = roomUUID;

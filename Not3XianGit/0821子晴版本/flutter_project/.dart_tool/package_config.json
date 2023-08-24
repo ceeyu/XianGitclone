@@ -195,7 +195,7 @@
     },
     {
       "name": "fastboard_flutter",
-      "rootUri": "file:///Users/widelab/.pub-cache/git/XianGitclone-b28c2adc27662bfbf44670a5765c2224ebed7c7d/Not3XianGit/fastboard_flutter",
+      "rootUri": "file:///Users/widelab/.pub-cache/git/XianGitclone-c11d674c46e918aa57e3d030b5b14545359dfd43/Not3XianGit/fastboard_flutter",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -866,7 +866,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2023-08-23T05:24:43.982094Z",
+  "generated": "2023-08-24T01:33:26.545793Z",
   "generator": "pub",
   "generatorVersion": "3.0.5"
 }

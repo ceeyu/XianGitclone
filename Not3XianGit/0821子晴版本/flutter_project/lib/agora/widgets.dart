@@ -33,7 +33,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
   var showCloud = false;
   final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
   final TextEditingController _downloadFileNameController=TextEditingController();
-  List<dynamic> plantNameList=[];
+  List<String> plantNameList=[];
   List<dynamic> whitepptDataList=[];
   File? newPptxFile;
   String? selectedPlantName;
@@ -41,7 +41,6 @@ class CloudTestWidgetState extends State<CloudTestWidget>
   void initState()
   {
     super.initState();
-    showAllPlant();
   }
   Future<String?> getAccessToken() async 
   {
@@ -367,34 +366,45 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           {
             print('ShowAllPlant API :$responseData');
           }
-          if(responseData[0]['plant_name']!=null&&responseData[0]['plant_num']!=null)
+          if(responseData.isNotEmpty&&responseData[0]['plant_name']!=null)
           {
-            plantNameList=List<dynamic>.from(responseData[0]['plant_name']);
-            selectedPlantName=plantNameList.isNotEmpty?plantNameList[0]:'沒有資料夾';
+            setState(()
+            {
+              final plantNames=responseData[0]['plant_name'] as List<dynamic>;
+              plantNameList = List<String>.from(plantNames);
+              selectedPlantName=plantNameList.isNotEmpty?plantNameList[0]:'沒有資料夾';
+              if(kDebugMode)
+              {
+                print('plantNameList取得所有資料夾名稱 :$plantNameList');
+                print('ShowAllPlant的selectedPlantName內容: $selectedPlantName');
+              }
+            });
             final plantNumber=responseData[0]['plant_num'];
             await _storage.write(key: 'plant_num', value: plantNumber);
-            if(kDebugMode)
+            if (kDebugMode)
             {
-              print('取得所有資料夾名稱 :$plantNameList');
               print('取得資料夾總數量 :$plantNumber');
-              print('ShowAllPlant的selectedPlantName內容: $selectedPlantName');
             }
           }
           else
           {
-            final responseData=jsonDecode(response.body);
-            final errorMessage=responseData[0]['error_message'];
-            if (kDebugMode) 
+            setState(() 
             {
-              print('ErrorMessage目前沒有樹: $errorMessage');
-            }
+              final responseData=jsonDecode(response.body);
+              final errorMessage=responseData[0]['error_message'];
+              selectedPlantName=plantNameList.isNotEmpty?plantNameList[0]:'沒有資料夾';
+              if (kDebugMode) 
+              {
+                print('ErrorMessage目前沒有樹: $errorMessage');
+              }
+            });
           }
         }
         else
         {
           if(kDebugMode)
           {
-            print('Error:請求失敗,$response,${response.statusCode}');
+            print('ShowAllPlant Error:請求失敗,$response,${response.statusCode}');
           }
         }
       }
@@ -487,9 +497,10 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       }
     }
   }
-  Future<void> uploadFileToPlant()async//採收果實
+  Future<void> uploadFileToPlant(String selectedPlantName)async//採收果實
   {
     final savedAccessToken=await getAccessToken();
+    final userFileName=_downloadFileNameController.text;
     if(savedAccessToken!=null)
     {
       try
@@ -504,9 +515,16 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           body: jsonEncode(<String,String>
           {
             'uuid':ROOM_UUID,
-            'plant_name':selectedPlantName!,//dropdownmenu
+            'plant_name':selectedPlantName,//dropdownmenu
+            'file_name':userFileName,
           }),
         );
+        if(kDebugMode)
+        {
+          print('uploadFileToPlant uuid:$ROOM_UUID');
+          print('uploadFileToPlant plant_name:$selectedPlantName');
+          print('uploadFileToPlant file_name:$userFileName');
+        }
         if(response.statusCode>=200&&response.statusCode<405)
         {
           final responseData=jsonDecode(response.body);
@@ -557,8 +575,9 @@ class CloudTestWidgetState extends State<CloudTestWidget>
   }
   Future<void> downloadInfo()async//輸入上傳
   {
+    await showAllPlant();
     // ignore: use_build_context_synchronously
-    showDialog
+    await showDialog
     (
       context: context, 
       builder: (context)=>AlertDialog
@@ -596,9 +615,12 @@ class CloudTestWidgetState extends State<CloudTestWidget>
                   isExpanded: true,
                   onChanged: (newValue)
                   {
-                    selectedPlantName=newValue;
+                    setState(() 
+                    {
+                      selectedPlantName=newValue;
+                    });
                   },
-                  items: plantNameList.map<DropdownMenuItem<String>>((dynamic value)
+                  items: plantNameList.map<DropdownMenuItem<String>>((String value)
                   {
                     return DropdownMenuItem<String>
                     (
@@ -636,7 +658,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
             onPressed: () async 
             {
               await updatePptFile();
-              await uploadFileToPlant();
+              await uploadFileToPlant(selectedPlantName!);
             },
             child: const Text('確定下載'),
           ),
