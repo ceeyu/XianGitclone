@@ -15,8 +15,6 @@ import 'package:http/http.dart' as http;
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter_project/agora/quick_start.dart'; // 引入QuickStartPage
 import 'package:flutter_project/agora/constants.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:file_saver/file_saver.dart';
 class ChatingPage extends StatefulWidget 
 {
   final String? selectedName;
@@ -59,7 +57,6 @@ class _ChatingPageState extends State<ChatingPage>
   List<Map<String,dynamic>> joinDataList=[];
   final TextEditingController _messageController=TextEditingController();
   List<Map<String,dynamic>> whitepptDataList=[];
-  final ScreenshotController _screenshotController = ScreenshotController();
   @override
   void initState()
   {
@@ -512,7 +509,6 @@ class _ChatingPageState extends State<ChatingPage>
               await joinRoom();//加入葉子
               await createPPT();//創空白ppt檔
               await getFile();//取得空白檔案
-              captureScreenshotMobile();
               //ignore: use_build_context_synchronously
               Navigator.of(context).push
               (
@@ -964,47 +960,6 @@ class _ChatingPageState extends State<ChatingPage>
         {
           print('Catch Error 請求File失敗:$error');
         }
-      }
-    }
-  }
-  void captureScreenshotMobile() async //移動端截圖
-  {
-    _screenshotController.capture().then((Uint8List? image)
-    {
-      FileSaver.instance.saveFile
-      (
-        name: 'test.jpg',
-        bytes: image!,
-        mimeType:MimeType.jpeg, 
-      );
-    });
-    //getSavedScreenshot();
-    if(kDebugMode)
-    {
-      print('截圖成功!');
-    }
-  }
-  void getSavedScreenshot() async 
-  {
-    try 
-    {
-      final appDir = await getApplicationDocumentsDirectory();
-      final filePath = '${appDir.path}/test.jpg'; // 检查实际的文件名和路径
-      final savedScreenshotFile = File(filePath);
-      if (await savedScreenshotFile.exists()) 
-      {
-        // 文件存在，你可以使用 savedScreenshotFile 进行操作，例如显示、分享等
-        if (kDebugMode) {
-          print('找到并操作保存的截图文件');
-        }
-      } else {
-        if (kDebugMode) {
-          print('截图文件不存在');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('获取截图文件时出现错误: $e');
       }
     }
   }
