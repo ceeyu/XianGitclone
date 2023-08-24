@@ -365,6 +365,8 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   @override
   Widget build(BuildContext context) 
   {
+    Size screenSize=MediaQuery.of(context).size;
+    double fontSize = screenSize.width * 0.05;
     return Scaffold
     (
       body:Column
@@ -375,25 +377,25 @@ class _StartFruitsPageState extends State<StartFruitsPage>
           Center
           (
             child:plantNameList.isNotEmpty
-              ?const Center
+              ?Center
               (
                 child:Column
                 (
                   children: 
                   [
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text
                     (
                       "目前已有的資料夾",
                       style: TextStyle
                       (
                         color: Colors.black45,
-                        fontSize: 30,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    SizedBox(height: 10),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               )
@@ -410,13 +412,13 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: 
                   [
-                    Image.asset('assets/images/StartFruits_2.png',width: 150,height: 150),
-                    const Text
+                    Image.asset('assets/images/StartFruits_2.png',width: screenSize.width*0.5,height: 150),
+                    Text
                     (
                       '請按右下角的按鈕創建資料夾',
                       style:TextStyle
                       (
-                        fontSize: 30,
+                        fontSize: fontSize,
                         color: Colors.black45,
                         fontWeight: FontWeight.bold,
                       ),
@@ -441,6 +443,10 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                   (
                     onPressed: ()//這裡跳轉至打開不同資料夾裡的頁面
                     {
+                      setState(() 
+                      {
+                        
+                      });
                       //Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom
@@ -468,16 +474,16 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                                   (
                                     plantImageBytes,
                                     height:270,
-                                    width:230,
+                                    width:screenSize.width*0.7,
                                     fit:BoxFit.contain,//校外
                                   )
                                   :const SizedBox(),
                                 Text
                                 (
                                   plantName,
-                                  style: const TextStyle
+                                  style: TextStyle
                                   (
-                                    fontSize: 40,
+                                    fontSize: fontSize*0.7,
                                     color: Colors.black45,
                                     fontWeight: FontWeight.w500,
                                   ),

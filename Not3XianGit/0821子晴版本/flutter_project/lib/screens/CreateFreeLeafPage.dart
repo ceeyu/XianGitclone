@@ -66,7 +66,6 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
   bool switchValue_Camera = true;
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
-  final TextEditingController _textController = TextEditingController();
   final TextEditingController _leafNameController=TextEditingController();
   // ignore: non_constant_identifier_names
   String PostSeach = '';
@@ -1067,6 +1066,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             (
               alignment: Alignment.center, //橫的
               height: 200.0,
+              width:300.0,
               margin: const EdgeInsets.all(20.0),
               decoration: BoxDecoration
               (
@@ -1089,7 +1089,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
               ),
               child: Row
               (
-                  //mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>
                   [
                     Column
@@ -1137,40 +1137,13 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                         ),
                       ],
                     ),
-                    Column
-                    (
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>
-                      [
-                        Padding
-                        (
-                          padding: const EdgeInsets.only(top: 50, left: 20, right: 10),
-                          child: MaterialButton
-                          (
-                            onPressed: ()
-                            {
-                              setState(() 
-                              {
-                                PostSeach = _textController.text;
-                              });
-                            },
-                            color: const Color.fromARGB(255, 0, 158, 71),
-                            child: const Text
-                            (
-                              '確認',
-                              style: TextStyle(color: Colors.white)
-                            )
-                          ),
-                        ),
-                      ],
-                    ),
                   ]
               ),
             ),
           ),
           Row
           (
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: 
             [
               ElevatedButton

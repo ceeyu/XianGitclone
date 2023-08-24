@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/MyPage1.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -157,11 +158,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           else 
           {
             // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
+            Navigator.of(context).push(MaterialPageRoute(builder:(_)=>const MyPage1()));
             if(kDebugMode)
             {
               print('BanRoomButton已成功關閉會議！');
@@ -650,6 +647,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
             onPressed: ()async
             {
               Navigator.of(context).pop();
+              await banRoomAndLeaveRoom();
             }, 
             child:const Text('取消下載'),
           ),
@@ -659,6 +657,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
             {
               await updatePptFile();
               await uploadFileToPlant(selectedPlantName!);
+              await downloadedFileDialog();
             },
             child: const Text('確定下載'),
           ),
@@ -685,7 +684,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           (
             onPressed: ()async
             {
-              Navigator.of(context).pop();
+              await banRoomAndLeaveRoom();
             }, 
             child:const Text('取消下載'),
           ),
@@ -693,10 +692,37 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           (
             onPressed: () async 
             {
-              //await doScreenshot();
+              await doScreenshot();
               await downloadInfo();
             },
             child: const Text('確定下載'),
+          ),
+        ],
+      ),
+    );
+  }
+  Future<void> downloadedFileDialog()async
+  {
+    await showDialog
+    (
+      context: context,
+      builder: (context) => AlertDialog
+      (
+        content: const Text
+        (
+          '檔案下載成功，檔案已放置在您的資料夾裡\n離開：還能通過連結再加入噢\n關閉：直接結束這會議(不是創建者或會議最後使用者只能離開)',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+        actions: 
+        [
+          ElevatedButton
+          (
+            onPressed: ()async
+            {
+              await banRoomAndLeaveRoom();
+            },
+            child:const Text('離開'),
           ),
         ],
       ),
@@ -852,9 +878,6 @@ class CloudTestWidgetState extends State<CloudTestWidget>
         widget.controller.insertVideo(item.url, item.name); // 插入影片到白板中
         break;
       case "leave": //離開葉子
-        await banRoomAndLeaveRoom(); // 呼叫API
-        break;
-      case "download": //下載檔案
         await _handleDownLoadButton(); // 呼叫API
         break;
       case "pptx":

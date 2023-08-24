@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:carousel_slider/carousel_slider.dart";
 import 'package:flutter_project/HomePage.dart';
+import 'package:flutter_project/MyPage1.dart';
 //import 'package:flutter_project/screens/AnimationFruitsPage.dart';
 import 'package:flutter_project/screens/GardenerSettingPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -343,7 +344,7 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
                   title: const Text('創建成功'),
                   content:Text
                   (
-                    '$plantName資料夾創建成功，\n 請重新登入以查看檢視果實'
+                    '$plantName資料夾創建成功!'
                   ),
                   actions: 
                     [
@@ -351,7 +352,8 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
                       (
                         onPressed: ()async
                         {
-                          await logOut();
+                          Navigator.of(context).push(MaterialPageRoute(builder:(_)=>const MyPage1()));
+
                         }, 
                         child: const Text('OK'),
                       ),
@@ -493,16 +495,18 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
   @override
   Widget build(BuildContext context) 
   {
+    Size screenSize=MediaQuery.of(context).size;
+    double fontSize = screenSize.width * 0.05;
     return Scaffold
     (
       appBar: AppBar
       (
-        title: const Center
+        title: Center
         (
           child:Text
           (
             'Not3',
-            style:TextStyle(color:Colors.white),
+            style:TextStyle(color:Colors.white,fontSize: fontSize),
           ),
         ),
         backgroundColor: Colors.green,
@@ -950,9 +954,9 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
               ),
             ],
           ),
-          const Center
+          Center
           (
-            child:Text("選擇您的資料夾喲",style: TextStyle(color: Colors.black45,fontSize: 20,fontWeight: FontWeight.bold)),
+            child:Text("選擇您的資料夾喲",style: TextStyle(color: Colors.black45,fontSize: fontSize,fontWeight: FontWeight.bold)),
           ),  
           Center
           (
@@ -1007,7 +1011,7 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
                                   Image.asset
                                   (
                                     page,
-                                    width:200,
+                                    width:screenSize.width,
                                     height: 200,
                                   ),
                                 ],
@@ -1035,11 +1039,7 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
           ),
           SizedBox
           (
-
-          ),
-          SizedBox
-          (
-            width: 200,
+            width: screenSize.width*0.5,
             height: 80,
             child:TextField
             (

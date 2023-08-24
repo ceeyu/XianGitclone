@@ -215,6 +215,8 @@ class _ChatPageState extends State<ChatPage>
   @override
   Widget build(BuildContext context) 
   {
+    Size screenSize=MediaQuery.of(context).size;
+    double fontSize = screenSize.width * 0.05;
     return Scaffold
     (
       body:SingleChildScrollView
@@ -245,7 +247,7 @@ class _ChatPageState extends State<ChatPage>
                         [
                           SizedBox
                           (
-                            width: 470,
+                            width: screenSize.width*0.5,
                             height:100,
                             child:Padding
                             (
@@ -292,7 +294,7 @@ class _ChatPageState extends State<ChatPage>
                     [
                       SizedBox
                       (
-                        width: 120,
+                        width: screenSize.width*0.3,
                         height: 80,
                         child:Padding
                         (
@@ -307,7 +309,7 @@ class _ChatPageState extends State<ChatPage>
                               });
                             },
                             color:const Color.fromARGB(255,0,158,71),
-                            child: const Text('搜尋',style:TextStyle(color:Colors.white,fontSize: 30))
+                            child: Text('搜尋',style:TextStyle(color:Colors.white,fontSize: fontSize))
                           ),
                         ),
 
@@ -324,7 +326,7 @@ class _ChatPageState extends State<ChatPage>
                 [
                   SizedBox
                   (
-                    width: 470,
+                    width: screenSize.width*0.4,
                     height:50,
                     child:DropdownButtonHideUnderline
                     (
@@ -351,9 +353,9 @@ class _ChatPageState extends State<ChatPage>
                               child:Text
                               (
                                 value!,
-                                style: const TextStyle
+                                style: TextStyle
                                 (
-                                  fontSize: 15,
+                                  fontSize: fontSize*0.8,
                                 ),
                               ),
                             ),
@@ -368,11 +370,11 @@ class _ChatPageState extends State<ChatPage>
                     [
                       SizedBox
                       (
-                        width: 180,
+                        width: screenSize.width*0.35,
                         height: 80,
                         child:Padding
                         (
-                          padding:const EdgeInsets.only(top:25,left:20),
+                          padding:const EdgeInsets.only(top:25,left:40),
                           child:MaterialButton
                           (
                             onPressed: ()async
@@ -439,7 +441,7 @@ class _ChatPageState extends State<ChatPage>
                               }                          
                             },
                             color:const Color.fromARGB(255,0,158,71),
-                            child: const Text('傳送訊息',style:TextStyle(color:Colors.white,fontSize: 30))
+                            child:Text('傳送訊息',style:TextStyle(color:Colors.white,fontSize: fontSize*0.8))
                           ),
                         ),
 
@@ -450,25 +452,22 @@ class _ChatPageState extends State<ChatPage>
               ),
               const SizedBox(height: 50),
               const SizedBox(height: 50),
-              const SizedBox(height: 50),
-              const SizedBox(height: 50),
-              const SizedBox(height: 50),
               Center
               (
                 child: Column
                 (
                   children: 
                   [
-                    const Text
+                    Text
                     (
                       '請搜尋其他使用者進行交流',
                       style: TextStyle
                       (
-                        fontSize: 70,
+                        fontSize: fontSize,
                         color: Colors.blueGrey,
                       ),
                     ),
-                    Image.asset('assets/images/StartFruits_2.png',width: 300,height: 300),                      
+                    Image.asset('assets/images/StartFruits_2.png',width: screenSize.width * 0.5,height: screenSize.width * 0.5),                      
                   ],
                 ),
               ),

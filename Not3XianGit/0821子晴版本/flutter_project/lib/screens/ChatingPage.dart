@@ -1011,6 +1011,8 @@ class _ChatingPageState extends State<ChatingPage>
   @override
   Widget build(BuildContext context)
   {
+    Size screenSize=MediaQuery.of(context).size;
+    double fontSize = screenSize.width * 0.05;
     return Scaffold
     (
       appBar: AppBar
@@ -1468,9 +1470,9 @@ class _ChatingPageState extends State<ChatingPage>
                 (
                   '$selectedName',
                   textAlign: TextAlign.center,
-                  style:const TextStyle
+                  style:TextStyle
                   (
-                    fontSize: 24,
+                    fontSize: fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -1480,12 +1482,12 @@ class _ChatingPageState extends State<ChatingPage>
             Expanded
             (
               child:chatDataList.isEmpty
-                ?const Center
+                ?Center
                 (
                   child: Text
                   (
                     '目前與他/她沒有聊天紀錄',
-                    style:TextStyle(fontSize: 16),
+                    style:TextStyle(fontSize: fontSize),
                   ),
                 )
                 :ListView.builder
@@ -1500,23 +1502,23 @@ class _ChatingPageState extends State<ChatingPage>
                       String errorMessage=chat['error_message'];
                       if(errorMessage=='兩方帳號相同，不能自己跟自己聊天，所以不會有資料')
                       {
-                        return const Center
+                        return Center
                         (
                           child: Text
                           (
                             '不能自己跟自己聊天噢',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: fontSize),
                           ),
                         );
                       }
                       else if(errorMessage=='他倆沒有聊天紀錄')
                       {
-                        return const Center
+                        return Center
                         (
                           child: Text
                           (
                             '目前與他/她沒有聊天紀錄',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: fontSize),
                           ),
                         );
                       }                      
@@ -1537,10 +1539,10 @@ class _ChatingPageState extends State<ChatingPage>
                           (
                             text: 'Someone sent you a link : ${chat['chat_data']}',
                             color:bubbleColor,
-                            textStyle: const TextStyle
+                            textStyle: TextStyle
                             (
                               color:Colors.white,
-                              fontSize: 16,
+                              fontSize: fontSize,
                             ),
                             tail: true,
                             isSender: !isSender,
@@ -1553,10 +1555,10 @@ class _ChatingPageState extends State<ChatingPage>
                         (
                           text: chat['chat_data'],
                           color:bubbleColor,
-                          textStyle: const TextStyle
+                          textStyle:TextStyle
                           (
                             color:Colors.white,
-                            fontSize: 16,
+                            fontSize: fontSize,
                           ),
                           tail: true,
                           isSender: !isSender,
@@ -1585,45 +1587,46 @@ class _ChatingPageState extends State<ChatingPage>
                   }
                 },
                 actions: 
+                const 
                 [
-                  InkWell
-                  (
-                    child: const Icon
-                    (
-                      Icons.add,
-                      color:Colors.black,
-                      size:24,
-                    ),
-                    onTap: (){},
-                  ),
-                  Padding
-                  (
-                    padding: const EdgeInsets.only(left:8,right:8),
-                    child: InkWell
-                    (
-                      child: Icon
-                      (
-                        Icons.camera_alt,
-                        color:Colors.blue.shade100,
-                        size:24,
-                      ),
-                      onTap: (){},
-                    ),
-                  ),
-                  Padding
-                  (
-                    padding: const EdgeInsets.only(left:8,right:8),
-                    child: InkWell
-                    (
-                      child: Icon
-                      (
-                        Icons.emoji_emotions,
-                        color:Colors.green.shade100,
-                        size:24,
-                      ),
-                      onTap: (){},
-                    ),
-                  ),
+                  // InkWell
+                  // (
+                  //   child: const Icon
+                  //   (
+                  //     Icons.add,
+                  //     color:Colors.black,
+                  //     size:24,
+                  //   ),
+                  //   onTap: (){},
+                  // ),
+                  // Padding
+                  // (
+                  //   padding: const EdgeInsets.only(left:8,right:8),
+                  //   child: InkWell
+                  //   (
+                  //     child: Icon
+                  //     (
+                  //       Icons.camera_alt,
+                  //       color:Colors.blue.shade100,
+                  //       size:24,
+                  //     ),
+                  //     onTap: (){},
+                  //   ),
+                  // ),
+                  // Padding
+                  // (
+                  //   padding: const EdgeInsets.only(left:8,right:8),
+                  //   child: InkWell
+                  //   (
+                  //     child: Icon
+                  //     (
+                  //       Icons.emoji_emotions,
+                  //       color:Colors.green.shade100,
+                  //       size:24,
+                  //     ),
+                  //     onTap: (){},
+                  //   ),
+                  // ),
                 ],
               ),
             ),

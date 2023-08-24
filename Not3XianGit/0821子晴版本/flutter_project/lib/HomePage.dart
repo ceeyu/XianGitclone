@@ -7,16 +7,18 @@ class HomePage extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
+    Size screenSize=MediaQuery.of(context).size;
+    double fontSize = screenSize.width * 0.1;
     return Scaffold
     (
       appBar: AppBar
       (
-        title:const Center
+        title:Center
         (
           child: Text
           (
             "Not3首頁",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white,fontSize: fontSize*0.6),
           )
         ),
         backgroundColor: Colors.green
@@ -31,12 +33,12 @@ class HomePage extends StatelessWidget
             mainAxisAlignment: MainAxisAlignment.center,
             children: 
             [
-              const Row
+              Row
               (
                 mainAxisAlignment: MainAxisAlignment.center,
                 children:
                   [
-                    Text("Welcome!!",style: TextStyle(color: Colors.black45,fontSize: 30,fontWeight: FontWeight.bold))
+                    Text("Welcome!!",style: TextStyle(color: Colors.black45,fontSize: fontSize,fontWeight: FontWeight.bold))
                   ],
               ),
               Row
@@ -47,7 +49,7 @@ class HomePage extends StatelessWidget
                   Container
                   (
                     alignment: Alignment.topCenter,
-                    child:Image.asset('assets/images/Logo.png',width: 300,height: 300),
+                    child:Image.asset('assets/images/Logo.png',width: screenSize.width*0.6,height: 300),
                   ),
                 ],
               ),
@@ -59,7 +61,7 @@ class HomePage extends StatelessWidget
                   Container
                   (
                     height: 60,
-                    width:150,
+                    width:screenSize.width*0.3,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration
@@ -75,17 +77,17 @@ class HomePage extends StatelessWidget
                           context,MaterialPageRoute(builder:(context)=> const LoginPage())
                         );
                       },
-                      child:const Text
+                      child:Text
                       (
                         '登錄',
-                        style: TextStyle(color: Colors.white, fontSize: 15)
+                        style: TextStyle(color: Colors.white, fontSize: fontSize*0.5)
                       ),
                     ),
                   ),
                   Container
                   (
                     height: 60,
-                    width:150,
+                    width:screenSize.width*0.3,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration
@@ -101,33 +103,11 @@ class HomePage extends StatelessWidget
                           context,MaterialPageRoute(builder:(context)=> const SignUpPage())
                         );
                       },
-                      child:const Text
+                      child:Text
                       (
                         '註冊',
-                        style: TextStyle(color: Colors.white, fontSize: 15)
+                        style: TextStyle(color: Colors.white, fontSize: fontSize*0.5)
                       ),
-                    ),
-                  ),
-                ],
-              ),
-              Row
-              (
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: 
-                [
-                  SizedBox
-                  (
-                    height:48.0,
-                    child:TextButton
-                    (
-                      child: const Text("查看登錄後進去的頁面"),
-                      onPressed: ()
-                      {
-                        // Navigator.push
-                        // (
-                        //   context,MaterialPageRoute(builder:(context)=>const MyPage1())
-                        // );
-                      },
                     ),
                   ),
                 ],

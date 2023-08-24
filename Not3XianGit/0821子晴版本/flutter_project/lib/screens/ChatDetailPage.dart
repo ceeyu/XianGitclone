@@ -1,4 +1,4 @@
-// ignore: file_names
+//目前沒有在用的頁面
 import 'package:flutter/material.dart';
 
 class ChatDetailPage extends StatefulWidget

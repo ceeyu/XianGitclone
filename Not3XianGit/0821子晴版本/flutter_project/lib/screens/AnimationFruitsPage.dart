@@ -1,3 +1,4 @@
+//目前沒有在用的頁面
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
@@ -139,9 +140,9 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
               ),
               color: Colors.green,
               textColor: Colors.white,
-              child: Text(plantButtonText),
               onPressed: _onPlantButtonPressed,
               splashColor: Colors.redAccent,
+              child: Text(plantButtonText),
             ),
           ),
           Row

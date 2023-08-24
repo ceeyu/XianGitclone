@@ -293,11 +293,13 @@ class _MyPage1State extends State<MyPage1>
   @override
   Widget build(BuildContext context) 
   {
+    Size screenSize=MediaQuery.of(context).size;
+    double fontSize = screenSize.width * 0.05;
     return Scaffold
     (
       appBar: AppBar
       (
-        title: const Center
+        title: Center
         (
           child:Text
           (
@@ -305,7 +307,7 @@ class _MyPage1State extends State<MyPage1>
             style:TextStyle
             (
               color:Colors.white,
-              fontSize: 40,
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
             ),
           ),

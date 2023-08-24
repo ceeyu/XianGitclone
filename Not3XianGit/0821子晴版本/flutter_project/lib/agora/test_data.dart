@@ -73,15 +73,8 @@ class TestData
             "url": "",
             "taskUUID": "",
             "taskToken": ""
-        },{
-            "type": "download",
-            "name": "點選下載檔案",
-            "url": "",
-            "taskUUID": "",
-            "taskToken": ""
         }]
         ''';
-  //最後一筆資料暫時當作離開葉子測試
   // 解析JSON資料為List<CloudFile>
   static List<CloudFile> kCloudFiles = (jsonDecode(kCloudJson) as List)
       .map((e) => CloudFile.fromJson(e))
