@@ -15,6 +15,19 @@ class _FruitsTreePageState extends State<FruitsTreePage>
   {
     return Scaffold
     (
+      appBar: AppBar
+      (
+        title: const Center
+        (
+          child:Text
+          (
+            '檢視資料夾',
+            style:TextStyle(color:Colors.white),
+          ),
+        ),
+        backgroundColor: Colors.green,
+        elevation: 0.0, //陰影
+      ),
       body:Column
       (
         mainAxisAlignment:MainAxisAlignment.center,

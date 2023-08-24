@@ -294,8 +294,8 @@ class _ChatPageState extends State<ChatPage>
                     [
                       SizedBox
                       (
-                        width: screenSize.width*0.3,
-                        height: 80,
+                        width: screenSize.width*0.2,
+                        height: screenSize.height*0.07,
                         child:Padding
                         (
                           padding:const EdgeInsets.only(top:25,left:20),
@@ -309,7 +309,7 @@ class _ChatPageState extends State<ChatPage>
                               });
                             },
                             color:const Color.fromARGB(255,0,158,71),
-                            child: Text('搜尋',style:TextStyle(color:Colors.white,fontSize: fontSize))
+                            child: Text('搜尋',style:TextStyle(color:Colors.white,fontSize: fontSize*0.7))
                           ),
                         ),
 
@@ -326,8 +326,8 @@ class _ChatPageState extends State<ChatPage>
                 [
                   SizedBox
                   (
-                    width: screenSize.width*0.4,
-                    height:50,
+                    width: screenSize.width*0.5,
+                    height:screenSize.height*0.05,
                     child:DropdownButtonHideUnderline
                     (
                       child:DropdownButton<String>
@@ -355,7 +355,7 @@ class _ChatPageState extends State<ChatPage>
                                 value!,
                                 style: TextStyle
                                 (
-                                  fontSize: fontSize*0.8,
+                                  fontSize: fontSize*0.5,
                                 ),
                               ),
                             ),
@@ -370,8 +370,8 @@ class _ChatPageState extends State<ChatPage>
                     [
                       SizedBox
                       (
-                        width: screenSize.width*0.35,
-                        height: 80,
+                        width: screenSize.width*0.3,
+                        height: screenSize.height*0.08,
                         child:Padding
                         (
                           padding:const EdgeInsets.only(top:25,left:40),
@@ -441,7 +441,7 @@ class _ChatPageState extends State<ChatPage>
                               }                          
                             },
                             color:const Color.fromARGB(255,0,158,71),
-                            child:Text('傳送訊息',style:TextStyle(color:Colors.white,fontSize: fontSize*0.8))
+                            child:Text('傳送訊息',style:TextStyle(color:Colors.white,fontSize: fontSize*0.7))
                           ),
                         ),
 

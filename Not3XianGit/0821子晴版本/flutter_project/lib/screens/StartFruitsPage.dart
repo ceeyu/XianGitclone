@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_project/HomePage.dart';
+import 'package:flutter_project/screens/AnimationFruitsPage.dart';
 import 'package:flutter_project/screens/OpenFruitsPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -443,11 +444,13 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                   (
                     onPressed: ()//這裡跳轉至打開不同資料夾裡的頁面
                     {
-                      setState(() 
-                      {
-                        
-                      });
-                      //Navigator.of(context).pop();
+                      // setState(() 
+                      // {
+                      // });
+                      Navigator.push
+                      (
+                        context,MaterialPageRoute(builder:(_)=> const AnimationFruitsPage())
+                      );
                     },
                     style: ElevatedButton.styleFrom
                     (

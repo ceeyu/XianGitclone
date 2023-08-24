@@ -2,15 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
-//import 'dart:convert';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:flutter_project/HomePage.dart';
-// import 'package:flutter_project/screens/GardenerSettingPage.dart';
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:http/http.dart' as http;
-
-
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 class AnimationFruitsPage extends StatefulWidget 
 {
   const AnimationFruitsPage({Key? key}) : super(key: key);
@@ -19,7 +15,6 @@ class AnimationFruitsPage extends StatefulWidget
   // ignore: library_private_types_in_public_api
   _AnimationFruitsPageState createState() => _AnimationFruitsPageState();
 }
-
 class _AnimationFruitsPageState extends State<AnimationFruitsPage> 
 {
   Artboard? _riveArtboard;
@@ -50,8 +45,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       },
     );
   }
-  // 按下Plant按鈕後，TreeProgress增加20，直到等於或超過60時重置為0
-  void _onPlantButtonPressed() 
+  void _onPlantButtonPressed() // 按下Plant按鈕後，TreeProgress增加20，直到等於或超過60時重置為0
   {
     setState(() 
     {
@@ -70,6 +64,19 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
     double treeWidth = MediaQuery.of(context).size.width - 40;
     return Scaffold
     (
+      appBar: AppBar
+      (
+        title: const Center
+        (
+          child:Text
+          (
+            '檢視資料夾',
+            style:TextStyle(color:Colors.white),
+          ),
+        ),
+        backgroundColor: Colors.green,
+        elevation: 0.0, //陰影
+      ),
       backgroundColor: Colors.white,
       body: Column
       (
@@ -103,7 +110,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
             padding: const EdgeInsets.only(bottom: 10),
             child: Text
             (
-              _treeProgress.toString() + '個檔案',
+              '$_treeProgress個檔案',
               style: const TextStyle
               (
                 color: Colors.black,
@@ -144,19 +151,6 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
               splashColor: Colors.redAccent,
               child: Text(plantButtonText),
             ),
-          ),
-          Row
-          (
-            mainAxisAlignment: MainAxisAlignment.start,
-            children:
-            [
-              IconButton
-              (
-                tooltip: '返回上一頁',
-                icon:const Icon(Icons.arrow_circle_left_outlined,size:30),
-                onPressed: (){Navigator.of(context).pop();},
-              ),
-            ],
           ),
         ],
       ),

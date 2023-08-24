@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget
           child: Text
           (
             "Not3首頁",
-            style: TextStyle(color: Colors.white,fontSize: fontSize*0.6),
+            style: TextStyle(color: Colors.white,fontSize: fontSize*0.3),
           )
         ),
         backgroundColor: Colors.green
@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget
                 [
                   Container
                   (
-                    height: 60,
+                    height: screenSize.height*0.1,
                     width:screenSize.width*0.3,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(8.0),
@@ -80,13 +80,13 @@ class HomePage extends StatelessWidget
                       child:Text
                       (
                         '登錄',
-                        style: TextStyle(color: Colors.white, fontSize: fontSize*0.5)
+                        style: TextStyle(color: Colors.white, fontSize: fontSize*0.3)
                       ),
                     ),
                   ),
                   Container
                   (
-                    height: 60,
+                    height: screenSize.height*0.1,
                     width:screenSize.width*0.3,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(8.0),
