@@ -33,6 +33,10 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   Uint8List? avatarImageBytes;
   Map<String,Uint8List> plantImagesMap={};
   List<dynamic> plantNameList=[];
+  List<Map<String,dynamic>> plantFruitsList=[];
+  List<dynamic> plantFruitsInfo=[];
+  List<String> plantFruitsName=[];
+  List<String> plantFruitsNumber=[];
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -356,6 +360,95 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       }
     } 
   } 
+  Future<void> showPlantFruitInfo()async//要修按下的按鈕
+  {
+    final savedAccessToken=await getAccessToken();
+    if(savedAccessToken!=null)
+    {
+      try
+      {
+        final response=await http.post
+        (
+          Uri.parse('http://120.126.16.222/plants/show-fruit-info'),
+          headers: <String,String>
+          {
+            'Authorization':'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String,String>
+          {
+            'plant_name':'社團',//按下所選資料夾，目前寫死來測試
+          }),
+        );
+        if(response.statusCode>=200&&response.statusCode<405)
+        {
+          final responseData=jsonDecode(response.body);
+          
+          if(responseData[0]['total_fruit_num']!=null&&responseData[0]['fruit_info']!=null)
+          {
+            plantFruitsList=List<Map<String,dynamic>>.from(responseData);
+            plantFruitsInfo=plantFruitsList.map((item)=>item['fruit_info']).toList();
+            for(var item in plantFruitsInfo)
+            {
+              for(var fruitInfo in item)
+              {
+                var plantName=fruitInfo['plant_name'];
+                var plantNumber=fruitInfo['fruit_num'];
+                plantFruitsName.clear();
+                plantFruitsNumber.clear();
+                plantFruitsNumber.add(plantNumber.toString());
+                plantFruitsName.add(plantName);
+              }
+            }
+              if(kDebugMode)
+              {
+                print('showPlantFruitInfo回傳plantFruitsList :$plantFruitsList');
+                print('取得資料夾裡檔案資料 :$plantFruitsInfo');
+                print('取得資料夾裡檔案名稱 :$plantFruitsName');
+                print('取得資料夾裡檔案ID(fruit_num) :$plantFruitsNumber');
+                
+              }
+            final plantFruitNumber=responseData[0]['total_fruit_num'];
+            await _storage.write(key: 'fruit_num', value: plantFruitNumber);
+            if (kDebugMode) 
+            {
+              print('取得資料夾裡檔案總數量 :$plantFruitNumber');
+            }
+          }
+          else
+          {
+            final responseData=jsonDecode(response.body);
+            final errorMessage=responseData[0]['error_message'];
+            if (kDebugMode) 
+            {
+              print('ErrorMessage目前沒有資料夾及檔案: $errorMessage');
+            }
+          }
+        }
+        else
+        {
+          if(kDebugMode)
+          {
+            print('ShowPlantFruitInfo Error:請求失敗,$response,${response.statusCode}');
+          }
+        }
+      }
+      catch(error)
+      {
+        if(kDebugMode)
+        {
+          print('ShowPlantFruitInfo Catch Error:請求出錯,$error');
+        }
+      }
+    }
+    else 
+    {
+      if(kDebugMode)
+      {
+        print('沒有保存的access_token');
+      }
+    }      
+  } 
+
   @override
   void initState()
   {
@@ -444,9 +537,10 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                   (
                     onPressed: ()//這裡跳轉至打開不同資料夾裡的頁面
                     {
-                      // setState(() 
-                      // {
-                      // });
+                      setState(() 
+                      {
+                        showPlantFruitInfo();
+                      });
                       Navigator.push
                       (
                         context,MaterialPageRoute(builder:(_)=> const AnimationFruitsPage())
