@@ -376,7 +376,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
           },
           body: jsonEncode(<String,String>
           {
-            'plant_name':'社團',//按下所選資料夾，目前寫死來測試
+            'plant_name':'資料夾一',//按下所選資料夾，目前寫死來測試
           }),
         );
         if(response.statusCode>=200&&response.statusCode<405)

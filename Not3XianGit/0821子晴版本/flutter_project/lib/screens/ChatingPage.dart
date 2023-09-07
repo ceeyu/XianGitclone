@@ -524,7 +524,7 @@ class _ChatingPageState extends State<ChatingPage>
       ),
     );
   }
-  Future<void> joinLinkRoom(String link)async
+  Future<void> joinLinkRoom(String roomlink)async
   {
     final savedAccessToken=await getAccessToken();
     if(savedAccessToken!=null)
@@ -540,12 +540,12 @@ class _ChatingPageState extends State<ChatingPage>
           },
           body:jsonEncode(<String,String>
           {
-            "link":"Someone sent you a link : $link",
+            "link":"Someone sent you a link : $roomlink",
           }),
         );
         if(kDebugMode)
         {
-          print(link);
+          print('JoinLinkRoom $roomlink');
         }
         if(response.statusCode>=200&&response.statusCode<300)
         {
@@ -564,7 +564,7 @@ class _ChatingPageState extends State<ChatingPage>
           APP_ID = appID;
           ROOM_UUID = roomUUID;
           ROOM_TOKEN = roomToken;
-          LINK = link;
+          LINK = roomlink;
           setState(() 
           {
             linkDataList=List<Map<String,dynamic>>.from(responseData);

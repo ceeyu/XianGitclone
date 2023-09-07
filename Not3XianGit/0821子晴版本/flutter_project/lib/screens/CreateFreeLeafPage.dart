@@ -292,8 +292,13 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
     await _storage.write(key: 'leaf_name', value: leafName);
     final savedLeafName=await getLeafName();
     passLeafName=savedLeafName;
+    APP_ID = '';
+    ROOM_UUID = '';
+    ROOM_TOKEN = '';
+    LINK = '';
     if(kDebugMode)
     {
+      print('joinIntoRoom Initial: \n1.RoomID:$ROOM_UUID\n2.RoomUUID:$ROOM_TOKEN\n3.RoomLink:$LINK');
       print('SavedLeafName: $savedLeafName');
     }
     if (savedAccessToken != null) 
@@ -317,6 +322,10 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
         if (response.statusCode >= 200 && response.statusCode < 300)
         {
           final responseData = jsonDecode(response.body);
+          ROOM_UUID='';
+          ROOM_TOKEN='';
+          LINK = '';
+          APP_ID='';
           if (responseData.isNotEmpty &&responseData[0]['roomData'] != null &&responseData[0]['roomToken'] != null &&responseData[0]['leafData'] != null) 
           {
             final leafData = responseData[0]['leafData'];
@@ -383,7 +392,6 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
         print('API response is empty');
       }
     }
-
   }
   Future<void> createPPT()async//創空白ppt檔
   {

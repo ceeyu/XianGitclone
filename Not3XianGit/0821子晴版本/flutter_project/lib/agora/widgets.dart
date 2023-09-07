@@ -35,10 +35,13 @@ class CloudTestWidgetState extends State<CloudTestWidget>
   var showCloud = false;
   final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
   final TextEditingController _downloadFileNameController=TextEditingController();
+  final ScreenshotController _screenshotController = ScreenshotController();
   List<String> plantNameList=[];
   List<dynamic> whitepptDataList=[];
   File? newPptxFile;
   String? selectedPlantName;
+  var downloadOrLeave=false;
+  var downloadOrLeave2=false;
   @override
   void initState()
   {
@@ -110,10 +113,11 @@ class CloudTestWidgetState extends State<CloudTestWidget>
         ),
         actions: 
         [
-          TextButton
+          ElevatedButton
           (
             onPressed: () 
             {
+              Navigator.of(context).pop();
               Navigator.of(context).pop();
               Navigator.of(context).pop();
               Navigator.of(context).pop();
@@ -158,11 +162,48 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           } 
           else 
           {
+            if(downloadOrLeave==false)
+            {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
             // ignore: use_build_context_synchronously
-            Navigator.of(context).push(MaterialPageRoute(builder:(_)=>const MyPage1()));
+              Navigator.of(context).replace
+              (
+                // ignore: use_build_context_synchronously
+                oldRoute: ModalRoute.of(context)!,
+                newRoute: MaterialPageRoute(
+                  builder: (_) => const MyPage1(),
+                ),
+              );
+            }
+            else
+            {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).replace
+              (
+                // ignore: use_build_context_synchronously
+                oldRoute: ModalRoute.of(context)!,
+                newRoute: MaterialPageRoute(
+                  builder: (_) => const MyPage1(),
+                ),
+              );
+            }
+            APP_ID='';
+            ROOM_TOKEN='';
+            ROOM_UUID='';
+            LINK='';
             if(kDebugMode)
             {
               print('BanRoomButton已成功關閉會議！');
+              print('清空之後：\nRoomToken:$ROOM_TOKEN\nRoomUUID:$ROOM_UUID\nRoomLink:$LINK');
             }
           }
         } 
@@ -214,8 +255,67 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           if (body[0]['message'] == '成功離開' && body[0]['isFounder'] == 'false'&&body[0]['isLast'] == 'false') 
           {
             final message = body[0]['message'];
-            // ignore: use_build_context_synchronously
-            await showDisconnectResultDialog(context, message);
+            if(kDebugMode)
+            {
+              print('LeaveButton: $message');
+            }
+            if(downloadOrLeave==true&&downloadOrLeave2==false)
+            {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).replace
+              (
+                // ignore: use_build_context_synchronously
+                oldRoute: ModalRoute.of(context)!,
+                newRoute: MaterialPageRoute
+                (
+                  builder: (_) => const MyPage1(),
+                ),
+              );
+            }
+            else if(downloadOrLeave==false&&downloadOrLeave2==true)
+            {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).replace
+              (
+                // ignore: use_build_context_synchronously
+                oldRoute: ModalRoute.of(context)!,
+                newRoute: MaterialPageRoute
+                (
+                  builder: (_) => const MyPage1(),
+                ),
+              );
+            }
+            else if(downloadOrLeave==false&&downloadOrLeave2==false)
+            {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop(); 
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).replace
+              (
+                // ignore: use_build_context_synchronously
+                oldRoute: ModalRoute.of(context)!,
+                newRoute: MaterialPageRoute
+                (
+                  builder: (_) => const MyPage1(),
+                ),
+              );
+            }
           } 
           //isLastOne
           else if (body[0]['message'] == '成功離開' && body[0]['isLast'] == 'true'&&body[0]['isFounder']== 'false') 
@@ -257,10 +357,6 @@ class CloudTestWidgetState extends State<CloudTestWidget>
                     onPressed: ()async
                     {
                       await _handleBanRoomButton();
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
                     }, 
                     child:const Text('關閉會議'),
                   ),
@@ -269,10 +365,6 @@ class CloudTestWidgetState extends State<CloudTestWidget>
                     onPressed: ()async
                     {
                       await showDisconnectResultDialog(context, '成功離開');
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
                     }, 
                     child:const Text('離開會議'),
                   ),
@@ -647,7 +739,8 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           (
             onPressed: ()async
             {
-              Navigator.of(context).pop();
+              downloadOrLeave=false;
+              downloadOrLeave2=true;
               await banRoomAndLeaveRoom();
             }, 
             child:const Text('取消下載'),
@@ -656,6 +749,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           (
             onPressed: () async 
             {
+              downloadOrLeave=true;
               await updatePptFile();
               await uploadFileToPlant(selectedPlantName!);
               await downloadedFileDialog();
@@ -693,6 +787,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
           (
             onPressed: () async 
             {
+              downloadOrLeave=true;
               await doScreenshot();
               await downloadInfo();
             },
@@ -731,7 +826,42 @@ class CloudTestWidgetState extends State<CloudTestWidget>
   }
   Future<void> doScreenshot()async
   {
-    //Screenshot
+    if (kDebugMode) 
+    {
+      print('Screenshoting......');
+    }
+    await Future.delayed(const Duration(milliseconds: 500));
+    WidgetsBinding.instance.addPostFrameCallback((_)async 
+    {
+      try
+      {
+        final image=await _screenshotController.capture(pixelRatio: 3.0);
+        if(image!=null)
+        {
+          final screenshotFile=File('screenshotTest.png');
+          screenshotFile.writeAsBytesSync(image);
+          if (kDebugMode) 
+          {
+            print('Saved the image in : ${screenshotFile.path}');
+          }
+        }
+        else
+        {
+          if (kDebugMode) 
+          {
+            print('Screenshot Failed: Invalid');
+          }
+        }
+      }
+      catch(error)
+      {
+        if (kDebugMode) 
+        {
+          print('Screentshot failed:$error');
+        }
+      }
+
+    });
   }
   @override
   Widget build(BuildContext context) 
