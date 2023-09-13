@@ -36,6 +36,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   List<Map<String,dynamic>> plantFruitsList=[];
   List<dynamic> plantFruitsInfo=[];
   List<String> plantFruitsName=[];
+  List<String> getplantName=[];
   List<String> plantFruitsNumber=[];
   Future<String?> getAccessToken()async
   {
@@ -56,6 +57,16 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       print('PlantNumber : $plantNumber ');
     }
     return plantNumber;
+  }
+  Future<String?> getPlantRivName()async
+  {
+    // 從 flutter_secure_storage 取得 riv file name
+    String? rivPlantName = await _storage.read(key:'pressedPlantName');
+    if (kDebugMode) 
+    {
+      print('Get rivPlantName : $rivPlantName');
+    }
+    return rivPlantName;
   }
   Future<void> deleteAccessToken() async 
   {
@@ -260,8 +271,8 @@ class _StartFruitsPageState extends State<StartFruitsPage>
             await _storage.write(key: 'plant_num', value: plantNumber);
             if(kDebugMode)
             {
-              print('取得所有資料夾名稱 :$plantNameList');
-              print('取得資料夾總數量 :$plantNumber');
+              print('取得所有資料夾名稱plantNameList :$plantNameList');
+              print('取得資料夾總數量plantNumber :$plantNumber');
             }
           }
           else
@@ -363,6 +374,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   Future<void> showPlantFruitInfo()async//要修按下的按鈕
   {
     final savedAccessToken=await getAccessToken();
+    final savedPressedPlantName=await getPlantRivName();
     if(savedAccessToken!=null)
     {
       try
@@ -376,7 +388,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
           },
           body: jsonEncode(<String,String>
           {
-            'plant_name':'資料夾一',//按下所選資料夾，目前寫死來測試
+            'plant_name':savedPressedPlantName!,
           }),
         );
         if(response.statusCode>=200&&response.statusCode<405)
@@ -387,31 +399,49 @@ class _StartFruitsPageState extends State<StartFruitsPage>
           {
             plantFruitsList=List<Map<String,dynamic>>.from(responseData);
             plantFruitsInfo=plantFruitsList.map((item)=>item['fruit_info']).toList();
+            getplantName.clear();
+            plantFruitsName.clear();
+            plantFruitsNumber.clear();
             for(var item in plantFruitsInfo)
             {
               for(var fruitInfo in item)
               {
                 var plantName=fruitInfo['plant_name'];
-                var plantNumber=fruitInfo['fruit_num'];
-                plantFruitsName.clear();
-                plantFruitsNumber.clear();
-                plantFruitsNumber.add(plantNumber.toString());
-                plantFruitsName.add(plantName);
+                var fruitName=fruitInfo['fruit_name'];
+                var fruitNumber=fruitInfo['fruit_num'];
+                // if(kDebugMode)
+                // {
+                //   print('fruitInfo的每一項plant_name :$plantName');
+                //   print('fruitInfo的每一項fruit_name :$fruitName');
+                //   print('fruitInfo的每一項fruit_num :$fruitNumber');
+                // }
+                getplantName.add(plantName.toString());
+                plantFruitsNumber.add(fruitNumber.toString());
+                plantFruitsName.add(fruitName.toString());
               }
             }
-              if(kDebugMode)
-              {
-                print('showPlantFruitInfo回傳plantFruitsList :$plantFruitsList');
-                print('取得資料夾裡檔案資料 :$plantFruitsInfo');
-                print('取得資料夾裡檔案名稱 :$plantFruitsName');
-                print('取得資料夾裡檔案ID(fruit_num) :$plantFruitsNumber');
-                
-              }
-            final plantFruitNumber=responseData[0]['total_fruit_num'];
-            await _storage.write(key: 'fruit_num', value: plantFruitNumber);
+            //把List<String>資料保存在storage裡
+            final jsonData=
+            {
+              'saved_fruits_name':plantFruitsName,
+              'saved_fruits_num':plantFruitsNumber,
+            };
+            final jsonString=jsonEncode(jsonData);
+            await _storage.write(key: 'list_fruit_info', value: jsonString);
+            if(kDebugMode)
+            {
+              print('showPlantFruitInfo回傳plantFruitsList :$plantFruitsList');
+              print('取得資料夾裡檔案資料 :$plantFruitsInfo');
+              print('取得檔案所對應的資料夾名稱(plant_name) :$getplantName');
+              print('取得資料夾裡檔案的所有名稱(fruit_name) :$plantFruitsName');
+              print('取得資料夾裡檔案ID(fruit_num) :$plantFruitsNumber');
+            }
+            final totalFruitNumber=responseData[0]['total_fruit_num'];
+            await _storage.write(key: 'total_fruit_num', value: totalFruitNumber);
+            //await _storage.write(key: 'all_fruits_name', value: plantFruitsName);
             if (kDebugMode) 
             {
-              print('取得資料夾裡檔案總數量 :$plantFruitNumber');
+              print('取得資料夾裡檔案總數量 : $totalFruitNumber');
             }
           }
           else
@@ -448,7 +478,6 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       }
     }      
   } 
-
   @override
   void initState()
   {
@@ -535,12 +564,19 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                   final plantImageBytes = plantImagesMap[plantName];
                   return ElevatedButton
                   (
-                    onPressed: ()//這裡跳轉至打開不同資料夾裡的頁面
+                    onPressed: ()async//這裡跳轉至打開不同資料夾裡的頁面
                     {
+                      final pressedPlantName=plantName;
+                      await _storage.write(key: 'pressedPlantName', value: pressedPlantName);
+                      if(kDebugMode)
+                      {
+                        print('你已按下的plantName: $pressedPlantName');
+                      }
                       setState(() 
                       {
                         showPlantFruitInfo();
                       });
+                      // ignore: use_build_context_synchronously
                       Navigator.push
                       (
                         context,MaterialPageRoute(builder:(_)=> const AnimationFruitsPage())

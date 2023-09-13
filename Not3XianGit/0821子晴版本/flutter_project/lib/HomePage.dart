@@ -80,7 +80,7 @@ class HomePage extends StatelessWidget
                       child:Text
                       (
                         '登錄',
-                        style: TextStyle(color: Colors.white, fontSize: fontSize*0.3)
+                        style: TextStyle(color: Colors.white, fontSize: fontSize*0.5)
                       ),
                     ),
                   ),

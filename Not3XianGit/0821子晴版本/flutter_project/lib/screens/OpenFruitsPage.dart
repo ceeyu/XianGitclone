@@ -1077,20 +1077,6 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
               ),
             ),
           ),
-          // Row
-          // (
-          //     children:
-          //     [
-          //       ElevatedButton
-          //       (
-          //         onPressed: () 
-          //         {
-          //           Navigator.push(context,MaterialPageRoute(builder: (_)=>const AnimationFruitsPage()));
-          //         },
-          //         child: const Text('跳至有Animation'),
-          //       ),
-          //     ],
-          // ),
         ],
       ),
     );

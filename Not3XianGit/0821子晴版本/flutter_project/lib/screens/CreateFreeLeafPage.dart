@@ -543,6 +543,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             if(kDebugMode)
             {
               print('PPTX文件已保存在:$pptxFilePath');
+              print('所取得的pptx: $pptxFile');
             }
           }
           // else if(kIsWeb)//web

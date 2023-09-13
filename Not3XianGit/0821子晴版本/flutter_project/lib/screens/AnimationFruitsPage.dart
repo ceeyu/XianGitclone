@@ -1,5 +1,4 @@
-//目前沒有在用的頁面
-import 'dart:math';
+//import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_project/screens/FruitsFilePage.dart';
 class AnimationFruitsPage extends StatefulWidget 
 {
   const AnimationFruitsPage({Key? key}) : super(key: key);
@@ -23,45 +23,59 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   StateMachineController? _controller;
   SMIInput<double>? _progress;
   String plantButtonText = "";
-  int _treeProgress = 0;
+  String treeFileNumber = "";
+  String treeName = "";
+  String treeTypeName = "";
+  ByteData? plantRivImage;
   final int _treeMaxProgress = 60; 
   final _storage = const FlutterSecureStorage(); 
-  // List<Map<String,dynamic>> plantFruitsList=[];
-  // List<dynamic> plantFruitsInfo=[];
-  // List<String> plantFruitsName=[];
-  // List<String> plantFruitsNumber=[];
-  //Map<String,Uint8List> FruitFilesMap={};
   @override
   void initState() 
   {
     super.initState();
+    getPlantTotalFruitNumber();
+    getPlantType();
+    getNowPlantName();
     plantButtonText = "Plant";
-    rootBundle.load('assets/tree_demo.riv').then
-    (
-      (data) async 
+    showRivFile().then((_)
+    {
+      setState(() 
       {
-        final file = RiveFile.import(data);
-        final artboard = file.mainArtboard;
-        var controller = StateMachineController.fromArtboard(artboard, 'Grow');
-        if (controller != null) 
-        {
-          artboard.addController(controller);
-          _progress = controller.findInput('input');
-        }
-        setState(() => _riveArtboard = artboard);
-      },
-    );
+       _riveArtboard=RiveFile.import(plantRivImage!).mainArtboard;
+      });
+    });
+    // rootBundle.load('assets/tree_demo.riv').then
+    // (
+    //   (data) async 
+    //   {
+    //     final file = RiveFile.import(data);
+    //     final artboard = file.mainArtboard;
+    //     var controller = StateMachineController.fromArtboard(artboard, 'Grow');
+    //     if (controller != null) 
+    //     {
+    //       artboard.addController(controller);
+    //       _progress = controller.findInput('input');
+    //     }
+    //     setState(() => _riveArtboard = artboard);
+    //   },
+    // );
   }
-  void _onPlantButtonPressed() // 按下Plant按鈕後，TreeProgress增加20，直到等於或超過60時重置為0
+  void _onPlantButtonPressed()
   {
+    int treeProgress=0;
+    treeProgress=treeFileNumber as int;
+    if (kDebugMode) 
+    {
+      print('Get TreeProgress: $treeProgress');
+    }
     setState(() 
     {
-      _treeProgress += 20; //增加級距
-      if (_treeProgress > _treeMaxProgress) 
+      treeProgress += 20; //增加級距
+      if (treeProgress > _treeMaxProgress) 
       {
-        _treeProgress = 0;
+        treeProgress = 0;
       }
-      _progress?.value = _treeProgress.toDouble();
+      _progress?.value = treeProgress.toDouble();
     });
   }
   Future<String?> getAccessToken()async
@@ -80,74 +94,101 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
     String? fruitNumber = await _storage.read(key:'fruit_num');
     if (kDebugMode) 
     {
-      print('FruitNumber : $fruitNumber ');
+      print('Init FruitNumber : $fruitNumber ');
     }
     return fruitNumber;
   }
-  // Future<void> showFruitFile()async
-  // {
-  //   final savedAccessToken=await getAccessToken();
-  //   final savedFruitNumber=await getFruitNumber();
-  //   if(savedAccessToken!=null)
-  //   {
-  //     try
-  //     {
-  //       final fruitNum=int.parse(savedFruitNumber!);
-  //       final maxIndex=min(fruitNum,plantFruitsName.length);
-  //       for(int i=0;i<maxIndex;i++)
-  //       {
-  //         final plantname=plantFruitsName[i];
-  //         final fruitnumber=plantFruitsNumber[i];
-  //         final response=await http.post
-  //         (
-  //           Uri.parse('http://120.126.16.222/plants/show-file'),
-  //           headers: <String,String>
-  //           {
-  //             'Authorization':'Bearer $savedAccessToken',
-  //           },
-  //           body: jsonEncode(<String,String>
-  //           {
-  //             'plant_name':plantname,
-  //             'fruit_num':fruitnumber,
-  //           }),
-  //         );
-  //         if (kDebugMode) 
-  //         {
-  //           print('plantname:$plantname;fruitnumber:$fruitnumber');
-  //         }
-  //         if(response.statusCode>=200&&response.statusCode<405)
-  //         {
-  //           final responseData=response.bodyBytes;
-  //           if(kDebugMode)
-  //           {
-  //             print('showFruitFile所取得的檔案(所有): $responseData');
-  //           }
-  //         }
-  //         else
-  //         {
-  //           if(kDebugMode)
-  //           {
-  //             print('showFruitFile Error:請求失敗,$response,${response.statusCode}');
-  //           }
-  //         }
-  //       }
-  //     }
-  //     catch(error)
-  //     {
-  //       if(kDebugMode)
-  //       {
-  //         print('showFruitFile Catch Error:請求出錯,$error');
-  //       }
-  //     }
-  //   }
-  //   else 
-  //   {
-  //     if(kDebugMode)
-  //     {
-  //       print('沒有保存的access_token');
-  //     }
-  //   }      
-  // } 
+  Future<String?> getPlantType()async//要修改成plant的種類->加API？
+  {
+    // 從 flutter_secure_storage 取得 plant image name
+    String? treeType = await _storage.read(key:'selectedPlantImage');
+    treeTypeName=treeType!;
+    if (kDebugMode) 
+    {
+      print('Get Init selectedPlantImage : $treeType');
+    }
+    return treeType;
+  }
+  Future<String?> getNowPlantName()async
+  {
+    // 從 flutter_secure_storage 取得 plant name
+    String? nowPlantName = await _storage.read(key:'pressedPlantName');
+    treeName=nowPlantName!;
+    if (kDebugMode) 
+    {
+      print('Get Init nowTreeName : $treeName');
+    }
+    return nowPlantName;
+  }
+  Future<String?> getPlantTotalFruitNumber()async
+  {
+    // 從 flutter_secure_storage 取得plant total fruit number
+    String? totalFruitNumber = (await _storage.read(key:'total_fruit_num'));
+    treeFileNumber=totalFruitNumber!;
+    if (kDebugMode) 
+    {
+      print('Get Init totalFruitNumber : $treeFileNumber');
+    }
+    return totalFruitNumber;
+  }
+  Future<void> showRivFile()async
+  {
+    final savedAccessToken=await getAccessToken();
+    final savedPressedPlantName=await getNowPlantName();
+    if(savedAccessToken!=null)
+    {
+      try
+      {
+          if(kDebugMode)
+          {
+            print('showRivFile所按下的plantname:$savedPressedPlantName');
+          }
+          final response=await http.post
+          (
+            Uri.parse('http://120.126.16.222/plants/show-riv'),
+            headers: <String,String>
+            {
+              'Authorization':'Bearer $savedAccessToken',
+              'Content-Type':'application/octet-stream',
+            },
+            body: jsonEncode(<String,String>
+            {
+              'plant_name':savedPressedPlantName!,
+            }),
+          );
+          if(response.statusCode>=200&&response.statusCode<405)
+          {
+            final plantRivImageBytes = response.bodyBytes;
+            plantRivImage=ByteData.sublistView(Uint8List.fromList(plantRivImageBytes));
+            if(kDebugMode)
+            {
+              print('show-riv請求成功：$plantRivImageBytes');
+            }
+          }
+          else
+          {
+            if(kDebugMode)
+            {
+              print('Error:請求失敗,$response,${response.statusCode}');
+            }
+          }
+        }
+      catch(error)
+      {
+        if(kDebugMode)
+        {
+          print('Error:請求出錯,$error');
+        }
+      }
+    }
+    else 
+    {
+      if(kDebugMode)
+      {
+        print('沒有保存的access_token');
+      }
+    } 
+  } 
   @override
   Widget build(BuildContext context) 
   {
@@ -173,43 +214,49 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       (
         children: 
         [
-          const Padding
+          Padding
           (
-            padding: EdgeInsets.only(top: 60),
+            padding: const EdgeInsets.only(top: 60),
             child: Text
             (
-              "您的樹與花朵",
-              style: TextStyle
+              treeName,
+              style:const TextStyle
               (
                 color: Colors.black,
-                fontSize: 30,
+                fontSize: 40,
                 fontWeight: FontWeight.normal
               ),
             ),
           ),
-          ElevatedButton
-          (
-            onPressed: ()
-            {
-              //showFruitFile();
-            }, 
-            child: const Text('TEST SHOW')
-          ),
+          const SizedBox(height: 30),
           Expanded
           (
-            child: Center
+            child:ElevatedButton
             (
+              style: ElevatedButton.styleFrom
+              (
+                elevation: 0.0, 
+              ),
+              onPressed: ()
+              {
+                //_onPlantButtonPressed();
+                Navigator.push
+                (
+                  context,MaterialPageRoute(builder:(_)=> const FruitsFilePage())
+                );
+
+              }, 
               child: _riveArtboard == null
-                  ? const SizedBox()
-                  : Rive(alignment: Alignment.center, artboard: _riveArtboard!),
-            ),
+                    ? const SizedBox()
+                     : Rive(artboard: _riveArtboard!),//alignment: Alignment.center, 
+            )
           ),
           Padding
           (
             padding: const EdgeInsets.only(bottom: 10),
             child: Text
             (
-              '$_treeProgress個檔案',
+              '目前這棵植物共有$treeFileNumber個果實',
               style: const TextStyle
               (
                 color: Colors.black,
@@ -218,37 +265,18 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
               ),
             ),
           ),
-          const Padding
-          (
-            padding: EdgeInsets.only(bottom: 30),
-            child: Text
-            (
-              "櫻花",
-              style: TextStyle
-              (
-                color: Colors.black,
-                fontSize: 40,
-                fontWeight: FontWeight.normal
-              ),
-            ),
-          ),
           Padding
           (
-            padding: const EdgeInsets.only(bottom: 90),
-            child: MaterialButton
+            padding: const EdgeInsets.only(bottom: 250),
+            child: Text
             (
-              height: 40.0,
-              minWidth: 180.0,
-              elevation: 8.0,
-              shape: RoundedRectangleBorder
+              '植物種類為$treeTypeName',
+              style: const TextStyle
               (
-                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.black,
+                fontSize: 30,
+                fontWeight: FontWeight.bold
               ),
-              color: Colors.green,
-              textColor: Colors.white,
-              onPressed: _onPlantButtonPressed,
-              splashColor: Colors.redAccent,
-              child: Text(plantButtonText),
             ),
           ),
         ],

@@ -109,7 +109,7 @@ flutter:
     - assets/images/whitejasmine.png
     - assets/images/peony.png
     - assets/images/blueorchid.png
-
+    - assets/images/pptx.png
   fonts:
     - family: Raleway
       fonts:
