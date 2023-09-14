@@ -10,7 +10,7 @@
 		</data>
 		<key>Headers/mic_stream-Swift.h</key>
 		<data>
-		m2TeKKZwQFfBmL9p94y5O+NATEk=
+		9SvCbj0jLqapCovDJktslkGMZgI=
 		</data>
 		<key>Headers/mic_stream-umbrella.h</key>
 		<data>
@@ -18,15 +18,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		CJIfwDcIk/UqKk/m+6yK+AVteZo=
+		FGtlyGArw5EG/X1hadbaUq7sLlQ=
 		</data>
 		<key>Modules/mic_stream.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		xx3gPBvB6+GcDEEPBz5z6+9UW5M=
+		BBod6BrL43lKHO1IgBs3ThSdv64=
 		</data>
 		<key>Modules/mic_stream.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		K4Iw7WcMiyR4NGcELGM23f76qtc=
+		C/uyZG/Fin+mWPADQtD3OZPmXJQ=
 		</data>
 		<key>Modules/mic_stream.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -34,11 +34,11 @@
 		</data>
 		<key>Modules/mic_stream.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		mItlrOOo1v6ueD4h82NsohWDI2M=
+		jxfMIpvXl8ol8s85E7/j2x0HXW0=
 		</data>
 		<key>Modules/mic_stream.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		+IuGPCKoI15iPTGq78HTczI/flE=
+		/ozbCE7L3HXvSYCnNuI9n0ZtPME=
 		</data>
 		<key>Modules/mic_stream.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -46,11 +46,11 @@
 		</data>
 		<key>Modules/mic_stream.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		vZBtWaVIfV00tLYSPbgO8xCcTIM=
+		GOyaLZhUGEf+jIuHQrJr0CX5xeY=
 		</data>
 		<key>Modules/mic_stream.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		qqjc+KrFJpW/dfhIj9kNcFspKKU=
+		FFOsVYN3thwOiiPSslgpclKPSUI=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -70,7 +70,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			6yXkWuRrCNN+eRYD1K5mqFQ2kH1LgCfx6SE2dh+sImw=
+			UfTYNpN4uPn6Q7NCZlFBIW8O/gKferGaEraeCS2Vy5o=
 			</data>
 		</dict>
 		<key>Headers/mic_stream-umbrella.h</key>
@@ -84,14 +84,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			OjHSsvcC3Ds8L2npNuv8eWoNr1W2v2lohzNW9aGwAbg=
+			aK+Ds9INwbi1wqCaXqYTlXFQwfJ7kkkSTAeYiYbSspw=
 			</data>
 		</dict>
 		<key>Modules/mic_stream.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			KdJEjSlsCX0dhFU4Km6oyZKxQ5tJNV36Hx80xLgeE9k=
+			gKd9ZN+U595nDS1C02QHcaR8LDPJR6pxZcwYTmDtv/8=
 			</data>
 		</dict>
 		<key>Modules/mic_stream.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
@@ -105,14 +105,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ak8nHfdkn5jaxTOshxx3VW3eZqJc8pOyMvnUAfjk6sc=
+			PMBEBBh+c8/aPo/2kvkzHmDKm9EG1MUZ4ZMNXsDvhf8=
 			</data>
 		</dict>
 		<key>Modules/mic_stream.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			prj3EtN2KroaBpetkCtBHyyusynXj+UZ+FdeZy2GJKQ=
+			G8v3IsuyT7G5ZSkkRFTkOgLTBXpqQMkzPxypfFtuVQc=
 			</data>
 		</dict>
 		<key>Modules/mic_stream.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
@@ -126,14 +126,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			DPf1RmGHM+dTzKVRXuc1lMwFNWovjZXAUMrVad2q9A4=
+			J+T7D4a05khaB0a2n3FCUfaFTn8opOtCtlphU6uC2KI=
 			</data>
 		</dict>
 		<key>Modules/mic_stream.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BksAOBI0zCjBN5tvnT2XbXC83QP82Kjq/NeTcsQCwdw=
+			TgpdIHj8BtjNLFBDNthLRJiGB/FLNayginRkxYzhTrg=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

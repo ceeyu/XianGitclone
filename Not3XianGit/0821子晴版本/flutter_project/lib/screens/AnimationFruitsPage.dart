@@ -1,4 +1,6 @@
 //import 'dart:math';
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
@@ -21,13 +23,13 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   Artboard? _riveArtboard;
   // ignore: unused_field
   StateMachineController? _controller;
-  SMIInput<double>? _progress;
+  //SMIInput<double>? _progress;
   String plantButtonText = "";
-  String treeFileNumber = "";
+  int treeFileNumber = 0;
   String treeName = "";
   String treeTypeName = "";
   ByteData? plantRivImage;
-  final int _treeMaxProgress = 60; 
+  //final int _treeMaxProgress = 2; 
   final _storage = const FlutterSecureStorage(); 
   @override
   void initState() 
@@ -37,47 +39,47 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
     getPlantType();
     getNowPlantName();
     plantButtonText = "Plant";
-    showRivFile().then((_)
-    {
-      setState(() 
-      {
-       _riveArtboard=RiveFile.import(plantRivImage!).mainArtboard;
-      });
-    });
-    // rootBundle.load('assets/tree_demo.riv').then
-    // (
-    //   (data) async 
+    // showRivFile().then((_)
+    // {
+    //   setState(() 
     //   {
-    //     final file = RiveFile.import(data);
-    //     final artboard = file.mainArtboard;
-    //     var controller = StateMachineController.fromArtboard(artboard, 'Grow');
-    //     if (controller != null) 
-    //     {
-    //       artboard.addController(controller);
-    //       _progress = controller.findInput('input');
-    //     }
-    //     setState(() => _riveArtboard = artboard);
-    //   },
-    // );
-  }
-  void _onPlantButtonPressed()
-  {
-    int treeProgress=0;
-    treeProgress=treeFileNumber as int;
-    if (kDebugMode) 
-    {
-      print('Get TreeProgress: $treeProgress');
-    }
-    setState(() 
-    {
-      treeProgress += 20; //增加級距
-      if (treeProgress > _treeMaxProgress) 
+    //    _riveArtboard=RiveFile.import(plantRivImage!).mainArtboard;
+    //   });
+    // });
+    rootBundle.load('assets/tree_demo.riv').then
+    (
+      (data) async 
       {
-        treeProgress = 0;
-      }
-      _progress?.value = treeProgress.toDouble();
-    });
+        final file = RiveFile.import(data);
+        final artboard = file.mainArtboard;
+        var controller = StateMachineController.fromArtboard(artboard, 'Grow');
+        if (controller != null) 
+        {
+          artboard.addController(controller);
+          //_progress = controller.findInput('input');
+        }
+        setState(() => _riveArtboard = artboard);
+      },
+    );
   }
+  // void _onPlantButtonPressed()
+  // {
+  //   int treeProgress=0;
+  //   setState(() 
+  //   {
+  //     treeProgress=treeFileNumber;
+  //     //treeProgress += 20; //增加級距//觸發成長
+  //     if (treeProgress > _treeMaxProgress) 
+  //     {
+  //       treeProgress = 0;
+  //     }
+  //     _progress?.value = treeProgress.toDouble();
+  //     if (kDebugMode) 
+  //     {
+  //       print('Get TreeProgress: $treeProgress');
+  //     }
+  //   });
+  // }
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -124,7 +126,25 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   {
     // 從 flutter_secure_storage 取得plant total fruit number
     String? totalFruitNumber = (await _storage.read(key:'total_fruit_num'));
-    treeFileNumber=totalFruitNumber!;
+    if (totalFruitNumber != null) 
+    {
+      treeFileNumber = int.tryParse(totalFruitNumber)!;
+      if (treeFileNumber == null) 
+      {
+        // 字符串无法成功转换为整数，可以进行错误处理
+        if (kDebugMode) 
+        {
+          print('Error: Unable to parse totalFruitNumber as int');
+        }
+      } 
+      else 
+      {
+        if (kDebugMode) 
+        {
+          print('Get Init totalFruitNumber : $treeFileNumber');
+        }
+      }
+    }
     if (kDebugMode) 
     {
       print('Get Init totalFruitNumber : $treeFileNumber');
@@ -239,7 +259,6 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
               ),
               onPressed: ()
               {
-                //_onPlantButtonPressed();
                 Navigator.push
                 (
                   context,MaterialPageRoute(builder:(_)=> const FruitsFilePage())

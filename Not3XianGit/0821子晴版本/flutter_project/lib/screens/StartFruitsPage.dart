@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:flutter_project/HomePage.dart';
 import 'package:flutter_project/screens/AnimationFruitsPage.dart';
 import 'package:flutter_project/screens/OpenFruitsPage.dart';
@@ -38,6 +39,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   List<String> plantFruitsName=[];
   List<String> getplantName=[];
   List<String> plantFruitsNumber=[];
+
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token

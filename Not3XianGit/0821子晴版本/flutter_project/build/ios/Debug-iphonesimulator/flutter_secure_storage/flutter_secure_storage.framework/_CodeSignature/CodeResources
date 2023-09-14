@@ -10,7 +10,7 @@
 		</data>
 		<key>Headers/flutter_secure_storage-Swift.h</key>
 		<data>
-		AsB6Lmphg3tvg1b6SqnmaigEGXw=
+		5BhQ6//+EfATApnRTSnh8c5jTEk=
 		</data>
 		<key>Headers/flutter_secure_storage-umbrella.h</key>
 		<data>
@@ -18,15 +18,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		5jM4JLX0zKwEe2mZQEXXsnG7ATg=
+		JHzBGn2CTwvXUzRvc+LGhFNT35A=
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		SwXTchB8oZceMJ833JZKG6rDRCc=
+		mBjrBvpi3b8QHq2zn26iaAFP+Vc=
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		CTMcpF+NcL1/EBZURTB0+RW8CS8=
+		2zAgaVqo7KwhqZwOi2ZeRHDnlNA=
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -34,11 +34,11 @@
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		wpfhX9jv93hDa/4m+h9IWwqzmGc=
+		ac58QIj9UOxHI0jCICjC27ax/lk=
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		eGaaoRg9xd3krftbJDUqI6AeoiU=
+		hHnfGyoI9YKWgZVFP97DKJkP8Gk=
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -46,11 +46,11 @@
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		vT2gQSOIuER0wTm202oVgsDs+ns=
+		OkgLxj5Pn4nN1Q5eJxudk1KznL4=
 		</data>
 		<key>Modules/flutter_secure_storage.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		2IKLHJ3T5h6eYaouhbzCXLIsGTA=
+		59Xeq5WF9lPPAq9tk50vxgsyIS4=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -70,7 +70,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			P3vEqF4MOhlJALAU/vq2HuGpb136bHPwF95/ATrtXn0=
+			liIIG0HOHdKenYSr2X/kjjKPI0YyxNKaejmRlUdPIW8=
 			</data>
 		</dict>
 		<key>Headers/flutter_secure_storage-umbrella.h</key>
@@ -84,14 +84,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			vnKS2BlTAHSBpYEsASUuHUbGEWPkCqcE1AHm6+YY54U=
+			KZjb7PDsvV661hw7szRdOrzfuYsdxG16RA8xvT2XRKU=
 			</data>
 		</dict>
 		<key>Modules/flutter_secure_storage.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			TWm7VLYqjQ+KkIcZyb+pzrXmmWQHy6qYo1bHBucPz1Y=
+			bKSR+XESX4rnrU+FD9wldlJZ2pA7+s+20kDaldwOEVg=
 			</data>
 		</dict>
 		<key>Modules/flutter_secure_storage.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
@@ -105,14 +105,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			9u+VUKcd4iIlrP4F5fCGPwGld83FD2WMiniphJhGDjk=
+			hXKQ2cyv2ufGg7YPRrSy0WdmlfWnWEUXvyjH/WlzdzA=
 			</data>
 		</dict>
 		<key>Modules/flutter_secure_storage.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			SSpkeX6e3BJgcqsGM65p2zRi6EH+Uq8OoxQGKAR2fwM=
+			abuO8XV24gLNGvn7eCSO4bnmRjlfOjvZSkDZxuCEQZc=
 			</data>
 		</dict>
 		<key>Modules/flutter_secure_storage.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
@@ -126,14 +126,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			3Zlm96lEr0QRouYWFTjpXdGcdKAdNPNCqnbSRtodd+g=
+			dgBu9nnJFdroId5nvWfGSskHUbxmvHVUfWECY+EyrZk=
 			</data>
 		</dict>
 		<key>Modules/flutter_secure_storage.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			oUjulQmkOnFtfVvHOI7EU2rgF3Y8pQpp22qS+SN5unE=
+			xZvKNqD3Ej1gnC5Q+1WuBYwE2JhWuuydNw6+Z3jQBLY=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
