@@ -106,7 +106,7 @@ class FruitsFilePageState extends State<FruitsFilePage>
   Future<void> showFruitFile()async
   {
     final savedAccessToken=await getAccessToken();
-    final savedFruitNumber=await getFruitNumber();
+    final savedFruitNumber=await getPlantTotalFruitNumber();
     if(savedAccessToken!=null)
     {
       try
@@ -207,7 +207,7 @@ class FruitsFilePageState extends State<FruitsFilePage>
             (
               child:Text
               (
-                '共有$treeFileNumber個果實',
+                '共有$treeFileNumber個果實(從左至右按照時間順序擺放)',
                 style: const TextStyle
                 (
                   color: Colors.black,
@@ -289,14 +289,18 @@ class FruitsFilePageState extends State<FruitsFilePage>
                                     fit:BoxFit.contain,
                                   )
                                   :const SizedBox(),
-                                Text
+                                Align
                                 (
-                                  plantName!,
-                                  style: TextStyle
+                                  alignment: Alignment.center,
+                                  child:Text
                                   (
-                                    fontSize: fontSize*0.5,
-                                    color: Colors.black45,
-                                    fontWeight: FontWeight.w500,
+                                    plantName!,
+                                    style: TextStyle
+                                    (
+                                      fontSize: fontSize*0.4,
+                                      color: Colors.black45,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ],

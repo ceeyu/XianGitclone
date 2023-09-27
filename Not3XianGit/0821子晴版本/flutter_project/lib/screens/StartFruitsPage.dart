@@ -373,7 +373,7 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       }
     } 
   } 
-  Future<void> showPlantFruitInfo()async//要修按下的按鈕
+  Future<void> showPlantFruitInfo()async
   {
     final savedAccessToken=await getAccessToken();
     final savedPressedPlantName=await getPlantRivName();
@@ -411,12 +411,6 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                 var plantName=fruitInfo['plant_name'];
                 var fruitName=fruitInfo['fruit_name'];
                 var fruitNumber=fruitInfo['fruit_num'];
-                // if(kDebugMode)
-                // {
-                //   print('fruitInfo的每一項plant_name :$plantName');
-                //   print('fruitInfo的每一項fruit_name :$fruitName');
-                //   print('fruitInfo的每一項fruit_num :$fruitNumber');
-                // }
                 getplantName.add(plantName.toString());
                 plantFruitsNumber.add(fruitNumber.toString());
                 plantFruitsName.add(fruitName.toString());
@@ -440,7 +434,6 @@ class _StartFruitsPageState extends State<StartFruitsPage>
             }
             final totalFruitNumber=responseData[0]['total_fruit_num'];
             await _storage.write(key: 'total_fruit_num', value: totalFruitNumber);
-            //await _storage.write(key: 'all_fruits_name', value: plantFruitsName);
             if (kDebugMode) 
             {
               print('取得資料夾裡檔案總數量 : $totalFruitNumber');

@@ -48,12 +48,9 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
   String? selectedPlantImage='';
   final List<String> _pageData=<String>// 定義頁面視圖數據
   [
-    'assets/images/marigold.png',
     'assets/images/SunFlower.png',
     'assets/images/Greentree.png',
-    'assets/images/blueorchid.png',//orchid花
-    'assets/images/Sakura.png',//櫻花
-    'assets/images/whitejasmine.png',//茉莉花
+    'assets/images/Sakura.png',
     'assets/images/peony.png',//牡丹花
   ];
   String getPlantNameFromIndex(int index)
@@ -61,18 +58,12 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
     switch(index)
     {
       case 0:
-        return '金盞草';
-      case 1:
         return '向日葵';
-      case 2:
+      case 1:
         return '綠樹';
-      case 3:
-        return '蘭花';
-      case 4:
+      case 2:
         return '櫻花';
-      case 5:
-        return '茉莉花';
-      case 6:
+      case 3:
         return '牡丹花';
       default:
         return '你沒有選擇到圖片噢';
@@ -1037,6 +1028,20 @@ class _OpenFruitsPageState extends State< OpenFruitsPage>
               ],
             ),
           ),
+          SizedBox
+          (
+            width: screenSize.width*0.5,
+            height: 50,
+            child:Center
+            (
+              child:Text
+              (
+                getPlantNameFromIndex(_currentPageIndex),//"樹種名字",
+                style: TextStyle(color: Colors.black,fontSize: fontSize*0.8,)
+              ),
+            ),
+          ),
+          const SizedBox(height:30),
           SizedBox
           (
             width: screenSize.width*0.5,

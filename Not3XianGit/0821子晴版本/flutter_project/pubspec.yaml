@@ -111,6 +111,18 @@ flutter:
     - assets/images/peony.png
     - assets/images/blueorchid.png
     - assets/images/pptx.png
+    - assets/plantImages/yellow_1.png
+    - assets/plantImages/yellow_2.png
+    - assets/plantImages/yellow_3.png
+    - assets/plantImages/yellow_4.png
+    - assets/plantImages/green_1.png
+    - assets/plantImages/green_2.png
+    - assets/plantImages/green_3.png
+    - assets/plantImages/green_4.png
+    - assets/plantImages/pink_1.png
+    - assets/plantImages/pink_2.png
+    - assets/plantImages/pink_3.png
+    - assets/plantImages/pink_4.png
   fonts:
     - family: Raleway
       fonts:

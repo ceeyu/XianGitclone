@@ -1,11 +1,8 @@
-//import 'dart:math';
 // ignore_for_file: unnecessary_null_comparison
-
+import 'package:rive/rive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -13,39 +10,29 @@ import 'package:flutter_project/screens/FruitsFilePage.dart';
 class AnimationFruitsPage extends StatefulWidget 
 {
   const AnimationFruitsPage({Key? key}) : super(key: key);
-
   @override
   // ignore: library_private_types_in_public_api
   _AnimationFruitsPageState createState() => _AnimationFruitsPageState();
 }
 class _AnimationFruitsPageState extends State<AnimationFruitsPage> 
 {
+  // ignore: unused_field
   Artboard? _riveArtboard;
   // ignore: unused_field
   StateMachineController? _controller;
-  //SMIInput<double>? _progress;
-  String plantButtonText = "";
   int treeFileNumber = 0;
   String treeName = "";
   String treeTypeName = "";
+  String returnPlantType="";
   ByteData? plantRivImage;
-  //final int _treeMaxProgress = 2; 
   final _storage = const FlutterSecureStorage(); 
   @override
   void initState() 
   {
     super.initState();
     getPlantTotalFruitNumber();
-    getPlantType();
-    getNowPlantName();
-    plantButtonText = "Plant";
-    // showRivFile().then((_)
-    // {
-    //   setState(() 
-    //   {
-    //    _riveArtboard=RiveFile.import(plantRivImage!).mainArtboard;
-    //   });
-    // });
+    getPlantType().then((_) => choosePlantImage());
+    getNowPlantName().then((_) => showRivImage());
     rootBundle.load('assets/tree_demo.riv').then
     (
       (data) async 
@@ -62,24 +49,6 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       },
     );
   }
-  // void _onPlantButtonPressed()
-  // {
-  //   int treeProgress=0;
-  //   setState(() 
-  //   {
-  //     treeProgress=treeFileNumber;
-  //     //treeProgress += 20; //增加級距//觸發成長
-  //     if (treeProgress > _treeMaxProgress) 
-  //     {
-  //       treeProgress = 0;
-  //     }
-  //     _progress?.value = treeProgress.toDouble();
-  //     if (kDebugMode) 
-  //     {
-  //       print('Get TreeProgress: $treeProgress');
-  //     }
-  //   });
-  // }
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -100,14 +69,14 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
     }
     return fruitNumber;
   }
-  Future<String?> getPlantType()async//要修改成plant的種類->加API？
+  Future<String?> getPlantType()async
   {
     // 從 flutter_secure_storage 取得 plant image name
-    String? treeType = await _storage.read(key:'selectedPlantImage');
+    String? treeType = await _storage.read(key:'show_plant_type');
     treeTypeName=treeType!;
     if (kDebugMode) 
     {
-      print('Get Init selectedPlantImage : $treeType');
+      print('Get Init selectedPlantType : $treeType');
     }
     return treeType;
   }
@@ -151,7 +120,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
     }
     return totalFruitNumber;
   }
-  Future<void> showRivFile()async
+  Future<void> showRivImage()async
   {
     final savedAccessToken=await getAccessToken();
     final savedPressedPlantName=await getNowPlantName();
@@ -161,7 +130,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       {
           if(kDebugMode)
           {
-            print('showRivFile所按下的plantname:$savedPressedPlantName');
+            print('showRivImage所按下的plantname:$savedPressedPlantName');
           }
           final response=await http.post
           (
@@ -169,7 +138,6 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
             headers: <String,String>
             {
               'Authorization':'Bearer $savedAccessToken',
-              'Content-Type':'application/octet-stream',
             },
             body: jsonEncode(<String,String>
             {
@@ -178,18 +146,26 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
           );
           if(response.statusCode>=200&&response.statusCode<405)
           {
-            final plantRivImageBytes = response.bodyBytes;
-            plantRivImage=ByteData.sublistView(Uint8List.fromList(plantRivImageBytes));
+            final responseData = jsonDecode(response.body);
             if(kDebugMode)
             {
-              print('show-riv請求成功：$plantRivImageBytes');
+              print('show-riv請求成功：$responseData');
+            }
+            if(responseData[0]['file_name']!=null&&responseData[0]['plant_type']!=null)
+            {
+              returnPlantType=responseData[0]['plant_type'];
+              await _storage.write(key: 'show_plant_type', value: returnPlantType);
+              if(kDebugMode)
+              {
+                print('show-riv所取得的樹種：$returnPlantType');
+              }
             }
           }
           else
           {
             if(kDebugMode)
             {
-              print('Error:請求失敗,$response,${response.statusCode}');
+              print('Error:show-riv請求失敗,$response,${response.statusCode}');
             }
           }
         }
@@ -197,7 +173,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       {
         if(kDebugMode)
         {
-          print('Error:請求出錯,$error');
+          print('Error:show-riv請求出錯,$error');
         }
       }
     }
@@ -209,11 +185,86 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       }
     } 
   } 
+  Future<Image?> choosePlantImage()async
+  {
+    //5,15,35,50
+    Size screenSize=MediaQuery.of(context).size;
+    if(treeTypeName!=null)
+    {
+      if(treeTypeName=="櫻花"||treeTypeName=="牡丹花")
+      {
+        if(treeFileNumber==0||treeFileNumber<=5)
+        {
+          return Image.asset('assets/plantImages/pink_1.png',width: screenSize.width*0.5,height: 350);
+        }
+        else if(treeFileNumber>5 && treeFileNumber<=15)
+        {
+          return Image.asset('assets/plantImages/pink_2.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>15 && treeFileNumber<=35)
+        {
+          return Image.asset('assets/plantImages/pink_3.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>35 && treeFileNumber<=50)
+        {
+          return Image.asset('assets/plantImages/pink_4.png',width: screenSize.width*0.5,height: 150);
+        }
+      }
+      else if(treeTypeName=="綠樹")
+      {
+        if(treeFileNumber==0||treeFileNumber<=5)
+        {
+          return Image.asset('assets/plantImages/green_1.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>5 && treeFileNumber<=15)
+        {
+          return Image.asset('assets/plantImages/green_2.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>15 && treeFileNumber<=35)
+        {
+          return Image.asset('assets/plantImages/green_3.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>35 && treeFileNumber<=50)
+        {
+          return Image.asset('assets/plantImages/green_4.png',width: screenSize.width*0.5,height: 150);
+        }
+      }
+      else if(treeTypeName=="金盞草"||treeTypeName=="向日葵")
+      {
+        if(treeFileNumber==0||treeFileNumber<=5)
+        {
+          return Image.asset('assets/plantImages/yellow_1.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>5 && treeFileNumber<=15)
+        {
+          return Image.asset('assets/plantImages/yellow_2.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>15 && treeFileNumber<=35)
+        {
+          Image.asset('assets/plantImages/yellow_3.png',width: screenSize.width*0.5,height: 150);
+        }
+        else if(treeFileNumber>35 && treeFileNumber<=50)
+        {
+          return Image.asset('assets/plantImages/yellow_4.png',width: screenSize.width*0.5,height: 150);
+        }
+      }
+      else
+      {
+        if(kDebugMode)
+        {
+          print("目前選擇的植物不存在：$treeTypeName");
+        }
+      }
+    }
+    return null;
+  }
   @override
   Widget build(BuildContext context) 
   {
     // ignore: unused_local_variable
     double treeWidth = MediaQuery.of(context).size.width - 40;
+    //Size screenSize=MediaQuery.of(context).size;
+    //double fontSize = screenSize.width * 0.05;
     return Scaffold
     (
       appBar: AppBar
@@ -251,24 +302,62 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
           const SizedBox(height: 30),
           Expanded
           (
-            child:ElevatedButton
+            child: FutureBuilder<Image?>
             (
-              style: ElevatedButton.styleFrom
-              (
-                elevation: 0.0, 
-              ),
-              onPressed: ()
+              future: choosePlantImage(),
+              builder: (context, snapshot) 
               {
-                Navigator.push
-                (
-                  context,MaterialPageRoute(builder:(_)=> const FruitsFilePage())
-                );
-
-              }, 
-              child: _riveArtboard == null
-                    ? const SizedBox()
-                     : Rive(artboard: _riveArtboard!),//alignment: Alignment.center, 
-            )
+                if (snapshot.connectionState == ConnectionState.waiting) 
+                {
+                  return const CircularProgressIndicator();
+                } 
+                else if (snapshot.hasError) 
+                {
+                  return Text('植物圖出現錯誤: ${snapshot.error}');
+                } 
+                else if (snapshot.hasData) 
+                {
+                  return LayoutBuilder
+                  (
+                    builder: ((context, constraints) 
+                    {
+                      final image=snapshot.data;
+                      final imageHeight=image?.height?.toDouble()?? 0.0;
+                      final imageWidth=image?.width?.toDouble()??1.0;
+                      final buttonHeight = constraints.maxWidth * (imageHeight/imageWidth);
+                      return Center
+                      (
+                          child:ElevatedButton
+                          (
+                            style: ElevatedButton.styleFrom
+                            (
+                              elevation: 0.0,
+                              fixedSize: Size.fromHeight(buttonHeight),
+                            ),
+                            onPressed: () 
+                            {
+                              Navigator.push
+                              (
+                                context,
+                                MaterialPageRoute(builder: (_) => const FruitsFilePage()),
+                              );
+                            },
+                            child: Transform.scale
+                            (
+                              scale:2.0,
+                              child:snapshot.data!, 
+                            ),
+                          ),
+                      );
+                    }),
+                  );
+                } 
+                else 
+                {
+                  return const Text('没有plantImages可用');
+                }
+              },
+            ),
           ),
           Padding
           (
