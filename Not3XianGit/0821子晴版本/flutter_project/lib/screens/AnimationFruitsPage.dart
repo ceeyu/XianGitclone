@@ -187,27 +187,46 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   } 
   Future<Image?> choosePlantImage()async
   {
-    //5,15,35,50
     Size screenSize=MediaQuery.of(context).size;
     if(treeTypeName!=null)
     {
       if(treeTypeName=="櫻花"||treeTypeName=="牡丹花")
       {
-        if(treeFileNumber==0||treeFileNumber<=5)
+        if(treeFileNumber==0||treeFileNumber<5)
         {
-          return Image.asset('assets/plantImages/pink_1.png',width: screenSize.width*0.5,height: 350);
+          return Image.asset('assets/plantImages/pink_1.png',width: screenSize.width*0.5,height:200);
         }
-        else if(treeFileNumber>5 && treeFileNumber<=15)
+        else if(treeFileNumber==5||treeFileNumber<7)
         {
-          return Image.asset('assets/plantImages/pink_2.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/pink_1_1.png',width: screenSize.width*0.5,height:200);
         }
-        else if(treeFileNumber>15 && treeFileNumber<=35)
+        else if(treeFileNumber>=7 && treeFileNumber<10)
         {
-          return Image.asset('assets/plantImages/pink_3.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/pink_1_2.png',width: screenSize.width*0.5,height:200);
         }
-        else if(treeFileNumber>35 && treeFileNumber<=50)
+        else if(treeFileNumber==10||treeFileNumber<12)
         {
-          return Image.asset('assets/plantImages/pink_4.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/pink_2.png',width: screenSize.width*0.5,height:200);
+        }
+        else if(treeFileNumber>=13 && treeFileNumber<15)
+        {
+          return Image.asset('assets/plantImages/pink_2_1.png',width: screenSize.width*0.5,height:200);
+        }
+        else if(treeFileNumber==15||treeFileNumber<17)
+        {
+          return Image.asset('assets/plantImages/pink_3.png',width: screenSize.width*0.5,height:200);
+        }
+        else if(treeFileNumber>=18 && treeFileNumber<25)
+        {
+          return Image.asset('assets/plantImages/pink_3_1.png',width: screenSize.width*0.5,height:200);
+        }
+        else if(treeFileNumber==25||treeFileNumber<50)//4
+        {
+          return Image.asset('assets/plantImages/pink_4.png',width: screenSize.width*0.5,height:200);
+        }
+        else if(treeFileNumber>=50)//5
+        {
+          return Image.asset('assets/plantImages/pink_5.png',width: screenSize.width*0.5,height: 150);
         }
       }
       else if(treeTypeName=="綠樹")
@@ -233,19 +252,19 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       {
         if(treeFileNumber==0||treeFileNumber<=5)
         {
-          return Image.asset('assets/plantImages/yellow_1.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/yellow_1.png',width: screenSize.width*0.5,height: 200);
         }
         else if(treeFileNumber>5 && treeFileNumber<=15)
         {
-          return Image.asset('assets/plantImages/yellow_2.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/yellow_2.png',width: screenSize.width*0.5,height: 200);
         }
         else if(treeFileNumber>15 && treeFileNumber<=35)
         {
-          Image.asset('assets/plantImages/yellow_3.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/yellow_3.png',width: screenSize.width*0.5,height: 200);
         }
         else if(treeFileNumber>35 && treeFileNumber<=50)
         {
-          return Image.asset('assets/plantImages/yellow_4.png',width: screenSize.width*0.5,height: 150);
+          return Image.asset('assets/plantImages/yellow_4.png',width: screenSize.width*0.5,height: 200);
         }
       }
       else
@@ -344,7 +363,7 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
                             },
                             child: Transform.scale
                             (
-                              scale:2.0,
+                              scale:2.5,
                               child:snapshot.data!, 
                             ),
                           ),

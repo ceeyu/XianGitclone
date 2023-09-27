@@ -120,9 +120,14 @@ flutter:
     - assets/plantImages/green_3.png
     - assets/plantImages/green_4.png
     - assets/plantImages/pink_1.png
+    - assets/plantImages/pink_1_1.png
     - assets/plantImages/pink_2.png
     - assets/plantImages/pink_3.png
+    - assets/plantImages/pink_3_1.png
     - assets/plantImages/pink_4.png
+    - assets/plantImages/pink_5.png
+    - assets/plantImages/pink_1_2.png
+    - assets/plantImages/pink_2_1.png
   fonts:
     - family: Raleway
       fonts:
