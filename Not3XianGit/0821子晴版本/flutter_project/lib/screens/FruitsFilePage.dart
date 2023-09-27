@@ -1,9 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+// ignore: depend_on_referenced_packages
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 class FruitsFilePage extends StatefulWidget 
 {
   const FruitsFilePage({Key? key}) : super(key: key);
@@ -17,9 +21,11 @@ class FruitsFilePageState extends State<FruitsFilePage>
   String treeFileNumber = "";
   String treeName = "";
   String treeTypeName = "";
+  String localPptxFilePath="";
   List<String?> fruitsName=[];
   List<String?> fruitsNumber=[];
   Map<String,Uint8List> rivImagesMap={};
+  File? pptxFile;
   final _storage = const FlutterSecureStorage(); 
   @override
   void initState() 
@@ -29,7 +35,7 @@ class FruitsFilePageState extends State<FruitsFilePage>
     getNowPlantName().then((_)
     {
       getFruitInfoList();
-      showFruitFile();
+      showFruitFile().then((_) => getFilePath());
     });
   }
   Future<String?> getAccessToken()async
@@ -41,6 +47,20 @@ class FruitsFilePageState extends State<FruitsFilePage>
       print('Access Token: $accessToken');
     }
     return accessToken;
+  }
+  Future<String?> getFilePath()async
+  {
+    // 從 flutter_secure_storage 取得 pptxFilePath
+    String? filePath = await _storage.read(key:'pptxFilePath');
+    setState(() 
+    {
+      localPptxFilePath=filePath!;
+    });
+    if (kDebugMode) 
+    {
+      print('Get localPptxFilePath : $localPptxFilePath ');
+    }
+    return filePath;
   }
   Future<String?> getFruitNumber()async
   {
@@ -136,15 +156,28 @@ class FruitsFilePageState extends State<FruitsFilePage>
           }
           if(response.statusCode>=200&&response.statusCode<405)
           {
-            final rivFileBytes=response.bodyBytes;
+            final fruitFileBytes=response.bodyBytes;
             setState(() 
             {
-              rivImagesMap[plantname]=rivFileBytes;
+              rivImagesMap[plantname]=fruitFileBytes;
             });
-
+            if(!kIsWeb)
+            {
+              final docDir = await getApplicationDocumentsDirectory();
+              final pptxFilePath = '${docDir.path}/$plantname';
+              final pptxFile = File(pptxFilePath);
+              await pptxFile.writeAsBytes(fruitFileBytes);
+              if(kDebugMode)
+              {
+                print('白板PPTX文件已保存在:$pptxFilePath');
+                print('所取得的pptx: $pptxFile');
+              }
+              await _storage.write(key:'pptxFilePath',value: pptxFilePath);
+              //await _storage.write(key:'pptxFilePath_$plantname',value: pptxFilePath);
+            }
             if(kDebugMode)
             {
-              print('showFruitFile所取得的檔案(所有): $rivFileBytes');
+              print('showFruitFile所取得的檔案(所有): $fruitFileBytes');
             }
           }
           else
@@ -172,6 +205,33 @@ class FruitsFilePageState extends State<FruitsFilePage>
       }
     }      
   } 
+  Future<void> openFileWithThirdPartyApp(String pptxfilePath) async 
+  {
+    final uri = Uri.file(pptxfilePath);
+    final url='shareddocuments://${uri.path}';
+    if (kDebugMode)
+    {
+      print('openFileWithThirdPartyApp的fileUrl: $url');
+    }
+    try
+    {
+      if (await canLaunchUrl(Uri.parse(url))) 
+      {
+        await launchUrl(Uri.parse(url));
+      } 
+      else 
+      {
+        throw 'Could not launch to 檔案';
+      }
+    }
+    catch(error)
+    {
+      if (kDebugMode)
+      {
+        print('Error opening Files app: $error');
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) 
   {
@@ -257,8 +317,14 @@ class FruitsFilePageState extends State<FruitsFilePage>
                   final plantImageBytes = rivImagesMap[plantName];
                   return ElevatedButton
                   (
-                    onPressed: ()//這裡跳轉至打開檔案->第三方軟體開啟
+                    onPressed: ()async//這裡跳轉至打開檔案->第三方軟體開啟
                     {
+                      final localFilePath = localPptxFilePath;
+                      if (kDebugMode)
+                      {
+                        print('按下按鈕時localFilePath: $localFilePath');
+                      }
+                      openFileWithThirdPartyApp(localFilePath);
                     },
                     style: ElevatedButton.styleFrom
                     (
