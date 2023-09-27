@@ -100,7 +100,6 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
       treeFileNumber = int.tryParse(totalFruitNumber)!;
       if (treeFileNumber == null) 
       {
-        // 字符串无法成功转换为整数，可以进行错误处理
         if (kDebugMode) 
         {
           print('Error: Unable to parse totalFruitNumber as int');
