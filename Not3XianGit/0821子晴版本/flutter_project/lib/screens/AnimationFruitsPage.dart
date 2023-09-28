@@ -1,11 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
-import 'package:rive/rive.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-// import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:http/http.dart' as http;
 import 'package:flutter_project/screens/FruitsFilePage.dart';
 class AnimationFruitsPage extends StatefulWidget 
 {
@@ -16,15 +12,10 @@ class AnimationFruitsPage extends StatefulWidget
 }
 class _AnimationFruitsPageState extends State<AnimationFruitsPage> 
 {
-  // ignore: unused_field
-  Artboard? _riveArtboard;
-  // ignore: unused_field
-  StateMachineController? _controller;
   int treeFileNumber = 0;
   String treeName = "";
   String treeTypeName = "";
   String returnPlantType="";
-  ByteData? plantRivImage;
   final _storage = const FlutterSecureStorage(); 
   @override
   void initState() 
@@ -33,31 +24,6 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
     getPlantTotalFruitNumber();
     getNowPlantName();
     getPlantType().then((_) => choosePlantImage());
-    rootBundle.load('assets/tree_demo.riv').then
-    (
-      (data) async 
-      {
-        final file = RiveFile.import(data);
-        final artboard = file.mainArtboard;
-        var controller = StateMachineController.fromArtboard(artboard, 'Grow');
-        if (controller != null) 
-        {
-          artboard.addController(controller);
-          //_progress = controller.findInput('input');
-        }
-        setState(() => _riveArtboard = artboard);
-      },
-    );
-  }
-  Future<String?> getAccessToken()async
-  {
-    // 從 flutter_secure_storage 取得 access_token
-    String? accessToken = await _storage.read(key:'access_token');
-    if (kDebugMode) 
-    {
-      print('Access Token: $accessToken');
-    }
-    return accessToken;
   }
   Future<String?> getFruitNumber()async
   {
@@ -73,7 +39,10 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   {
     // 從 flutter_secure_storage 取得 plant image name
     String? treeType = await _storage.read(key:'show_plant_type');
-    treeTypeName=treeType!;
+    setState(() 
+    {
+      treeTypeName=treeType!;
+    });
     if (kDebugMode) 
     {
       print('Get Init selectedPlantType : $treeType');
@@ -84,7 +53,10 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
   {
     // 從 flutter_secure_storage 取得 plant name
     String? nowPlantName = await _storage.read(key:'pressedPlantName');
-    treeName=nowPlantName!;
+    setState(() 
+    {
+      treeName=nowPlantName!;
+    });
     if (kDebugMode) 
     {
       print('Get Init nowTreeName : $treeName');
@@ -113,99 +85,116 @@ class _AnimationFruitsPageState extends State<AnimationFruitsPage>
         }
       }
     }
-    if (kDebugMode) 
-    {
-      print('Get Init totalFruitNumber : $treeFileNumber');
-    }
     return totalFruitNumber;
   }
-  Future<Image?> choosePlantImage()async
+  Future<Image?> choosePlantImage() async 
   {
-    Size screenSize=MediaQuery.of(context).size;
-    if(treeTypeName!=null)
+    Size screenSize = MediaQuery.of(context).size;
+    final imagePaths = 
     {
-      if(treeTypeName=="櫻花"||treeTypeName=="牡丹花")
+      "櫻花": 
+      [
+        'assets/plantImages/pink_1.png',
+        'assets/plantImages/pink_1_1.png',
+        'assets/plantImages/pink_1_2.png',
+        'assets/plantImages/pink_2.png',
+        'assets/plantImages/pink_2_1.png',
+        'assets/plantImages/pink_3.png',
+        'assets/plantImages/pink_3_1.png',
+        'assets/plantImages/pink_4.png',
+        'assets/plantImages/pink_5.png',
+      ],
+      "綠樹": 
+      [
+        'assets/plantImages/green_1.png',
+        'assets/plantImages/green_1.png',
+        'assets/plantImages/green_1.png',
+        'assets/plantImages/green_2.png',
+        'assets/plantImages/green_2.png',
+        'assets/plantImages/green_2.png',
+        'assets/plantImages/green_3.png',
+        'assets/plantImages/green_3.png',
+        'assets/plantImages/green_4.png',
+      ],
+      "向日葵": 
+      [
+        'assets/plantImages/yellow_1.png',
+        'assets/plantImages/yellow_1.png',
+        'assets/plantImages/yellow_1.png',
+        'assets/plantImages/yellow_2.png',
+        'assets/plantImages/yellow_2.png',
+        'assets/plantImages/yellow_2.png',
+        'assets/plantImages/yellow_3.png',
+        'assets/plantImages/yellow_3.png',
+        'assets/plantImages/yellow_4.png',
+      ],
+      "牡丹花": 
+      [
+        'assets/plantImages/pink_1.png',
+        'assets/plantImages/pink_1_1.png',
+        'assets/plantImages/pink_1_2.png',
+        'assets/plantImages/pink_2.png',
+        'assets/plantImages/pink_2_1.png',
+        'assets/plantImages/pink_3.png',
+        'assets/plantImages/pink_3_1.png',
+        'assets/plantImages/pink_4.png',
+        'assets/plantImages/pink_5.png',
+      ],
+      "茉莉花": 
+      [
+        'assets/plantImages/pink_1.png',
+        'assets/plantImages/pink_1_1.png',
+        'assets/plantImages/pink_1_2.png',
+        'assets/plantImages/pink_2.png',
+        'assets/plantImages/pink_2_1.png',
+        'assets/plantImages/pink_3.png',
+        'assets/plantImages/pink_3_1.png',
+        'assets/plantImages/pink_4.png',
+        'assets/plantImages/pink_5.png',
+      ],
+      "金盞草": 
+      [
+        'assets/plantImages/yellow_1.png',
+        'assets/plantImages/yellow_1.png',
+        'assets/plantImages/yellow_1.png',
+        'assets/plantImages/yellow_2.png',
+        'assets/plantImages/yellow_2.png',
+        'assets/plantImages/yellow_2.png',
+        'assets/plantImages/yellow_3.png',
+        'assets/plantImages/yellow_3.png',
+        'assets/plantImages/yellow_4.png',
+      ],
+    };
+    if (treeTypeName != null && imagePaths.containsKey(treeTypeName)) 
+    {
+      final paths = imagePaths[treeTypeName];
+      if (paths != null) 
       {
-        if(treeFileNumber==0||treeFileNumber<5)
+        int index = (treeFileNumber>=0&&treeFileNumber < 5)
+            ? 0
+              :(treeFileNumber>=5&&treeFileNumber<8)
+                ? 1
+                : (treeFileNumber>=8&&treeFileNumber<10)
+                  ? 2
+                  : (treeFileNumber>=10&&treeFileNumber<13)
+                    ? 3
+                    : (treeFileNumber>=13&&treeFileNumber<15)
+                      ? 4
+                      : (treeFileNumber>=15&&treeFileNumber<21)
+                        ? 5
+                        : (treeFileNumber>=21&&treeFileNumber<25)
+                          ? 6
+                          : (treeFileNumber>=25&&treeFileNumber<50)
+                              ? 7
+                              : 8;
+        if (index <= paths.length) 
         {
-          return Image.asset('assets/plantImages/pink_1.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber==5||treeFileNumber<7)
-        {
-          return Image.asset('assets/plantImages/pink_1_1.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber>=7 && treeFileNumber<10)
-        {
-          return Image.asset('assets/plantImages/pink_1_2.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber==10||treeFileNumber<12)
-        {
-          return Image.asset('assets/plantImages/pink_2.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber>=13 && treeFileNumber<15)
-        {
-          return Image.asset('assets/plantImages/pink_2_1.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber==15||treeFileNumber<17)
-        {
-          return Image.asset('assets/plantImages/pink_3.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber>=18 && treeFileNumber<25)
-        {
-          return Image.asset('assets/plantImages/pink_3_1.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber==25||treeFileNumber<50)//4
-        {
-          return Image.asset('assets/plantImages/pink_4.png',width: screenSize.width*0.5,height:200);
-        }
-        else if(treeFileNumber>=50)//5
-        {
-          return Image.asset('assets/plantImages/pink_5.png',width: screenSize.width*0.5,height: 200);
-        }
-      }
-      else if(treeTypeName=="綠樹"||treeTypeName=="茉莉花")
-      {
-        if(treeFileNumber==0||treeFileNumber<=5)
-        {
-          return Image.asset('assets/plantImages/green_1.png',width: screenSize.width*0.5,height: 200);
-        }
-        else if(treeFileNumber>5 && treeFileNumber<=15)
-        {
-          return Image.asset('assets/plantImages/green_2.png',width: screenSize.width*0.5,height: 200);
-        }
-        else if(treeFileNumber>15 && treeFileNumber<=35)
-        {
-          return Image.asset('assets/plantImages/green_3.png',width: screenSize.width*0.5,height: 200);
-        }
-        else if(treeFileNumber>35 && treeFileNumber<=50)
-        {
-          return Image.asset('assets/plantImages/green_4.png',width: screenSize.width*0.5,height: 200);
-        }
-      }
-      else if(treeTypeName=="金盞草"||treeTypeName=="向日葵")
-      {
-        if(treeFileNumber==0||treeFileNumber<=5)
-        {
-          return Image.asset('assets/plantImages/yellow_1.png',width: screenSize.width*0.5,height: 200);
-        }
-        else if(treeFileNumber>5 && treeFileNumber<=15)
-        {
-          return Image.asset('assets/plantImages/yellow_2.png',width: screenSize.width*0.5,height: 200);
-        }
-        else if(treeFileNumber>15 && treeFileNumber<=35)
-        {
-          return Image.asset('assets/plantImages/yellow_3.png',width: screenSize.width*0.5,height: 200);
-        }
-        else if(treeFileNumber>35 && treeFileNumber<=50)
-        {
-          return Image.asset('assets/plantImages/yellow_4.png',width: screenSize.width*0.5,height: 200);
-        }
-      }
-      else
-      {
-        if(kDebugMode)
-        {
-          print("目前選擇的植物不存在：$treeTypeName");
+          return Image.asset
+          (
+            paths[index],
+            width: screenSize.width * 0.5,
+            height: 200,
+          );
         }
       }
     }

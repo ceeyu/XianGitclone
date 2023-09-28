@@ -67,6 +67,7 @@ dependencies:
   archive: ^3.3.7
   html: ^0.15.4
   url_launcher: ^6.0.1
+  open_file: ^3.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

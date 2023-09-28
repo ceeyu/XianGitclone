@@ -40,6 +40,13 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   List<String> plantFruitsName=[];
   List<String> getplantName=[];
   List<String> plantFruitsNumber=[];
+  @override
+  void initState()
+  {
+    super.initState();
+    getUserInfo();
+    showAllPlant().then((_) => showPlantPicture());
+  }
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -538,13 +545,6 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       }
     } 
   } 
-  @override
-  void initState()
-  {
-    super.initState();
-    getUserInfo();
-    showAllPlant().then((value) => showPlantPicture());
-  }
   @override
   Widget build(BuildContext context) 
   {

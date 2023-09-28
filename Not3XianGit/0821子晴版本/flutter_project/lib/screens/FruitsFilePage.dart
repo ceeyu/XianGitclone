@@ -1,13 +1,14 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 // ignore: depend_on_referenced_packages
+import 'package:open_file/open_file.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 class FruitsFilePage extends StatefulWidget 
 {
   const FruitsFilePage({Key? key}) : super(key: key);
@@ -22,8 +23,10 @@ class FruitsFilePageState extends State<FruitsFilePage>
   String treeName = "";
   String treeTypeName = "";
   String localPptxFilePath="";
+  String? plantname="";String? fruitnumber="";
   List<String?> fruitsName=[];
   List<String?> fruitsNumber=[];
+  List<Map<String,dynamic>> fileInfo=[];
   Map<String,Uint8List> rivImagesMap={};
   File? pptxFile;
   final _storage = const FlutterSecureStorage(); 
@@ -32,45 +35,8 @@ class FruitsFilePageState extends State<FruitsFilePage>
   {
     super.initState();
     getPlantTotalFruitNumber();
-    getNowPlantName().then((_)
-    {
-      getFruitInfoList();
-      showFruitFile().then((_) => getFilePath());
-    });
-  }
-  Future<String?> getAccessToken()async
-  {
-    // 從 flutter_secure_storage 取得 access_token
-    String? accessToken = await _storage.read(key:'access_token');
-    if (kDebugMode) 
-    {
-      print('Access Token: $accessToken');
-    }
-    return accessToken;
-  }
-  Future<String?> getFilePath()async
-  {
-    // 從 flutter_secure_storage 取得 pptxFilePath
-    String? filePath = await _storage.read(key:'pptxFilePath');
-    setState(() 
-    {
-      localPptxFilePath=filePath!;
-    });
-    if (kDebugMode) 
-    {
-      print('Get localPptxFilePath : $localPptxFilePath ');
-    }
-    return filePath;
-  }
-  Future<String?> getFruitNumber()async
-  {
-    // 從 flutter_secure_storage 取得 fruit_num
-    String? fruitNumber = await _storage.read(key:'fruit_num');
-    if (kDebugMode) 
-    {
-      print('Get Init FruitNumber : $fruitNumber ');
-    }
-    return fruitNumber;
+    getNowPlantName();
+    getOneFruitInfoList();
   }
   Future<String?> getNowPlantName()async
   {
@@ -97,7 +63,51 @@ class FruitsFilePageState extends State<FruitsFilePage>
     }
     return totalFruitNumber;
   }
-  Future<Map<String,dynamic>?> getFruitInfoList()async
+  Future<String?> getPressedFileName()async
+  {
+    // 從 flutter_secure_storage 取得按下果實按鈕的FileName
+    String? buttonPressedFileName = await _storage.read(key:'pressedFileName');
+    if (kDebugMode) 
+    {
+      print('Get getPressedFileName: $buttonPressedFileName');
+    }
+    return buttonPressedFileName;
+  }
+  Future<String?> getPressedFileNumber()async
+  {
+    // 從 flutter_secure_storage 取得按下果實按鈕的FileNumber
+    String? buttonPressedFileNumber = await _storage.read(key:'pressedFileNumber');
+    if (kDebugMode) 
+    {
+      print('Get getPressedFileNumber: $buttonPressedFileNumber');
+    }
+    return buttonPressedFileNumber;
+  }
+  Future<String?> getAccessToken()async
+  {
+    // 從 flutter_secure_storage 取得 access_token
+    String? accessToken = await _storage.read(key:'access_token');
+    if (kDebugMode) 
+    {
+      print('Access Token: $accessToken');
+    }
+    return accessToken;
+  }
+  Future<String?> getFilePath()async
+  {
+    // 從 flutter_secure_storage 取得 pptxFilePath
+    String? filePath = await _storage.read(key:'pptxFilePath');
+    setState(() 
+    {
+      localPptxFilePath=filePath!;
+    });
+    if (kDebugMode) 
+    {
+      print('Get localPptxFilePath : $localPptxFilePath');
+    }
+    return filePath;
+  }
+  Future<List<Map<String,dynamic>>?> getOneFruitInfoList()async
   {
     final fruitInfoList=await _storage.read(key:'list_fruit_info');
     if(fruitInfoList!=null)
@@ -114,11 +124,24 @@ class FruitsFilePageState extends State<FruitsFilePage>
           print('Get List Of FruitsName : $fruitsName');
           print('Get List Of FruitsNumber : $fruitsNumber');
         }
-        return
+        setState(() 
         {
-          'plantAllFruitsName':plantFruitsName,
-          'plantAllFruitsNumber':plantFruitsNumber,
-        };
+          for(int i=0;i<plantFruitsName.length;i++)
+          {
+            fileInfo.add
+            (
+              {
+                'plantAllFruitsName':plantFruitsName[i]??'',
+                'plantAllFruitsNumber':plantFruitsNumber[i]??'',
+              }
+            );
+          }
+          if (kDebugMode) 
+          {
+            print('取得對應的List Of FruitsName && FruitsNumber : $fileInfo');
+          }
+        });
+        return fileInfo;
       }
     }
     return null;
@@ -126,66 +149,67 @@ class FruitsFilePageState extends State<FruitsFilePage>
   Future<void> showFruitFile()async
   {
     final savedAccessToken=await getAccessToken();
-    final savedFruitNumber=await getPlantTotalFruitNumber();
+    final savedFileName=await getPressedFileName();
+    final savedPlantName=await getNowPlantName();
+    final savedFileNumber=await getPressedFileNumber();
     if(savedAccessToken!=null)
     {
       try
       {
-        final fruitNum=int.parse(savedFruitNumber!);
-        final maxIndex=min(fruitNum,fruitsName.length);
-        for(int i=0;i<maxIndex;i++)
+        final response=await http.post
+        (
+          Uri.parse('http://120.126.16.222/plants/show-file'),
+          headers: <String,String>
+          {
+            'Authorization':'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String,String>
+          {
+            'plant_name':savedPlantName!,
+            'fruit_num':savedFileNumber!,
+          }),
+        );
+        if (kDebugMode) 
         {
-          final plantname=fruitsName[i];
-          final fruitnumber=fruitsNumber[i];
-          final response=await http.post
-          (
-            Uri.parse('http://120.126.16.222/plants/show-file'),
-            headers: <String,String>
-            {
-              'Authorization':'Bearer $savedAccessToken',
-            },
-            body: jsonEncode(<String,String>
-            {
-              'plant_name':plantname!,
-              'fruit_num':fruitnumber!,
-            }),
-          );
-          if (kDebugMode) 
+          print('提供給show-file的PlantName: $savedPlantName；FruitNumber: $savedFileNumber');
+        }
+        if(response.statusCode>=200&&response.statusCode<405)
+        {
+          final fruitFileBytes=response.bodyBytes;
+          final responseData=response.body;
+          if(kDebugMode)
           {
-            print('每一項fruitname: $plantname；每一項fruitnumber: $fruitnumber');
+            print('showFruitFile所取得的檔案(文件數據): $fruitFileBytes');
+            print('showFruitFile所取得的檔案(文件): $responseData');
           }
-          if(response.statusCode>=200&&response.statusCode<405)
+          if(!kIsWeb)
           {
-            final fruitFileBytes=response.bodyBytes;
-            setState(() 
+            final docDir = await getApplicationDocumentsDirectory();
+            final pptxFilePath = '${docDir.path}/$savedFileName';
+            final pptxFile = File(pptxFilePath);
+            await pptxFile.writeAsBytes(fruitFileBytes);
+            if(kDebugMode)
             {
-              rivImagesMap[plantname]=fruitFileBytes;
-            });
-            if(!kIsWeb)
+              print('白板PPTX文件已保存在:$pptxFilePath');
+              //print('所取得的pptx: $pptxFile');
+            }
+            await _storage.write(key:'pptxFilePath',value: pptxFilePath);
+            //打開檔案
+            final result=await OpenFile.open(pptxFilePath);
+            if(result.type!=ResultType.done)
             {
-              final docDir = await getApplicationDocumentsDirectory();
-              final pptxFilePath = '${docDir.path}/$plantname';
-              final pptxFile = File(pptxFilePath);
-              await pptxFile.writeAsBytes(fruitFileBytes);
               if(kDebugMode)
               {
-                print('白板PPTX文件已保存在:$pptxFilePath');
-                print('所取得的pptx: $pptxFile');
+                print('無法打開白板PPTX文件!');
               }
-              await _storage.write(key:'pptxFilePath',value: pptxFilePath);
-              //await _storage.write(key:'pptxFilePath_$plantname',value: pptxFilePath);
-            }
-            if(kDebugMode)
-            {
-              print('showFruitFile所取得的檔案(所有): $fruitFileBytes');
             }
           }
-          else
+        }
+        else
+        {
+          if(kDebugMode)
           {
-            if(kDebugMode)
-            {
-              print('showFruitFile Error:請求失敗,$response,${response.statusCode}');
-            }
+            print('showFruitFile Error:請求失敗,$response,${response.statusCode}');
           }
         }
       }
@@ -205,33 +229,6 @@ class FruitsFilePageState extends State<FruitsFilePage>
       }
     }      
   } 
-  Future<void> openFileWithThirdPartyApp(String pptxfilePath) async 
-  {
-    final uri = Uri.file(pptxfilePath);
-    final url='shareddocuments://${uri.path}';
-    if (kDebugMode)
-    {
-      print('openFileWithThirdPartyApp的fileUrl: $url');
-    }
-    try
-    {
-      if (await canLaunchUrl(Uri.parse(url))) 
-      {
-        await launchUrl(Uri.parse(url));
-      } 
-      else 
-      {
-        throw 'Could not launch to 檔案';
-      }
-    }
-    catch(error)
-    {
-      if (kDebugMode)
-      {
-        print('Error opening Files app: $error');
-      }
-    }
-  }
   @override
   Widget build(BuildContext context) 
   {
@@ -280,7 +277,7 @@ class FruitsFilePageState extends State<FruitsFilePage>
           const SizedBox(height:50),
           Expanded
           (
-            child:fruitsName.isEmpty
+            child:fileInfo.isEmpty
               ?Center
               (
                 child: Column
@@ -310,21 +307,29 @@ class FruitsFilePageState extends State<FruitsFilePage>
                   crossAxisSpacing: 30,
                   mainAxisSpacing: 30,
                 ),
-                itemCount: fruitsName.length,
+                itemCount: fileInfo.length,
                 itemBuilder: (context,index)
                 {
-                  final plantName=fruitsName[index];
-                  final plantImageBytes = rivImagesMap[plantName];
+                  final item=fileInfo[index];
+                  final plantAllFruitsName = item['plantAllFruitsName'];
+                  final plantAllFruitsNumber = item['plantAllFruitsNumber'];
                   return ElevatedButton
                   (
                     onPressed: ()async//這裡跳轉至打開檔案->第三方軟體開啟
                     {
-                      final localFilePath = localPptxFilePath;
-                      if (kDebugMode)
+                      if(kDebugMode)
                       {
-                        print('按下按鈕時localFilePath: $localFilePath');
+                        print('按下第$plantAllFruitsNumber個按鈕取得的值,FruitFileName:$plantAllFruitsName,FruitFileNumber:$plantAllFruitsNumber');
                       }
-                      openFileWithThirdPartyApp(localFilePath);
+                      await _storage.write(key: 'pressedFileName', value: plantAllFruitsName);
+                      await _storage.write(key: 'pressedFileNumber', value: plantAllFruitsNumber);
+                      await showFruitFile().then((_) => getFilePath());
+                      // final localFilePath = localPptxFilePath;
+                      // openFileWithThirdPartyApp(localFilePath);
+                      // if (kDebugMode)
+                      // {
+                      //   print('按下按鈕時localFilePath: $localFilePath');
+                      // }
                     },
                     style: ElevatedButton.styleFrom
                     (
@@ -346,21 +351,19 @@ class FruitsFilePageState extends State<FruitsFilePage>
                               alignment: Alignment.center,
                               children: 
                               [
-                                plantImageBytes!=null
-                                  ?Image.asset
-                                  (
-                                    'assets/images/pptx.png',
-                                    height:270,
-                                    width:screenSize.width*0.7,
-                                    fit:BoxFit.contain,
-                                  )
-                                  :const SizedBox(),
+                                Image.asset
+                                (
+                                  'assets/images/pptx.png',
+                                  height:270,
+                                  width:screenSize.width*0.7,
+                                  fit:BoxFit.contain,
+                                ),
                                 Align
                                 (
                                   alignment: Alignment.center,
                                   child:Text
                                   (
-                                    plantName!,
+                                    plantAllFruitsName!,
                                     style: TextStyle
                                     (
                                       fontSize: fontSize*0.4,

@@ -326,6 +326,10 @@ nested
 2.12
 file:///Users/widelab/.pub-cache/hosted/pub.dev/nested-1.0.0/
 file:///Users/widelab/.pub-cache/hosted/pub.dev/nested-1.0.0/lib/
+open_file
+2.17
+file:///Users/widelab/.pub-cache/hosted/pub.dev/open_file-3.3.2/
+file:///Users/widelab/.pub-cache/hosted/pub.dev/open_file-3.3.2/lib/
 package_config
 2.12
 file:///Users/widelab/.pub-cache/hosted/pub.dev/package_config-2.1.0/
@@ -571,9 +575,9 @@ whiteboard_sdk_flutter
 file:///Users/widelab/.pub-cache/hosted/pub.dev/whiteboard_sdk_flutter-0.5.4/
 file:///Users/widelab/.pub-cache/hosted/pub.dev/whiteboard_sdk_flutter-0.5.4/lib/
 win32
-2.17
-file:///Users/widelab/.pub-cache/hosted/pub.dev/win32-4.1.4/
-file:///Users/widelab/.pub-cache/hosted/pub.dev/win32-4.1.4/lib/
+3.0
+file:///Users/widelab/.pub-cache/hosted/pub.dev/win32-5.0.6/
+file:///Users/widelab/.pub-cache/hosted/pub.dev/win32-5.0.6/lib/
 xdg_directories
 2.17
 file:///Users/widelab/.pub-cache/hosted/pub.dev/xdg_directories-1.0.0/
