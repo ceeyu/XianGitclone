@@ -56,7 +56,10 @@ class FruitsFilePageState extends State<FruitsFilePage>
   {
     // 從 flutter_secure_storage 取得plant total fruit number
     String? totalFruitNumber = await _storage.read(key:'total_fruit_num');
-    treeFileNumber=totalFruitNumber!;
+    setState(() 
+    {
+      treeFileNumber=totalFruitNumber!;
+    });
     if (kDebugMode) 
     {
       print('Get Init totalFruitNumber : $treeFileNumber');
@@ -92,20 +95,6 @@ class FruitsFilePageState extends State<FruitsFilePage>
       print('Access Token: $accessToken');
     }
     return accessToken;
-  }
-  Future<String?> getFilePath()async
-  {
-    // 從 flutter_secure_storage 取得 pptxFilePath
-    String? filePath = await _storage.read(key:'pptxFilePath');
-    setState(() 
-    {
-      localPptxFilePath=filePath!;
-    });
-    if (kDebugMode) 
-    {
-      print('Get localPptxFilePath : $localPptxFilePath');
-    }
-    return filePath;
   }
   Future<List<Map<String,dynamic>>?> getOneFruitInfoList()async
   {
@@ -176,11 +165,9 @@ class FruitsFilePageState extends State<FruitsFilePage>
         if(response.statusCode>=200&&response.statusCode<405)
         {
           final fruitFileBytes=response.bodyBytes;
-          final responseData=response.body;
           if(kDebugMode)
           {
             print('showFruitFile所取得的檔案(文件數據): $fruitFileBytes');
-            print('showFruitFile所取得的檔案(文件): $responseData');
           }
           if(!kIsWeb)
           {
@@ -191,7 +178,6 @@ class FruitsFilePageState extends State<FruitsFilePage>
             if(kDebugMode)
             {
               print('白板PPTX文件已保存在:$pptxFilePath');
-              //print('所取得的pptx: $pptxFile');
             }
             await _storage.write(key:'pptxFilePath',value: pptxFilePath);
             //打開檔案
@@ -262,16 +248,18 @@ class FruitsFilePageState extends State<FruitsFilePage>
             padding: const EdgeInsets.all(0),
             child: Center
             (
-              child:Text
-              (
-                '共有$treeFileNumber個果實(從左至右按照時間順序擺放)',
-                style: const TextStyle
+              child:treeFileNumber=='0'
+                ?const SizedBox(height:30)
+                :Text
                 (
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
+                  '共有$treeFileNumber個果實(從左至右按照時間順序擺放)',
+                  style: const TextStyle
+                  (
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
-              ),
             ),
           ),
           const SizedBox(height:50),
@@ -323,13 +311,7 @@ class FruitsFilePageState extends State<FruitsFilePage>
                       }
                       await _storage.write(key: 'pressedFileName', value: plantAllFruitsName);
                       await _storage.write(key: 'pressedFileNumber', value: plantAllFruitsNumber);
-                      await showFruitFile().then((_) => getFilePath());
-                      // final localFilePath = localPptxFilePath;
-                      // openFileWithThirdPartyApp(localFilePath);
-                      // if (kDebugMode)
-                      // {
-                      //   print('按下按鈕時localFilePath: $localFilePath');
-                      // }
+                      await showFruitFile();
                     },
                     style: ElevatedButton.styleFrom
                     (
