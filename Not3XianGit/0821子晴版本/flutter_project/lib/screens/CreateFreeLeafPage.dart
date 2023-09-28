@@ -546,35 +546,6 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
               print('所取得的pptx: $pptxFile');
             }
           }
-          // else if(kIsWeb)//web
-          // {
-          //   final archive=ZipDecoder().decodeBytes(fileDataBytes);
-          //   for (final file in archive) 
-          //   {
-          //     if (!file.isFile) continue;
-          //     if (file.name == '[Content_Types].xml') 
-          //     {
-          //       // Handle content types or any other specific files
-          //       final content = utf8.decode(file.content);
-          //       if (kDebugMode) 
-          //       {
-          //         print('Content of [Content_Types].xml:');
-          //         print(content);
-          //       }
-          //     }
-          //   }
-          //   final blob = html.Blob([Uint8List.fromList(fileDataBytes)]);
-          //   final url = html.Url.createObjectUrlFromBlob(blob);
-          //   //window.open(url,'_blank');//網頁顯示
-          //   final anchor=html.AnchorElement(href:url)
-          //   ..target='blank'
-          //   ..download='$savedFileName';
-          //   anchor.click();
-          //   if(kDebugMode)
-          //   {
-          //     print('檔案已下載！');
-          //   }        
-          // }
           else 
           {
             final responseData = jsonDecode(response.body);

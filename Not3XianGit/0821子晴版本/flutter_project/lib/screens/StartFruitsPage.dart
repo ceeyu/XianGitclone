@@ -28,9 +28,10 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
   final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
-  String? firstName;
-  String? account;
-  String? avatarFileName;
+  String? firstName="";
+  String? account="";
+  String? avatarFileName="";
+  String returnPlantType="";
   Uint8List? avatarImageBytes;
   Map<String,Uint8List> plantImagesMap={};
   List<dynamic> plantNameList=[];
@@ -39,7 +40,6 @@ class _StartFruitsPageState extends State<StartFruitsPage>
   List<String> plantFruitsName=[];
   List<String> getplantName=[];
   List<String> plantFruitsNumber=[];
-
   Future<String?> getAccessToken()async
   {
     // 從 flutter_secure_storage 取得 access_token
@@ -473,6 +473,71 @@ class _StartFruitsPageState extends State<StartFruitsPage>
       }
     }      
   } 
+  Future<void> showRivImage()async
+  {
+    final savedAccessToken=await getAccessToken();
+    final savedPressedPlantName=await getPlantRivName();
+    if(savedAccessToken!=null)
+    {
+      try
+      {
+        if(kDebugMode)
+        {
+          print('showRivImage所按下的plantname:$savedPressedPlantName');
+        }
+        final response=await http.post
+        (
+          Uri.parse('http://120.126.16.222/plants/show-riv'),
+          headers: <String,String>
+          {
+            'Authorization':'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String,String>
+          {
+            'plant_name':savedPressedPlantName!,
+          }),
+        );
+        if(response.statusCode>=200&&response.statusCode<405)
+        {
+          final responseData = jsonDecode(response.body);
+          if(kDebugMode)
+          {
+            print('show-riv請求成功：$responseData');
+          }
+          if(responseData[0]['file_name']!=null&&responseData[0]['plant_type']!=null)
+          {
+            returnPlantType=responseData[0]['plant_type'];
+            await _storage.write(key: 'show_plant_type', value: returnPlantType);
+            if(kDebugMode)
+            {
+              print('show-riv所取得的樹種：$returnPlantType');
+            }
+          }
+        }
+        else
+        {
+          if(kDebugMode)
+          {
+            print('Error:show-riv請求失敗,$response,${response.statusCode}');
+          }
+        }
+      }
+      catch(error)
+      {
+        if(kDebugMode)
+        {
+          print('Error:show-riv請求出錯,$error');
+        }
+      }
+    }
+    else 
+    {
+      if(kDebugMode)
+      {
+        print('沒有保存的access_token');
+      }
+    } 
+  } 
   @override
   void initState()
   {
@@ -563,14 +628,11 @@ class _StartFruitsPageState extends State<StartFruitsPage>
                     {
                       final pressedPlantName=plantName;
                       await _storage.write(key: 'pressedPlantName', value: pressedPlantName);
+                      await showPlantFruitInfo().then((_) => showRivImage());
                       if(kDebugMode)
                       {
                         print('你已按下的plantName: $pressedPlantName');
                       }
-                      setState(() 
-                      {
-                        showPlantFruitInfo();
-                      });
                       // ignore: use_build_context_synchronously
                       Navigator.push
                       (
