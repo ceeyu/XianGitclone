@@ -1,48 +1,53 @@
 import 'dart:async';
-
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'constants.dart';
 import 'page.dart';
 import 'widgets.dart';
-
-class CustomLayoutPage extends FastExamplePage {
-  const CustomLayoutPage()
-      : super(
+class CustomLayoutPage extends FastExamplePage 
+{
+  const CustomLayoutPage({super.key})
+      : super
+      (
         const Icon(Icons.space_dashboard_rounded),
         'Custom Layout',
       );
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return const CustomLayoutBody();
   }
 }
-
-class CustomLayoutBody extends StatefulWidget {
-  const CustomLayoutBody();
-
+class CustomLayoutBody extends StatefulWidget 
+{
+  const CustomLayoutBody({super.key});
   @override
-  State<StatefulWidget> createState() {
+  State<StatefulWidget> createState() 
+  {
     return CustomLayoutBodyState();
   }
 }
-
-class CustomLayoutBodyState extends State<CustomLayoutBody> {
+class CustomLayoutBodyState extends State<CustomLayoutBody> 
+{
   Completer<FastRoomController> controllerCompleter = Completer();
-
   // 這個小工具是您應用程式的根
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
+  Widget build(BuildContext context) 
+  {
+    return Stack
+    (
+      children: 
+      [
         // 使用 LayoutBuilder 來獲取當前螢幕的寬高限制，並根據此來設置 FastRoomView 的 containerSizeRatio
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return FastRoomView(
-              fastRoomOptions: FastRoomOptions(
+        LayoutBuilder
+        (
+          builder: (context, constraints) 
+          {
+            return FastRoomView
+            (
+              fastRoomOptions: FastRoomOptions
+              (
                 appId: APP_ID,
                 uuid: ROOM_UUID,
                 token: ROOM_TOKEN,
@@ -57,22 +62,28 @@ class CustomLayoutBodyState extends State<CustomLayoutBody> {
             );
           },
         ),
-        FutureBuilder<FastRoomController>(
+        FutureBuilder<FastRoomController>
+        (
           future: controllerCompleter.future,
-          builder: (context, snapshot) {
+          builder: (context, snapshot) 
+          {
             return snapshot.hasData
-                ? Positioned(
-                    child: CloudTestWidget(controller: snapshot.data!),
-                  )
+                ? Positioned
+                (
+                  child: CloudTestWidget(controller: snapshot.data!),
+                )
                 : Container();
           },
         ),
-        Positioned(
+        Positioned
+        (
           left: 24,
           top: 24,
-          child: InkWell(
+          child: InkWell
+          (
             child: const Icon(Icons.arrow_back_ios),
-            onTap: () {
+            onTap: ()
+            {
               Navigator.of(context).pop();
             },
           ),
@@ -80,17 +91,18 @@ class CustomLayoutBodyState extends State<CustomLayoutBody> {
       ],
     );
   }
-
   // 在此自訂 FastRoomView 中的佈局
-  Widget customBuilder(
-    BuildContext context,
-    FastRoomController controller,
-  ) {
-    return Stack(
+  Widget customBuilder(BuildContext context,FastRoomController controller,) 
+  {
+    return Stack
+    (
+
       alignment: Alignment.center,
-      children: [
+      children: 
+      [
         FastOverlayHandlerView(controller), // 覆蓋處理元素的視圖
-        Positioned(
+        Positioned
+        (
           bottom: FastGap.gap_3,
           right: FastGap.gap_3,
           child: FastPageIndicator(controller),
@@ -100,25 +112,29 @@ class CustomLayoutBodyState extends State<CustomLayoutBody> {
       ],
     );
   }
-
-  Future<void> onFastRoomCreated(FastRoomController controller) async {
+  Future<void> onFastRoomCreated(FastRoomController controller) async 
+  {
     controllerCompleter.complete(controller);
   }
 
   @override
-  void initState() {
+  void initState() 
+  {
     super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations
+    (
+      [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.portraitUp,
+      ]
+    );
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
-
   @override
-  void dispose() {
+  void dispose()
+  {
     super.dispose();
     // SystemChrome.setPreferredOrientations([
     //   DeviceOrientation.portraitUp,

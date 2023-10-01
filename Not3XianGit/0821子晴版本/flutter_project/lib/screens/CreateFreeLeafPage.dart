@@ -11,7 +11,6 @@ import 'package:flutter_project/agora/constants.dart';
 import 'package:flutter_project/agora/quick_start.dart'; // 引入QuickStartPage
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
-
 class CreateFreeLeafPage extends StatefulWidget 
 {
   const CreateFreeLeafPage({super.key});
@@ -69,7 +68,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
   final TextEditingController _leafNameController=TextEditingController();
   // ignore: non_constant_identifier_names
   String PostSeach = '';
-  final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
+  final _storage = const FlutterSecureStorage(); 
   String? firstName;
   String? account;
   String? avatarFileName;
@@ -77,46 +76,76 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
   String? passLeafName;
   List<dynamic> whitepptDataList=[];
   File? pptxFile;
-  Future<String?> getAccessToken()async
-  {
-    // 從 flutter_secure_storage 取得 access_token
-    String? accessToken = await _storage.read(key:'access_token');
-    if (kDebugMode) 
-    {
-      print('Access Token: $accessToken');
-    }
-    return accessToken;
-  }
-  Future<String?> getLeafName()async
-  {
-    String? leafName=await _storage.read(key:'leaf_name');
-    if (kDebugMode) 
-    {
-      print('leafName: $leafName');
-    }
-    return leafName;
-  }
-  Future<String?> getFileName() async
-  {
-    String? fileName = await _storage.read(key:'file_name');
-    if (kDebugMode) 
-    {
-      print('FileName: $fileName');
-    }
-    return fileName;
-  }
-  Future<void> deleteAccessToken() async 
-  {
-    // 從 flutter_secure_storage 刪除 access_token
-    await _storage.delete(key: 'access_token');
-  }
   @override
   void initState()
   {
     super.initState();
     getUserInfo();
   }
-  Future<void> getUserInfo() async//顯示drawer的user資料
+  Future<String?> getAccessToken()async
+  {
+    String? accessToken = await _storage.read(key:'access_token');
+    return accessToken;
+  }
+  Future<String?> getLeafName()async
+  {
+    String? leafName=await _storage.read(key:'leaf_name');
+    return leafName;
+  }
+  Future<String?> getFileName() async
+  {
+    String? fileName = await _storage.read(key:'file_name');
+    return fileName;
+  }
+  Future<void> deleteAccessToken() async 
+  {
+    await _storage.delete(key: 'access_token');
+  }
+  Future<void> logOut()async
+  {
+    final savedAccessToken=await getAccessToken();
+    if (savedAccessToken != null) 
+    {
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/logout'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+        );
+        if (response.statusCode == 200) 
+        {
+          const message = '登出成功\n';
+          await showLogoutResultDialog(message);
+          await deleteAccessToken(); // 登出後刪除保存的 access_token
+        } 
+        else 
+        {
+          final errorMessage = response.body;
+          await showLogoutResultDialog(errorMessage);
+        }
+      } 
+      catch (e) 
+      {
+        if (kDebugMode) 
+        {
+          print('登出失敗：$e');
+        }
+        final errorMessage = '登出失敗：$e';
+        await showLogoutResultDialog(errorMessage);
+      }
+    } 
+    else 
+    {
+      const errorMessage = '尚未登入，無法進行登出。';
+      await showLogoutResultDialog(errorMessage);
+    }
+  }
+  Future<void> getUserInfo() async
   {
     final savedAccessToken=await getAccessToken();
     if(savedAccessToken!=null)
@@ -131,14 +160,9 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $savedAccessToken',
           },
-          body: jsonEncode(<String, String>
-          {
-            'access_token': savedAccessToken,
-          }),
         );
-        if (response.statusCode == 200) 
+        if (response.statusCode == 200&&response.statusCode<405) 
         {
-          // 解析API回傳的JSON數據
           final userInfo = jsonDecode(response.body);
           final userName=userInfo[0]['firstname'];
           final userAccount=userInfo[0]['account'];
@@ -150,12 +174,6 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             account=userAccount;
             this.avatarFileName = avatarFileName;
             avatarName=avatarFileName.split('.').first;
-            if(kDebugMode)
-            {
-              print('帳號名字:$firstName');
-              print('檔名:$avatarFileName');
-              print('帳號名:$avatarName');
-            }
           });
           await getAvatar();//取得頭像圖檔
         } 
@@ -167,7 +185,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
           });
           if(kDebugMode)
           {
-            print('Error:請求失敗,$response,${response.statusCode}');
+            print('getUserInfo Error:請求失敗,$response,${response.statusCode}');
           }
         }
       } 
@@ -179,7 +197,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
         });
         if(kDebugMode)
         {
-          print('Error:請求出錯,$e');
+          print('getUserInfo Error:請求出錯,$e');
         }
       }
     } 
@@ -195,7 +213,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
       }
     }      
   }
-  Future<void> getAvatar()async//顯示頭像
+  Future<void> getAvatar()async
   {
     final savedAccessToken=await getAccessToken();
     if(savedAccessToken!=null&&avatarFileName!=null)
@@ -209,10 +227,6 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
           {
             'Authorization':'Bearer $savedAccessToken',
           },
-          body: jsonEncode(<String,String>
-          {
-            'access_token':savedAccessToken,
-          }),
         );
         if(response.statusCode>=200&&response.statusCode<405)
         {
@@ -220,14 +234,12 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
           {
             avatarImageBytes=response.bodyBytes;
           });
-          // final newAvatarInfo=jsonDecode(response.body);
-          // final message=newAvatarInfo[0]['message'];
         }
         else
         {
           if(kDebugMode)
           {
-            print('Error:請求圖檔失敗,$response,${response.statusCode}');
+            print('getAvatar Error:請求圖檔失敗,$response,${response.statusCode}');
           }
         }
       }
@@ -235,7 +247,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
       {
         if(kDebugMode)
         {
-          print('Error:請求圖檔出錯,$error');
+          print('getAvatar Error:請求圖檔出錯,$error');
         }
       }
     }
@@ -247,15 +259,13 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
       }
     }      
   }
-  Future<void> showLogoutResultDialog(String message) async//登出
+  Future<void> showLogoutResultDialog(String message) async
   {
-    // 顯示登出 API 回傳的結果
     await showDialog
     (
       context: context,
       builder: (context) => AlertDialog
       (
-        //title: const Text('登出結果'),
         content: 
         Text
         (
@@ -292,15 +302,6 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
     await _storage.write(key: 'leaf_name', value: leafName);
     final savedLeafName=await getLeafName();
     passLeafName=savedLeafName;
-    APP_ID = '';
-    ROOM_UUID = '';
-    ROOM_TOKEN = '';
-    LINK = '';
-    if(kDebugMode)
-    {
-      print('joinIntoRoom Initial: \n1.RoomID:$ROOM_UUID\n2.RoomUUID:$ROOM_TOKEN\n3.RoomLink:$LINK');
-      print('SavedLeafName: $savedLeafName');
-    }
     if (savedAccessToken != null) 
     {
       try 
@@ -319,7 +320,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             'leaf_name':savedLeafName!,
           }),
         );
-        if (response.statusCode >= 200 && response.statusCode < 300)
+        if (response.statusCode >= 200 && response.statusCode < 405)
         {
           final responseData = jsonDecode(response.body);
           ROOM_UUID='';
@@ -329,12 +330,11 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
           if (responseData.isNotEmpty &&responseData[0]['roomData'] != null &&responseData[0]['roomToken'] != null &&responseData[0]['leafData'] != null) 
           {
             final leafData = responseData[0]['leafData'];
-            final link = leafData['link']; // 獲取 leafData 內的 link 變數
+            final link = leafData['link']; 
             final roomData = responseData[0]['roomData'];
             final roomToken = responseData[0]['roomToken'];
             final appIdentifier = responseData[0]['appIdentifier'];
             final uuid = roomData['uuid'];
-
             final freeLeafModel = FreeLeafModel
             (
               roomToken: roomToken,
@@ -345,18 +345,15 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
             if (kDebugMode) 
             {
               print('FreeLeafModel: $freeLeafModel');
-            }
-            if (kDebugMode) 
-            {
               print('Link: $link');
-            } // 印出 link 變數的值
+            }
             // 更新 constant.dart 的變數值
             APP_ID = appIdentifier;
             ROOM_UUID = uuid;
             ROOM_TOKEN = roomToken;
             LINK = link;
             // 跳轉至 QuickStartPage
-            setState(() // 在這裡傳遞給另一個Dart檔
+            setState(() // 在這裡傳遞leafName
             {
               Navigator.of(context).push
               (
@@ -393,7 +390,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
       }
     }
   }
-  Future<void> createPPT()async//創空白ppt檔
+  Future<void> createPPT()async
   {
     final savedAccessToken=await getAccessToken();
     if(savedAccessToken!=null)
@@ -420,19 +417,9 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
           final filePath=responseData[0]['file_path'];
           await _storage.write(key: 'file_name', value: fileName);
           await _storage.write(key: 'file_path', value: filePath);
-          if (kDebugMode) 
-          {
-            print('請求之後fileName:$fileName');
-            print('請求之後filePath:$filePath');
-          }
           setState(()
           {
             whitepptDataList=List<Map<String,dynamic>>.from(responseData);
-            if (kDebugMode) 
-            {
-              print('請求之後whitepptDataList:$whitepptDataList');
-            }
-
           });
           if(kDebugMode)
           {
@@ -497,7 +484,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('createPPT Catch Error: $error');
         }
       }
     }
@@ -629,10 +616,9 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                   children:  
                   [
                     const SizedBox(width: 20),
-                    if(avatarImageBytes!=null)
+                    if(avatarImageBytes!=null) 
                       CircleAvatar
                       (
-                        //圓形頭像
                         minRadius: 35,
                         maxRadius: 35,
                         backgroundImage: MemoryImage(avatarImageBytes!),
@@ -642,7 +628,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                     (
                       children: 
                       [
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 35),
                         Column
                         (
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -672,10 +658,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                   ],
                 ),
               ),
-              const SizedBox
-              (
-                height: 20,
-              ),
+              const SizedBox(height: 20,),
               Padding
               (
                 //一個Padding是一個項目
@@ -724,23 +707,17 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                   ),
                 ),
               ),
-              const SizedBox
-              (
-                height: 10,
-              ),
+              const SizedBox(height: 10,),
               ExpansionTile
               (
                 //下拉式
-                title:const Row
+                title: const Row
                 (
                   // ignore: prefer_const_literals_to_create_immutables
-                  children: 
+                  children:  
                   [
                     Icon(CupertinoIcons.settings),
-                    SizedBox
-                    (
-                      width: 10,
-                    ),
+                    SizedBox(width: 60,),
                     Text
                     (
                       "設定",
@@ -764,11 +741,15 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                     (
                       onTap: (() 
                       {
+                        // Navigator.push(
+                        //	 context,
+                        //	 new MaterialPageRoute(
+                        //		 builder: (context) => new VendorVenuePage()));
                       }),
                       child: Row
                       (
                         // ignore: prefer_const_literals_to_create_immutables
-                        children:
+                        children: 
                         [
                           const Icon
                           (
@@ -814,12 +795,11 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                     padding: const EdgeInsets.only(left: 15),
                     child: GestureDetector
                     (
-                      onTap: (() 
-                      {
-                      }),
+                      onTap: (() {}),
                       child: Row
                       (
                         // ignore: prefer_const_literals_to_create_immutables
+                        //mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: 
                         [
                           const Icon(Icons.camera_alt_outlined),
@@ -868,6 +848,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                       child: Row
                       (
                         // ignore: prefer_const_literals_to_create_immutables
+                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: 
                         [
                           const Icon(Icons.mic),
@@ -894,7 +875,7 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                             onChanged: (bool? value) 
                             {
                               // This is called when the user toggles the switch.
-                              setState(()
+                              setState(() 
                               {
                                 switchValue_Mic = value ?? false;
                               });
@@ -952,73 +933,51 @@ class _CreateFreeLeafPageState extends State<CreateFreeLeafPage>
                       ),
                     ),
                   ),
-                  //more child menu
                 ],
               ),
               const SizedBox(height: 10,),
-              ElevatedButton
+              Padding
               (
-                onPressed: ()async
-                {
-                  final savedAccessToken=await getAccessToken();
-                  if (savedAccessToken != null) 
-                  {
-                    // 呼叫登出 API
-                    try 
-                    {
-                      final response = await http.post
+                padding: const EdgeInsets.only(left: 15),
+                child: GestureDetector
+                (
+                  onTap: (() {}),
+                  child: Row
+                  (
+                    // ignore: prefer_const_literals_to_create_immutables
+                    children: 
+                    [
+                      const Icon(Icons.logout_sharp),
+                      SizedBox
                       (
-                        Uri.parse('http://120.126.16.222/gardeners/logout'),
-                        headers: <String, String>
-                        {
-                          'Content-Type': 'application/json',
-                          'Authorization': 'Bearer $savedAccessToken',
-                        },
-                        body: jsonEncode(<String, String>
-                        {
-                          //'account': account,
-                          'access_token': savedAccessToken,
-                        }),
-                      );
-
-                      if (response.statusCode == 200) 
-                      {
-                        // 輸出登出成功的回傳資料
-                        //final body = jsonDecode(response.body);
-                        const message = '登出成功\n';
-                        await showLogoutResultDialog(message);
-                        await deleteAccessToken(); // 登出後刪除保存的 access_token
-                      } 
-                      else 
-                      {
-                        // 登出失敗
-                        final errorMessage = response.body;
-                        await showLogoutResultDialog(errorMessage);
-                      }
-                    } 
-                    catch (e) 
-                    {
-                      if (kDebugMode) 
-                      {
-                        print('登出失敗：$e');
-                      }
-                      final errorMessage = '登出失敗：$e';
-                      await showLogoutResultDialog(errorMessage);
-                    }
-                  } 
-                  else 
-                  {
-                    // 沒有保存的 access_token，直接顯示錯誤訊息
-                    const errorMessage = '尚未登入，無法進行登出。';
-                    await showLogoutResultDialog(errorMessage);
-                  }
-                }, 
-                child: const Text('Logout'),
-              ),            
+                        width: 150,
+                        height: 50,
+                        child: TextButton
+                        (
+                          child: const Text
+                          (
+                            "登出",
+                            style: TextStyle
+                            (
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black
+                            ),
+                          ),
+                          onPressed: () async
+                          {
+                            await logOut();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
-      ),
+      ),      
       body: Column
       (
         mainAxisAlignment: MainAxisAlignment.center,

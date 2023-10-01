@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:carousel_slider/carousel_slider.dart";
 import 'package:flutter_project/HomePage.dart';
-import 'package:flutter_project/MyPage1.dart';
+import 'package:flutter_project/MyPage.dart';
 //import 'package:flutter_project/screens/AnimationFruitsPage.dart';
 import 'package:flutter_project/screens/GardenerSettingPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

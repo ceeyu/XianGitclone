@@ -29,121 +29,91 @@ class _ChatPageState extends State<ChatPage>
   String? selectedAccount;
   Future<String?> getAccessToken()async
   {
-    // 從 flutter_secure_storage 取得 access_token
     String? accessToken = await _storage.read(key:'access_token');
-    if (kDebugMode) 
-    {
-      print('Access Token: $accessToken');
-    }
     return accessToken;
   }
   Future<void> deleteAccessToken() async 
   {
-    // 從 flutter_secure_storage 刪除 access_token
     await _storage.delete(key: 'access_token');
   }
   Future<void> searchName(String firstName)async
   {
     final savedAccessToken=await getAccessToken();
     final searchFirstName =_enterfirstnameController.text;
-    if(savedAccessToken!=null)
+    if(savedAccessToken!=null&&searchFirstName.isNotEmpty)
     {
-      if(searchFirstName.isNotEmpty)
+      try 
       {
-        try 
-        {
-          final response = await http.post
-          (
-            Uri.parse('http://120.126.16.222/gardeners/search'),
-            headers: <String, String>
-            {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $savedAccessToken',
-            },
-            body: jsonEncode(<String, String>
-            {
-              'enter_firstname': searchFirstName,
-            }),
-          );
-          if (response.statusCode >= 200&&response.statusCode<405) 
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/search'),
+          headers: <String, String>
           {
-            // 解析API回傳的JSON數據
-            final  userInfo = json.decode(response.body);
-            if(kDebugMode)
-            {
-              print('Search API回傳資料:$userInfo');
-            }
-            if(userInfo.isNotEmpty)
-            {
-              if(userInfo[0]['error_message']=='搜尋不到資料')
-              {
-                setState(() 
-                {
-                  searchResults = userInfo.map((item) => item['error_message']).toList();
-                  searchAccounts=userInfo.map((item)=>item['error_message']).toList();
-                  selectedResult=searchResults.isNotEmpty?searchResults[0]:'搜尋不到資料';
-                  selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] :'搜尋不到資料';
-                });
-                if(kDebugMode)
-                {
-                  print('所找的帳號: $searchAccounts');
-                  print('所找的姓名: $searchResults');
-                  print('selectedResult內容: $selectedResult');
-                  print('selectedAccount內容:$selectedAccount');
-                }
-                // ignore: use_build_context_synchronously
-                showDialog
-                (
-                  context: context,
-                  builder: (BuildContext context) 
-                  {
-                    return AlertDialog
-                    (
-                      title: const Text('搜尋結果'),
-                      content: Text(userInfo[0]['error_message']),
-                      actions: <Widget>
-                      [
-                        ElevatedButton
-                        (
-                          child: const Text('重新搜尋'),
-                          onPressed: () 
-                          {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }
-              else
-              {
-                setState(() 
-                {
-                  searchResults = userInfo.map((item) => item['first_names']).toList();
-                  searchAccounts=userInfo.map((item)=>item['account']).toList();
-                  selectedResult=searchResults.isNotEmpty?searchResults[0]:'搜尋不到資料';
-                  selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] :'搜尋不到資料';
-
-                });
-                if(kDebugMode)
-                {
-                  print('API 回傳姓名: $userInfo');
-                  print('所找的帳號: $searchAccounts');
-                  print('所找的姓名: $searchResults');
-                  print('selectedResult內容: $selectedResult');
-                  print('selectedAccount內容:$selectedAccount');
-                }
-              }
-            }
-          } 
-        } 
-        catch (e) 
-        {
-          if(kDebugMode)
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+          body: jsonEncode(<String, String>
           {
-            print('Error:firstname_search請求出錯,$e');
+            'enter_firstname': searchFirstName,
+          }),
+        );
+        if (response.statusCode >= 200&&response.statusCode<405) 
+        {
+          final  userInfo = json.decode(response.body);
+          if(userInfo.isNotEmpty)
+          {
+            if(userInfo[0]['error_message']=='搜尋不到資料')
+            {
+              setState(() 
+              {
+                searchResults = userInfo.map((item) => item['error_message']).toList();
+                searchAccounts=userInfo.map((item)=>item['error_message']).toList();
+                selectedResult=searchResults.isNotEmpty?searchResults[0]:'搜尋不到資料';
+                selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] :'搜尋不到資料';
+              });
+              // ignore: use_build_context_synchronously
+              showDialog
+              (
+                context: context,
+                builder: (BuildContext context) 
+                {
+                  return AlertDialog
+                  (
+                    title: const Text('搜尋結果'),
+                    content: Text(userInfo[0]['error_message']),
+                    actions: <Widget>
+                    [
+                      ElevatedButton
+                      (
+                        child: const Text('重新搜尋'),
+                        onPressed: () 
+                        {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            else
+            {
+              setState(() 
+              {
+                searchResults = userInfo.map((item) => item['first_names']).toList();
+                searchAccounts=userInfo.map((item)=>item['account']).toList();
+                selectedResult=searchResults.isNotEmpty?searchResults[0]:'搜尋不到資料';
+                selectedAccount = searchAccounts.isNotEmpty ? searchAccounts[0] :'搜尋不到資料';
+              });
+            }
           }
+        } 
+      } 
+      catch (e) 
+      {
+        if(kDebugMode)
+        {
+          print('Error:firstname_search請求出錯,$e');
         }
       }
     } 
@@ -155,14 +125,10 @@ class _ChatPageState extends State<ChatPage>
       }
     }      
   }
-  Future<void> saveSelectedName(String selectedName)async
-  {
-    await _storage.write(key: 'selected_name', value: selectedName);
-  }
   Future<void> showChatData()async
   {
     final savedAccessToken=await getAccessToken();
-    if(savedAccessToken!=null)
+    if(savedAccessToken!=null&&selectedAccount!=null)
     {
       try
       {
@@ -176,7 +142,7 @@ class _ChatPageState extends State<ChatPage>
           },
           body:jsonEncode(<String,String>
           {
-            'other_account':selectedAccount??'',
+            'other_account':selectedAccount!,
           }),
         );
         if(response.statusCode>=200&&response.statusCode<300)
@@ -186,20 +152,12 @@ class _ChatPageState extends State<ChatPage>
           receiverFirstName=responseData.map((item) => item['receiver_firstname']).toList();
           sendTime=responseData.map((item) => item['send_time']).toList();
           chatData=responseData.map((item) => item['chat_data']).toList();
-          // if(kDebugMode)
-          // {
-          //   print('ChatPage API 回傳資料: $responseData');
-          //   print('傳送方名字: $senderFirstName');
-          //   print('接收方名字: $receiverFirstName');
-          //   print('傳送時間: $sendTime');
-          //   print('所找的聊天內容: $chatData');
-          // }
         }
         else
         {
           if(kDebugMode)
           {
-            print('Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
+            print('showChatData Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
           }
         }
       }
@@ -207,7 +165,7 @@ class _ChatPageState extends State<ChatPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('showChatData Catch Error: $error');
         }
       }
     }
@@ -326,8 +284,8 @@ class _ChatPageState extends State<ChatPage>
                 [
                   SizedBox
                   (
-                    width: screenSize.width*0.5,
-                    height:screenSize.height*0.05,
+                    width: screenSize.width*0.4,
+                    height:screenSize.height*0.07,
                     child:DropdownButtonHideUnderline
                     (
                       child:DropdownButton<String>
@@ -355,7 +313,7 @@ class _ChatPageState extends State<ChatPage>
                                 value!,
                                 style: TextStyle
                                 (
-                                  fontSize: fontSize*0.5,
+                                  fontSize: fontSize*0.7,
                                 ),
                               ),
                             ),
@@ -364,14 +322,15 @@ class _ChatPageState extends State<ChatPage>
                       ),
                     ),
                   ),
+                  const Column(children:[SizedBox(width: 20,),],),
                   Column
                   (
                     children: <Widget>
                     [
                       SizedBox
                       (
-                        width: screenSize.width*0.3,
-                        height: screenSize.height*0.08,
+                        width: screenSize.width*0.25,
+                        height: screenSize.height*0.07,
                         child:Padding
                         (
                           padding:const EdgeInsets.only(top:25,left:40),
@@ -414,7 +373,6 @@ class _ChatPageState extends State<ChatPage>
                                   }
                                   else
                                   {
-                                    // 觸發 API 請求
                                     await showChatData();
                                     // ignore: use_build_context_synchronously
                                     Navigator.push
@@ -441,7 +399,7 @@ class _ChatPageState extends State<ChatPage>
                               }                          
                             },
                             color:const Color.fromARGB(255,0,158,71),
-                            child:Text('傳送訊息',style:TextStyle(color:Colors.white,fontSize: fontSize*0.7))
+                            child:Text('交流',style:TextStyle(color:Colors.white,fontSize: fontSize*0.7))
                           ),
                         ),
 
@@ -450,8 +408,7 @@ class _ChatPageState extends State<ChatPage>
                   ),
                 ],
               ),
-              const SizedBox(height: 50),
-              const SizedBox(height: 50),
+              const SizedBox(height: 100),
               Center
               (
                 child: Column

@@ -41,7 +41,7 @@ class _ChatingPageState extends State<ChatingPage>
   bool switchValue_Camera = true;
   // ignore: non_constant_identifier_names
   bool switchValue_Notify = true;
-  final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
+  final _storage = const FlutterSecureStorage();
   String? firstName;
   String? account;
   String? avatarFileName;
@@ -50,7 +50,7 @@ class _ChatingPageState extends State<ChatingPage>
   String? selectedName;
   String? selectedAccount;
   String? passLeafName;
-  File? file;//目前web端要用html,移動端要用io//File file;
+  File? file;
   List<Map<String, dynamic>> chatDataList = [];
   bool isLinkMessage=false;
   List<Map<String,dynamic>> linkDataList=[];
@@ -69,46 +69,26 @@ class _ChatingPageState extends State<ChatingPage>
   }
   Future<String?> getlink()async
   {
-    // 從 flutter_secure_storage 取得 access_token
     String? savedLink = await _storage.read(key:'link');
-    if (kDebugMode) 
-    {
-      print('Leaf Link: $savedLink');
-    }
     return savedLink;
   }
   Future<String?> getAccessToken()async
   {
-    // 從 flutter_secure_storage 取得 access_token
     String? accessToken = await _storage.read(key:'access_token');
-    if (kDebugMode) 
-    {
-      print('Access Token: $accessToken');
-    }
     return accessToken;
   }
   Future<String?> getRoomUUID()async
   {
-    // 從 flutter_secure_storage 取得 access_token
     String? roomUUID = await _storage.read(key:'roomUUID');
-    if (kDebugMode) 
-    {
-      print('RoomUUID: $roomUUID');
-    }
     return roomUUID;
   }
   Future<String?> getFileName() async
   {
     String? fileName = await _storage.read(key:'file_name');
-    if (kDebugMode) 
-    {
-      print('FileName: $fileName');
-    }
     return fileName;
   }
   Future<void> deleteAccessToken() async 
   {
-    // 從 flutter_secure_storage 刪除 access_token
     await _storage.delete(key: 'access_token');
   }
   Future<void> getUserInfo() async
@@ -126,14 +106,9 @@ class _ChatingPageState extends State<ChatingPage>
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $savedAccessToken',
           },
-          body: jsonEncode(<String, String>
-          {
-            'access_token': savedAccessToken,
-          }),
         );
         if (response.statusCode == 200) 
         {
-          // 解析API回傳的JSON數據
           final userInfo = jsonDecode(response.body);
           final userName=userInfo[0]['firstname'];
           final userAccount=userInfo[0]['account'];
@@ -144,10 +119,6 @@ class _ChatingPageState extends State<ChatingPage>
             firstName = userName;
             account=userAccount;
             this.avatarFileName = avatarFileName;
-            if(kDebugMode)
-            {
-              print('檔名:$avatarFileName');
-            }
           });
           await getAvatar();//取得頭像圖檔
         } 
@@ -201,10 +172,6 @@ class _ChatingPageState extends State<ChatingPage>
           {
             'Authorization':'Bearer $savedAccessToken',
           },
-          body: jsonEncode(<String,String>
-          {
-            'access_token':savedAccessToken,
-          }),
         );
         if(response.statusCode>=200&&response.statusCode<405)
         {
@@ -239,13 +206,11 @@ class _ChatingPageState extends State<ChatingPage>
   }
   Future<void> showLogoutResultDialog(String message) async
   {
-    // 顯示登出 API 回傳的結果
     await showDialog
     (
       context: context,
       builder: (context) => AlertDialog
       (
-        //title: const Text('登出結果'),
         content: 
         Text
         (
@@ -274,6 +239,53 @@ class _ChatingPageState extends State<ChatingPage>
         ],
       ),
     );
+  }
+  Future<void> logOut()async
+  {
+    final savedAccessToken=await getAccessToken();
+    if (savedAccessToken != null) 
+    {
+      try 
+      {
+        final response = await http.post
+        (
+          Uri.parse('http://120.126.16.222/gardeners/logout'),
+          headers: <String, String>
+          {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $savedAccessToken',
+          },
+        );
+        if (response.statusCode == 200) 
+        {
+          // 輸出登出成功的回傳資料
+          //final body = jsonDecode(response.body);
+          const message = '登出成功\n';
+          await showLogoutResultDialog(message);
+          await deleteAccessToken(); // 登出後刪除保存的 access_token
+        } 
+        else 
+        {
+          // 登出失敗
+          final errorMessage = response.body;
+          await showLogoutResultDialog(errorMessage);
+        }
+      } 
+      catch (e) 
+      {
+        if (kDebugMode) 
+        {
+          print('登出失敗：$e');
+        }
+        final errorMessage = '登出失敗：$e';
+        await showLogoutResultDialog(errorMessage);
+      }
+    } 
+    else 
+    {
+      const errorMessage = '尚未登入，無法進行登出。';
+      await showLogoutResultDialog(errorMessage);
+    }
   }
   Future<void> showChatRecord()async
   {
@@ -306,10 +318,6 @@ class _ChatingPageState extends State<ChatingPage>
               {
                 chatDataList=List<Map<String,dynamic>>.from(responseData);
               });
-              if(kDebugMode)
-              {
-                print('ChatingPage API 回傳error_message: $chatDataList');
-              }
             }
             else if(responseData[0]['message']!='他倆沒有聊天紀錄'&&responseData[0]['error_message']!='兩方帳號相同，不能自己跟自己聊天，所以不會有資料')
             {
@@ -328,10 +336,6 @@ class _ChatingPageState extends State<ChatingPage>
               {
                 chatDataList=List<Map<String,dynamic>>.from(responseData);
               });
-              if(kDebugMode)
-              {
-                print('ChatingPage API 回傳error_message: $chatDataList');
-              }
             }
             else
             {
@@ -339,10 +343,6 @@ class _ChatingPageState extends State<ChatingPage>
               {
                 chatDataList=List<Map<String,dynamic>>.from(responseData);
               });
-              if(kDebugMode)
-              {
-                print('ChatingPage API 回傳error_message: $chatDataList');
-              }
             }
           }
           else
@@ -358,7 +358,7 @@ class _ChatingPageState extends State<ChatingPage>
         {
           if(kDebugMode)
           {
-            print('Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
+            print('showChatRecord Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
           }
         }
       }
@@ -366,7 +366,7 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('showChatRecord Catch Error: $error');
         }
       }
     }
@@ -395,19 +395,11 @@ class _ChatingPageState extends State<ChatingPage>
         if(response.statusCode>=200&&response.statusCode<300)
         {
           List<dynamic> responseData=jsonDecode(response.body);
-          if(kDebugMode)
-          {
-            print('Send-Message ResponseData: $responseData');
-          }
           if(responseData.isNotEmpty)
           {
             if(responseData[0]['error_message']=='發送方和接收方相同，不可以自己傳給自己')
             {
               final errorMessage=responseData[0]['error_message'];
-              if(kDebugMode)
-              {
-                print('ChatingPage API 回傳error_message: $errorMessage');
-              }
               setState(() 
               {
                 showDialog
@@ -441,16 +433,7 @@ class _ChatingPageState extends State<ChatingPage>
               setState(() 
               {
                 chatDataList=List<Map<String,dynamic>>.from(responseData);
-                if (kDebugMode) 
-                {
-                  print('傳送之後chatDatalist:$chatDataList');
-                }
               });
-              if(kDebugMode)
-              {
-                print('ChatingPage API 回傳資料: $responseData');
-                print('SendMessage()selectedAccount內容:$selectedAccount');
-              }
               if(message.startsWith('Someone sent you a link :')&&responseData[0]['isLink']=='true')
               {
                 isLinkMessage=true;
@@ -466,7 +449,7 @@ class _ChatingPageState extends State<ChatingPage>
         {
           if(kDebugMode)
           {
-            print('Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
+            print('sendMessage Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
           }
         }
       }
@@ -474,51 +457,70 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('sendMessage Catch Error: $error');
         }
       }
     }
   }
   Future<void> handleLinkClick(String link)async 
   {
-    const storage=FlutterSecureStorage();
-    await storage.write(key: 'link', value: link);
-    await joinLinkRoom(link);
+    await _storage.write(key:'link',value:link);
+    final savedRoomLink=await getlink();
+    String linkMessage='';
+    String enterLeaf='';
+    if(savedRoomLink=='目前這Room連結已不存在')
+    {
+      setState(() 
+      {
+        linkMessage='此葉子連結已關閉！';
+        enterLeaf='無法加入葉子';
+      });
+    }
+    else
+    {
+      setState(() 
+      {
+        linkMessage='Someone sent you a link : $savedRoomLink';
+        enterLeaf='邀請加入葉子';
+      });
+      await joinLinkRoom(link);
+    }
     // ignore: use_build_context_synchronously
     showDialog
     (
       context: context, 
       builder: (context)=>AlertDialog
       (
-        title: const Text('邀請加入葉子'),
-        content: Text('Someone sent you a link : $link'),
+        title: Text(enterLeaf),
+        content: Text(linkMessage),
         actions: 
         [
+          if(linkMessage!='此葉子連結已關閉！')
+            ElevatedButton
+            (
+              onPressed: () async 
+              {
+                await joinRoom();//加入葉子
+                await createPPT();//創空白ppt檔
+                await getWhiteFile();//取得空白檔案
+                //ignore: use_build_context_synchronously
+                Navigator.of(context).push
+                (
+                  MaterialPageRoute
+                  (
+                    builder: (context) => QuickStartBody(leafName:passLeafName),
+                  ),
+                );
+              },
+              child: const Text('加入'),
+            ),
           ElevatedButton
           (
             onPressed: ()
             {
               Navigator.of(context).pop();
             }, 
-            child:const Text('不加入'),
-          ),
-          ElevatedButton
-          (
-            onPressed: () async 
-            {
-              await joinRoom();//加入葉子
-              await createPPT();//創空白ppt檔
-              await getFile();//取得空白檔案
-              //ignore: use_build_context_synchronously
-              Navigator.of(context).push
-              (
-                MaterialPageRoute
-                (
-                  builder: (context) => QuickStartBody(leafName:passLeafName),
-                ),
-              );
-            },
-            child: const Text('加入'),
+            child:const Text('關閉'),
           ),
         ],
       ),
@@ -545,47 +547,50 @@ class _ChatingPageState extends State<ChatingPage>
         );
         if(kDebugMode)
         {
-          print('JoinLinkRoom $roomlink');
+          print('Print RoomeLink:$roomlink');
         }
-        if(response.statusCode>=200&&response.statusCode<300)
+        if(response.statusCode>=200&&response.statusCode<405)
         {
           final responseData=jsonDecode(response.body);
-          final roomUUID=responseData[0]['roomUUID'];
-          final roomToken=responseData[0]['roomToken'];
-          final appID=responseData[0]['appID'];
-          final leafName=responseData[0]['leaf_name'];
-          const storage=FlutterSecureStorage();
-          await storage.write(key:'roomUUID',value:roomUUID);//add_roomUUID
-          await storage.write(key: 'roomToken', value: roomToken);
-          await storage.write(key: 'appID', value: appID);
-          await storage.write(key: 'leaf_name', value: leafName);
-          passLeafName=leafName;
-          // 更新 constant.dart 的變數值
-          APP_ID = appID;
-          ROOM_UUID = roomUUID;
-          ROOM_TOKEN = roomToken;
-          LINK = roomlink;
-          setState(() 
+          if(responseData[0]['roomUUID']!=null)
           {
-            linkDataList=List<Map<String,dynamic>>.from(responseData);
-            // if (kDebugMode) 
-            // {
-            //   print('傳送之後linkDatalist:$linkDataList');
-            // }
-          });
-          if(kDebugMode)
+            final roomUUID=responseData[0]['roomUUID'];
+            final roomToken=responseData[0]['roomToken'];
+            final appID=responseData[0]['appID'];
+            final leafName=responseData[0]['leaf_name'];
+            await _storage.write(key:'roomUUID',value:roomUUID);//add_roomUUID
+            await _storage.write(key: 'roomToken', value: roomToken);
+            await _storage.write(key: 'appID', value: appID);
+            if(leafName!=null)
+            {
+              await _storage.write(key: 'leaf_name', value: leafName);
+              passLeafName=leafName;
+              // 更新 constant.dart 的變數值
+              APP_ID = appID;
+              ROOM_UUID = roomUUID;
+              ROOM_TOKEN = roomToken;
+              LINK = roomlink;
+            }
+            await _storage.write(key: 'link', value: roomlink);
+            setState(() 
+            {
+              linkDataList=List<Map<String,dynamic>>.from(responseData);
+            });
+          }
+          else if(responseData[0]['error_message']=="Link not found !")
           {
-            //print('joinLinkRoom 回傳資料: $responseData');
-            print('RoomUUID: $roomUUID');
-            print('RoomToken: $roomToken');
-            print('AppID: $appID');
+            await _storage.write(key: 'link', value: '目前這Room連結已不存在');
+            if(kDebugMode)
+            {
+              print('目前這Room連結已不存在');
+            }
           }
         }
         else
         {
           if(kDebugMode)
           {
-            print('Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
+            print('joinLinkRoom Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
           }
         }
       }
@@ -593,16 +598,16 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('joinLinkRoom Catch Error: $error');
         }
       }
     }
   }
-  Future<void> joinRoom()async//加入葉子
+  Future<void> joinRoom()async
   {
     final savedAccessToken=await getAccessToken();
     final savedRoomUUID=await getRoomUUID();
-    if(savedAccessToken!=null)
+    if(savedAccessToken!=null&&savedRoomUUID!=null)
     {
       try
       {
@@ -616,14 +621,10 @@ class _ChatingPageState extends State<ChatingPage>
           },
           body:jsonEncode(<String,String>
           {
-            "uuid":savedRoomUUID!,
+            "uuid":savedRoomUUID,
           }),
         );
-        if(kDebugMode)
-        {
-          print("Add-gardeners: $savedRoomUUID");
-        }
-        if(response.statusCode>=200&&response.statusCode<300)
+        if(response.statusCode>=200&&response.statusCode<405)
         {
           final responseData=jsonDecode(response.body);
           if(responseData[0]['error_message']=='error_message: Room not found !')
@@ -654,21 +655,13 @@ class _ChatingPageState extends State<ChatingPage>
           setState(() 
           {
             joinDataList=List<Map<String,dynamic>>.from(responseData);
-            if (kDebugMode) 
-            {
-              print('傳送之後joinDatalist:$joinDataList');
-            }
           });
-          if(kDebugMode)
-          {
-            print('joinRoom 回傳資料: $responseData');
-          }
         }
         else
         {
           if(kDebugMode)
           {
-            print('Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
+            print('joinRoom Error:請求失敗\n$response\nStatusCode: ${response.statusCode}');
           }
         }
       }
@@ -676,9 +669,36 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('joinRoom Catch Error: $error');
         }
       }
+    }
+    else
+    {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+      // ignore: use_build_context_synchronously
+      showDialog
+      (
+        context: context, 
+        builder: (context)=>AlertDialog
+        (
+          title: const Text('加入葉子失敗'),
+          content: const Text('此房間不存在'),
+          actions: 
+          [
+            ElevatedButton
+            (
+              onPressed: ()
+              {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }, 
+              child:const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
   Future<void> showOtherAvatar()async
@@ -697,7 +717,7 @@ class _ChatingPageState extends State<ChatingPage>
           },
           body: jsonEncode(<String,String>
           {
-            'account':selectedAccount??'',//other_account
+            'account':selectedAccount!,//other_account
           }),
         );
         if(response.statusCode>=200&&response.statusCode<405)
@@ -711,7 +731,7 @@ class _ChatingPageState extends State<ChatingPage>
         {
           if(kDebugMode)
           {
-            print('Error:請求圖檔失敗,$response,${response.statusCode}');
+            print('showOtherAvatar Error:請求圖檔失敗,$response,${response.statusCode}');
           }
         }
       }
@@ -719,7 +739,7 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if(kDebugMode)
         {
-          print('Error:請求圖檔出錯,$error');
+          print('showOtherAvatar Error:請求圖檔出錯,$error');
         }
       }
     }
@@ -731,7 +751,7 @@ class _ChatingPageState extends State<ChatingPage>
       }
     }      
   }
-  Future<void> createPPT()async//創空白ppt檔
+  Future<void> createPPT()async
   {
     final savedAccessToken=await getAccessToken();
     final savedRoomUUID=await getRoomUUID();
@@ -759,24 +779,10 @@ class _ChatingPageState extends State<ChatingPage>
           final filePath=responseData[0]['file_path'];
           await _storage.write(key: 'file_name', value: fileName);
           await _storage.write(key: 'file_path', value: filePath);
-          if (kDebugMode) 
-          {
-            print('請求之後fileName:$fileName');
-            print('請求之後filePath:$filePath');
-          }
           setState(()
           {
             whitepptDataList=List<Map<String,dynamic>>.from(responseData);
-            if (kDebugMode) 
-            {
-              print('請求之後whitepptDataList:$whitepptDataList');
-            }
-
           });
-          if(kDebugMode)
-          {
-            print('createPPT回傳資料: $responseData');
-          }
         }
         else
         {
@@ -836,24 +842,17 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if(kDebugMode)
         {
-          print('Catch Error: $error');
+          print('createPPT Catch Error: $error');
         }
       }
     }
   }
-  Future<void> getFile()async//取得file
+  Future<void> getWhiteFile()async
   {
     final savedAccessToken = await getAccessToken();
     final savedRoomUUID = await getRoomUUID();
     final fileName = await getFileName();
-    final savedZipFileName='${fileName!.split('.').first}_pptx';
-    final savedFileName=fileName.split('.').first;
-    await _storage.write(key: 'downloadfile_name', value: savedFileName);
-    if(kDebugMode)
-    {
-      print('SavedZipFileName: $savedZipFileName');
-      print('SavedFileName: $savedFileName');
-    }
+    final savedFileName=fileName!.split('.').first;
     if (savedAccessToken != null) 
     {
       try 
@@ -882,45 +881,16 @@ class _ChatingPageState extends State<ChatingPage>
             await pptxFile.writeAsBytes(pptxBytes);
             if(kDebugMode)
             {
-              print('PPTX文件已保存在:$pptxFilePath');
+              print('空白PPTX文件已保存在:$pptxFilePath');
             }
           }
-          // else if(kIsWeb)//web
-          // {
-          //   final archive=ZipDecoder().decodeBytes(fileDataBytes);
-          //   for (final file in archive) 
-          //   {
-          //     if (!file.isFile) continue;
-          //     if (file.name == '[Content_Types].xml') 
-          //     {
-          //       // Handle content types or any other specific files
-          //       final content = utf8.decode(file.content);
-          //       if (kDebugMode) 
-          //       {
-          //         print('Content of [Content_Types].xml:');
-          //         print(content);
-          //       }
-          //     }
-          //   }
-          //   final blob = html.Blob([Uint8List.fromList(fileDataBytes)]);
-          //   final url = html.Url.createObjectUrlFromBlob(blob);
-          //   //window.open(url,'_blank');//網頁顯示
-          //   final anchor=html.AnchorElement(href:url)
-          //   ..target='blank'
-          //   ..download='$savedFileName';
-          //   anchor.click();
-          //   if(kDebugMode)
-          //   {
-          //     print('檔案已下載！');
-          //   }        
-          // }
           else 
           {
             final responseData = jsonDecode(response.body);
             final errorMessage=responseData[0]['error_message'];
             if (kDebugMode) 
             {
-              print('請求getFile失敗: $errorMessage');
+              print('getWhiteFile請求getFile失敗: $errorMessage');
             }
           }
         } 
@@ -958,7 +928,7 @@ class _ChatingPageState extends State<ChatingPage>
       {
         if (kDebugMode) 
         {
-          print('Catch Error 請求File失敗:$error');
+          print('getWhiteFile Catch Error 請求File失敗:$error');
         }
       }
     }
@@ -972,13 +942,25 @@ class _ChatingPageState extends State<ChatingPage>
     (
       appBar: AppBar
       (
-        title: const Center
+        title: const Text
         (
-          child:Text
-          (
-            'Not3',
-            style:TextStyle(color:Colors.white),
-          ),
+          '聊天室',
+          style:TextStyle(color:Colors.white),
+        ),
+        centerTitle: true,
+        leading:Builder
+        (
+          builder: (BuildContext context)
+          {
+            return IconButton
+            (
+              onPressed:()
+              {
+                Scaffold.of(context).openDrawer();
+              }, 
+              icon: const Icon(Icons.menu),
+            );
+          },
         ),
         backgroundColor: Colors.green,
         elevation: 0.0, //陰影
@@ -1015,7 +997,7 @@ class _ChatingPageState extends State<ChatingPage>
                     (
                       children: 
                       [
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 35),
                         Column
                         (
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -1104,10 +1086,7 @@ class _ChatingPageState extends State<ChatingPage>
                   children:  
                   [
                     Icon(CupertinoIcons.settings),
-                    SizedBox
-                    (
-                      width: 10,
-                    ),
+                    SizedBox(width: 60,),
                     Text
                     (
                       "設定",
@@ -1131,6 +1110,10 @@ class _ChatingPageState extends State<ChatingPage>
                     (
                       onTap: (() 
                       {
+                        // Navigator.push(
+                        //	 context,
+                        //	 new MaterialPageRoute(
+                        //		 builder: (context) => new VendorVenuePage()));
                       }),
                       child: Row
                       (
@@ -1181,9 +1164,7 @@ class _ChatingPageState extends State<ChatingPage>
                     padding: const EdgeInsets.only(left: 15),
                     child: GestureDetector
                     (
-                      onTap: (() 
-                      {
-                      }),
+                      onTap: (() {}),
                       child: Row
                       (
                         // ignore: prefer_const_literals_to_create_immutables
@@ -1321,69 +1302,47 @@ class _ChatingPageState extends State<ChatingPage>
                       ),
                     ),
                   ),
-                  //more child menu
                 ],
               ),
               const SizedBox(height: 10,),
-              ElevatedButton
+              Padding
               (
-                onPressed: ()async
-                {
-                  final savedAccessToken=await getAccessToken();
-                  if (savedAccessToken != null) 
-                  {
-                    // 呼叫登出 API
-                    try 
-                    {
-                      final response = await http.post
+                padding: const EdgeInsets.only(left: 15),
+                child: GestureDetector
+                (
+                  onTap: (() {}),
+                  child: Row
+                  (
+                    // ignore: prefer_const_literals_to_create_immutables
+                    children: 
+                    [
+                      const Icon(Icons.logout_sharp),
+                      SizedBox
                       (
-                          Uri.parse('http://120.126.16.222/gardeners/logout'),
-                          headers: <String, String>
+                        width: 150,
+                        height: 50,
+                        child: TextButton
+                        (
+                          child: const Text
+                          (
+                            "登出",
+                            style: TextStyle
+                            (
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black
+                            ),
+                          ),
+                          onPressed: () async
                           {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer $savedAccessToken',
+                            await logOut();
                           },
-                          body: jsonEncode(<String, String>
-                          {
-                            'access_token': savedAccessToken,
-                          }),
-                        );
-
-                        if (response.statusCode == 200) 
-                        {
-                          // 輸出登出成功的回傳資料
-                          //final body = jsonDecode(response.body);
-                          const message = '登出成功\n';
-                          await showLogoutResultDialog(message);
-                          await deleteAccessToken(); // 登出後刪除保存的 access_token
-                        } 
-                        else 
-                        {
-                          // 登出失敗
-                          final errorMessage = response.body;
-                          await showLogoutResultDialog(errorMessage);
-                        }
-                      } 
-                      catch (e) 
-                      {
-                        if (kDebugMode) 
-                        {
-                          print('登出失敗：$e');
-                        }
-                        final errorMessage = '登出失敗：$e';
-                        await showLogoutResultDialog(errorMessage);
-                      }
-                    } 
-                    else 
-                    {
-                      // 沒有保存的 access_token，直接顯示錯誤訊息
-                      const errorMessage = '尚未登入，無法進行登出。';
-                      await showLogoutResultDialog(errorMessage);
-                    }
-
-                }, 
-                child: const Text('Logout'),
-              ),            
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -1484,6 +1443,7 @@ class _ChatingPageState extends State<ChatingPage>
                       Color bubbleColor=isSender?const Color.fromARGB(255, 14, 159, 203):const Color.fromARGB(255, 14, 100, 44);
                       if(isLinkMessage||chat['isLink']=='true')
                       {
+                        if(kDebugMode){print('Print Link: ${chat['chat_data']}');}
                         return InkWell
                         (
                           onTap: ()
@@ -1541,7 +1501,7 @@ class _ChatingPageState extends State<ChatingPage>
                     print('MessageBar傳送: $message');
                   }
                 },
-                actions: 
+                actions: //其他上傳圖片等擴充功能
                 const 
                 [
                   // InkWell

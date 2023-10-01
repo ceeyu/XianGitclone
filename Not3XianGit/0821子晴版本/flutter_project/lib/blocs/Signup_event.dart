@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'dart:io';
 import 'dart:typed_data';
-
 abstract class SignUpEvent extends Equatable 
 {
   const SignUpEvent();

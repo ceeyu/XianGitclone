@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget
           child: Text
           (
             "Not3首頁",
-            style: TextStyle(color: Colors.white,fontSize: fontSize*0.3),
+            style: TextStyle(color: Colors.white,fontSize: fontSize*0.5),
           )
         ),
         backgroundColor: Colors.green
@@ -72,10 +72,7 @@ class HomePage extends StatelessWidget
                     (
                       onPressed: ()
                       {
-                        Navigator.push
-                        (
-                          context,MaterialPageRoute(builder:(context)=> const LoginPage())
-                        );
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>const LoginPage()));
                       },
                       child:Text
                       (
@@ -98,10 +95,7 @@ class HomePage extends StatelessWidget
                     (
                       onPressed: ()
                       {
-                        Navigator.push
-                        (
-                          context,MaterialPageRoute(builder:(context)=> const SignUpPage())
-                        );
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>const SignUpPage()));
                       },
                       child:Text
                       (

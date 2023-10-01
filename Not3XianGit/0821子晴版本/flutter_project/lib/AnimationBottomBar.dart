@@ -1,6 +1,4 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
-
 class AnimationBottomBar extends StatefulWidget 
 {
   /// get data of List<BarItem>
@@ -44,13 +42,11 @@ class AnimationBottomBar extends StatefulWidget
   _AnimationBottomBarState createState() => _AnimationBottomBarState();
 }
 
-class _AnimationBottomBarState extends State<AnimationBottomBar>
-    with TickerProviderStateMixin 
-    {
+class _AnimationBottomBarState extends State<AnimationBottomBar>with TickerProviderStateMixin
+{
   /// init selectedBarIndex = 0;
   /// 初始化 selectedBarIndex = 0;
   int selectedBarIndex = 0;
-
   @override
   Widget build(BuildContext context) 
   {
@@ -69,7 +65,6 @@ class _AnimationBottomBarState extends State<AnimationBottomBar>
       ),
     );
   }
-
   /// save the single data of barItemsData into the List
   /// 將 barItemsData 的單筆資料存入 List 裡面
   List<Widget> _buildBarItems() 
@@ -85,7 +80,6 @@ class _AnimationBottomBarState extends State<AnimationBottomBar>
     }
     return _barItems;
   }
-
   /// build CustomBarItem in BottomNavigatorBar
   /// 建立客製化的 BarItem 樣式
   InkWell _customBarItem(int i, bool isSelected, BarItemData item) 
@@ -142,12 +136,10 @@ class _AnimationBottomBarState extends State<AnimationBottomBar>
     );
   }
 }
-
 class BarStyle 
 {
   final double fontSize, iconSize;
   final FontWeight fontWeight;
-
   BarStyle
   (
     {
@@ -157,7 +149,6 @@ class BarStyle
     }
   );
 }
-
 class BarItemData 
 {
   final String text;

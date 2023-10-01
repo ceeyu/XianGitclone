@@ -5,11 +5,10 @@ import 'package:flutter_project/blocs/Login_event.dart';
 import 'package:flutter_project/blocs/Login_state.dart';
 import 'package:flutter_project/Repository/LoginBloc_Repo.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 class LoginBloc extends Bloc<LoginEvent, LoginState> 
 {
   final LoginRepository _loginRepository;//套用API Model
-  final _storage=FlutterSecureStorage ();
+  final _storage=const FlutterSecureStorage ();
   LoginBloc(this._loginRepository):super(LoginInitialState());//初始
   
   @override

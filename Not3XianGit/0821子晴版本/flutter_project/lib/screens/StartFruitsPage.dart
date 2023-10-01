@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter_project/HomePage.dart';
-import 'package:flutter_project/screens/AnimationFruitsPage.dart';
+import 'package:flutter_project/screens/FruitsTree.dart';
 import 'package:flutter_project/screens/OpenFruitsPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';

@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'constants.dart';
-import 'page.dart';
-import 'widgets.dart';
+import 'dart:convert';import 'constants.dart';
+import 'page.dart';import 'widgets.dart';
 // 定義快速啟動頁面
 class QuickStartPage extends FastExamplePage 
 {
-  const QuickStartPage()
+  const QuickStartPage({super.key})
   : super
   (
     const Icon(Icons.rocket_launch_rounded),
@@ -202,8 +200,10 @@ class QuickStartBodyState extends State<QuickStartBody>
       },
     );
   }
-  bool _is_videio_on = false;
-  bool _is_message_on = false; //xian0519
+  // ignore: non_constant_identifier_names
+  //bool _is_videio_on = false;
+  // ignore: non_constant_identifier_names
+  //bool _is_message_on = false; 
   // ignore: non_constant_identifier_names
   bool switchValue_Volume = true;
   // ignore: non_constant_identifier_names
@@ -246,38 +246,38 @@ class QuickStartBodyState extends State<QuickStartBody>
             },
             icon: const Icon(Icons.list_alt), 
           ),
-          IconButton
-          (
-            tooltip: "彈幕",
-            icon: _is_message_on
-                ? const Icon(Icons.message)
-                : const Icon(Icons.speaker_notes_off,),
-            onPressed: () 
-            {
-              // do something
-              setState(() 
-              {
-                // Here we changing the icon.
-                _is_message_on = !_is_message_on;
-              });
-            },
-          ),
-          IconButton
-          (
-            tooltip: "錄影",
-            icon: _is_videio_on
-                ? const Icon(Icons.videocam)
-                : const Icon(Icons.videocam_off,),
-            onPressed: () 
-            {
-              // do something
-              setState(() 
-              {
-                // Here we changing the icon.
-                _is_videio_on = !_is_videio_on;
-              });
-            },
-          ),
+          // IconButton
+          // (
+          //   tooltip: "彈幕",
+          //   icon: _is_message_on
+          //       ? const Icon(Icons.message)
+          //       : const Icon(Icons.speaker_notes_off,),
+          //   onPressed: () 
+          //   {
+          //     // do something
+          //     setState(() 
+          //     {
+          //       // Here we changing the icon.
+          //       _is_message_on = !_is_message_on;
+          //     });
+          //   },
+          // ),
+          // IconButton
+          // (
+          //   tooltip: "錄影",
+          //   icon: _is_videio_on
+          //       ? const Icon(Icons.videocam)
+          //       : const Icon(Icons.videocam_off,),
+          //   onPressed: () 
+          //   {
+          //     // do something
+          //     setState(() 
+          //     {
+          //       // Here we changing the icon.
+          //       _is_videio_on = !_is_videio_on;
+          //     });
+          //   },
+          // ),
         ],
         backgroundColor: Colors.green,
         elevation: 0.0,

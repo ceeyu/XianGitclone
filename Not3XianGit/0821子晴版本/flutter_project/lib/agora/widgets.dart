@@ -1,18 +1,17 @@
 import 'dart:io';
 import 'package:fastboard_flutter/fastboard_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/MyPage1.dart';
+import 'package:flutter_project/MyPage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:async';
-import 'test_data.dart';
+import 'cloudData.dart';
 import 'dart:convert';
 import 'constants.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
-
 class CloudTestWidget extends StatefulWidget 
 {
   final FastRoomController controller;
@@ -23,7 +22,6 @@ class CloudTestWidget extends StatefulWidget
       Key? key,
     }
   ) : super(key: key);
-
   @override
   State<CloudTestWidget> createState()
   {
@@ -33,7 +31,7 @@ class CloudTestWidget extends StatefulWidget
 class CloudTestWidgetState extends State<CloudTestWidget> 
 {
   var showCloud = false;
-  final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
+  final _storage = const FlutterSecureStorage(); 
   final TextEditingController _downloadFileNameController=TextEditingController();
   final ScreenshotController _screenshotController = ScreenshotController();
   List<String> plantNameList=[];
@@ -514,7 +512,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       }
     }      
   } 
-  Future<void> updatePptFile()async//form-data
+  Future<void> updatePptFile()async
   {
     final savedAccessToken = await getAccessToken();
     final savedPptFileName = await getPptFileName();
@@ -587,7 +585,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       }
     }
   }
-  Future<void> uploadFileToPlant(String selectedPlantName)async//採收果實
+  Future<void> uploadFileToPlant(String selectedPlantName)async
   {
     final savedAccessToken=await getAccessToken();
     final userFileName=_downloadFileNameController.text;
@@ -663,7 +661,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       }
     }      
   }
-  Future<void> downloadInfo()async//輸入上傳
+  Future<void> downloadInfo()async
   {
     await showAllPlant();
     // ignore: use_build_context_synchronously
@@ -824,7 +822,7 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       ),
     );
   }
-  Future<void> doScreenshot()async
+  Future<void> doScreenshot()async//screenshot
   {
     if (kDebugMode) 
     {
@@ -994,10 +992,10 @@ class CloudTestWidgetState extends State<CloudTestWidget>
       "pptx": TestData.iconPpt,
       "png": TestData.iconImage,
       "mp4": TestData.iconVideo,
+      "leave":TestData.iconLeave,
     };
     return map[item.type] ?? TestData.iconPdf; // 根據檔案類型返回對應的圖示，預設為 PDF 圖示
   }
-
   Future<void> onItemClick(CloudFile item) 
   async 
   {

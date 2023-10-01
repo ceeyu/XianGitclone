@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		sv/HE9BNr8h/3EQ1OE9u/K729WQ=
+		8EZsrm67wcGF8LoH35yP65RnLOE=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		opPgjp4CfpvdFvyMoOqgK6NUU40=
+		+iTTaPOYGzqkBlQvPCDvLnFWZqQ=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -28,9 +28,25 @@
 		<data>
 		ATfzX8WuHjDM8qrtAm+g/HBSmjc=
 		</data>
-		<key>flutter_assets/assets/green.riv</key>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_add.svg</key>
 		<data>
-		mJ/djkferDGo4SoWg8v1Ql9ueJw=
+		Rv52cN6v14dUVibhTeuDTa8/qIc=
+		</data>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_image.svg</key>
+		<data>
+		itZoe9f5acByFZuKtY2Z5XOMiMw=
+		</data>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_pdf.svg</key>
+		<data>
+		8IZMQxUdHrx3BbNmNxswcuFWxtM=
+		</data>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_ppt.svg</key>
+		<data>
+		DDBRpKF2x+LlgqCXh1TOtG+swPY=
+		</data>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_video.svg</key>
+		<data>
+		ZKZgqsGg6OSbDMhwFBhSDiCGeZk=
 		</data>
 		<key>flutter_assets/assets/ic_cloud_add.svg</key>
 		<data>
@@ -220,10 +236,6 @@
 		<data>
 		gEyrGp+j2Z+ZcQa6Y4sr5oZbAyY=
 		</data>
-		<key>flutter_assets/assets/tree_demo.riv</key>
-		<data>
-		O5ZfP/h2mCSW77akpqvG0imC3R0=
-		</data>
 		<key>flutter_assets/awesome_package/static/Raleway-Italic.ttf</key>
 		<data>
 		rL9KffIm7RmR+bjcW46jH5Lxmrc=
@@ -242,7 +254,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		OpizQO9j7qVVO9LlonOlTr6A63A=
+		aoxtPdNLtH9BxW5dRPU3FDXhSmw=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -471,14 +483,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			CP9XKDovX4PJQV43BJK7A3HjQlYs1Q2X0GCQzrFKb2k=
+			jMVQJjkKsGzuBiQkRW6RXw/Sc/zfGPPJEBKUdN/xadA=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			WzqnHDhxaMLtgwJrza0DEhPKwn8ocNcdGk89n72ta3I=
+			fnvdtYvLnKrWfiqWv+yXqa7engxfyMrHEFEq9hRT1Vs=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -495,11 +507,39 @@
 			vxTNoRWv7b2uCFgzU5BgoNs+8cywBYKfMVNCk/WFiY4=
 			</data>
 		</dict>
-		<key>flutter_assets/assets/green.riv</key>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_add.svg</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BAnInASJKaPWWLWPwV1ZY3Cg1tTEcaPVKglsULEI1ts=
+			itE6LPLDdfC/rmBfWQGH3LH0hycXGjBHERccod9c0qA=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_image.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			pKqbb4J5Htz5wdlUYEufUR+5HD5XXvJ9exoLmcBjGcs=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_pdf.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			20KPh23dgtiFZrRT+ZhrAeWTvEzDsGPNU7/m7uy3oio=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_ppt.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			xr0hWjo6/Cs1y+gdkfHZ98DyoEUbW+jTgU9RW6jpe8k=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/cloudPicture/ic_cloud_video.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			syle6aquyP5mKteMBkzGdQ1D7/gT0mw+Iyonuo1CDaU=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/ic_cloud_add.svg</key>
@@ -831,13 +871,6 @@
 			CfUJRPhtHVE5PKxGCZy5eDd+8Mvuwwcp8X3OSOb108A=
 			</data>
 		</dict>
-		<key>flutter_assets/assets/tree_demo.riv</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			olniBVWvDTzYDKFbHW2KZo5ZEnwbGk7dI+lkluHhoas=
-			</data>
-		</dict>
 		<key>flutter_assets/awesome_package/static/Raleway-Italic.ttf</key>
 		<dict>
 			<key>hash2</key>
@@ -870,7 +903,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			7rnB7FTjU+v22f5Vj1Zalm/9Opd15DtUlKGEjAki8bw=
+			uTDyMjVC4MsrsZtzpsOr4LKWXHVyztImirGrzPfv5e4=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>

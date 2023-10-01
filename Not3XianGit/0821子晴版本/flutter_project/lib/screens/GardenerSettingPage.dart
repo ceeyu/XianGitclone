@@ -289,16 +289,28 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
     (
       appBar: AppBar
       (
-        title: const Center
+        title: const Text
         (
-          child: Text
-          (
-            '編輯園丁檔案',
-            style: TextStyle(color: Colors.white),
-          ),
+          '編輯園丁檔案',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        leading:Builder
+        (
+          builder: (BuildContext context)
+          {
+            return IconButton
+            (
+              onPressed:()
+              {
+                Scaffold.of(context).openDrawer();
+              }, 
+              icon: const Icon(Icons.menu),
+            );
+          },
         ),
         backgroundColor: Colors.green,
-        elevation: 0.0, //陰影
+        elevation: 0.0, 
       ),
       drawer: Drawer
       (
@@ -317,13 +329,12 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                 child: Row
                 (
                   // ignore: prefer_const_literals_to_create_immutables
-                  children: 
+                  children:  
                   [
                     const SizedBox(width: 20),
-                    if(avatarImageBytes!=null)
+                    if(avatarImageBytes!=null) 
                       CircleAvatar
                       (
-                        //圓形頭像
                         minRadius: 35,
                         maxRadius: 35,
                         backgroundImage: MemoryImage(avatarImageBytes!),
@@ -333,7 +344,7 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                     (
                       children: 
                       [
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 35),
                         Column
                         (
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -363,10 +374,7 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                   ],
                 ),
               ),
-              const SizedBox
-              (
-                height: 20,
-              ),
+              const SizedBox(height: 20,),
               Padding
               (
                 //一個Padding是一個項目
@@ -385,8 +393,8 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                       SizedBox
                       (
                         width: 150,
-                        height:50,
-                        child:TextButton
+                        height: 50,
+                        child: TextButton
                         (
                           child: const Text
                           (
@@ -398,11 +406,15 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                               color: Colors.black
                             ),
                           ),
-                          onPressed: ()
+                          onPressed: () 
                           {
                             Navigator.push
                             (
-                              context,MaterialPageRoute(builder:(_)=> const GardenerSettingPage())
+                              context,
+                              MaterialPageRoute
+                              (
+                                builder: (_) =>const GardenerSettingPage()
+                              )
                             );
                           },
                         ),
@@ -411,23 +423,17 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                   ),
                 ),
               ),
-              const SizedBox
-              (
-                height: 10,
-              ),
+              const SizedBox(height: 10,),
               ExpansionTile
               (
                 //下拉式
                 title: const Row
                 (
                   // ignore: prefer_const_literals_to_create_immutables
-                  children: 
+                  children:  
                   [
                     Icon(CupertinoIcons.settings),
-                    SizedBox
-                    (
-                      width: 10,
-                    ),
+                    SizedBox(width: 60,),
                     Text
                     (
                       "設定",
@@ -440,7 +446,7 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                     )
                   ],
                 ),
-                childrenPadding: const EdgeInsets.only(left: 25), // children padding
+                childrenPadding:const EdgeInsets.only(left: 25), // children padding
                 // ignore: prefer_const_literals_to_create_immutables
                 children: 
                 [
@@ -454,6 +460,7 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                       }),
                       child: Row
                       (
+                        // ignore: prefer_const_literals_to_create_immutables
                         children: 
                         [
                           const Icon
@@ -500,12 +507,11 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                     padding: const EdgeInsets.only(left: 15),
                     child: GestureDetector
                     (
-                      onTap: (() 
-                      {
-                      }),
-                      child:  Row
+                      onTap: (() {}),
+                      child: Row
                       (
                         // ignore: prefer_const_literals_to_create_immutables
+                        //mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: 
                         [
                           const Icon(Icons.camera_alt_outlined),
@@ -551,9 +557,10 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                       onTap: (() 
                       {
                       }),
-                      child:Row
+                      child: Row
                       (
                         // ignore: prefer_const_literals_to_create_immutables
+                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: 
                         [
                           const Icon(Icons.mic),
@@ -638,22 +645,51 @@ class _GardenerSettingPageState extends State<GardenerSettingPage>
                       ),
                     ),
                   ),
-                  //more child menu
                 ],
               ),
               const SizedBox(height: 10,),
-              ElevatedButton
+              Padding
               (
-                onPressed: ()async
-                {
-                  await logOut();
-                }, 
-                child: const Text('Logout'),
-              ),            
+                padding: const EdgeInsets.only(left: 15),
+                child: GestureDetector
+                (
+                  onTap: (() {}),
+                  child: Row
+                  (
+                    // ignore: prefer_const_literals_to_create_immutables
+                    children: 
+                    [
+                      const Icon(Icons.logout_sharp),
+                      SizedBox
+                      (
+                        width: 150,
+                        height: 50,
+                        child: TextButton
+                        (
+                          child: const Text
+                          (
+                            "登出",
+                            style: TextStyle
+                            (
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black
+                            ),
+                          ),
+                          onPressed: () async
+                          {
+                            await logOut();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
-      ),
+      ),      
       body:const Setting(),
     );
   }
@@ -677,7 +713,7 @@ class _SettingState extends State<Setting>
   String? userFirstName;
   String? updatedFirstName;
   String? updatedPassword;
-  final _storage = const FlutterSecureStorage(); // 用於存儲 access_token
+  final _storage = const FlutterSecureStorage(); 
   @override
   void initState()
   {
@@ -705,7 +741,7 @@ class _SettingState extends State<Setting>
   Future<String?> getPassword()async
   {
     // 從 flutter_secure_storage 取得 access_token
-    String? userPassword = await _storage.read(key:'password');
+    String? userPassword = await _storage.read(key:'savedLoginPassword');
     if (kDebugMode) 
     {
       print('getPassword的userPassword: $userPassword');
@@ -940,7 +976,6 @@ class _SettingState extends State<Setting>
                 );
               },
             );
-
           }
           _firstnameController.clear();
           _passwordController.clear();
@@ -948,6 +983,7 @@ class _SettingState extends State<Setting>
           {
             _showFields=false;
           });
+          
         }
       }
       catch(error)
@@ -959,173 +995,6 @@ class _SettingState extends State<Setting>
       }
       
     }
-  }
-  @override
-  Widget build(BuildContext context) 
-  {
-    return Scaffold
-    (
-      backgroundColor: Colors.white,
-      body:SafeArea
-      (
-        child:Container
-        (
-          padding:const EdgeInsets.all(16.0),
-          child:Column
-          (
-            mainAxisAlignment: MainAxisAlignment.center,
-            children:
-            [
-              Row
-              (
-                mainAxisAlignment: MainAxisAlignment.start,
-                children:<Widget>
-                [
-                  IconButton
-                  (
-                    tooltip: '返回上一頁',
-                    icon:const Icon(Icons.arrow_circle_left_outlined,size:30),
-                    onPressed: (){Navigator.of(context).pop();},
-                  ),
-                ],
-              ),
-              Row
-              (
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:
-                [
-                  const SizedBox(width: 20),
-                  if(avatarImageBytes!=null) 
-                    CircleAvatar
-                    (
-                      minRadius: 90,
-                      maxRadius: 90,
-                      backgroundImage: MemoryImage(avatarImageBytes!),
-                    ),
-                ],
-              ),
-              Row
-              (
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>
-                [
-                  IconButton//打開相簿上傳圖片
-                  (
-                    tooltip: '相簿上傳',
-                    icon:const Icon(Icons.photo_library,size:25), 
-                    onPressed:(){_pickImage(ImageSource.gallery);}
-                  ),
-                  IconButton//打開相機拍照
-                  (
-                    tooltip: '相機拍照',
-                    icon:const Icon(Icons.camera_alt,size:25),
-                    onPressed: () {_pickImage(ImageSource.camera);}
-                  ),
-                ],
-              ),
-              SizedBox
-              (
-                child:Text
-                (
-                  '目前姓名:  ${updatedFirstName??_GardenerSettingPageState.firstName}',
-                ),
-              ),
-              SizedBox
-              (
-                child:Text
-                (
-                  '目前密碼:  ${updatedPassword??userPassword}',
-                ),
-              ),
-              SizedBox
-              (
-                width:150,
-                child: TextButton
-                (
-                  child: const Text
-                  (
-                    "修改資料",
-                    style:TextStyle(color:Colors.green),
-                  ),
-                  onPressed: () 
-                  {
-                    setState(() 
-                    {
-                      _showFields=true;
-                    });
-                  },
-                ),
-              ),
-              if(_showFields)
-                Column
-                (
-                  children: 
-                  [
-                    SizedBox
-                    (
-                      width:300,
-                      height:80,
-                      child:TextField
-                      (
-                        controller: _firstnameController,
-                        obscureText: false,
-                        decoration:const InputDecoration
-                        (
-                          prefixIcon: Icon(Icons.person),
-                          labelText: "更改姓名",
-                          hintText: "請輸入新的姓名",
-                        ),
-                        maxLength: 10,
-                      ),
-                    ),
-                    SizedBox
-                    (
-                      width:300,
-                      height:80,
-                      child:TextField
-                      (
-                        controller: _passwordController,
-                        obscureText: !_showPassword,
-                        decoration:InputDecoration
-                        (
-                          prefixIcon: const Icon(Icons.lock),
-                          labelText: "更改密碼",
-                          hintText: "請輸入新的密碼",
-                          suffixIcon: IconButton
-                          (
-                            icon:Icon
-                            (
-                              _showPassword
-                              ? Icons.visibility
-                              :Icons.visibility_off,
-                            ),
-                            onPressed: ()
-                            {
-                              setState(() 
-                              {
-                                _showPassword=!_showPassword;
-                              });
-                            },
-                          ),
-                        ),
-                        maxLength: 16,
-                      ),
-                    ),
-                    ElevatedButton
-                    (
-                      onPressed: ()
-                      {
-                        updateUserInfo();
-                      }, 
-                      child:const Text('確認修改'),
-                    )
-                  ],
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
   Future<void> _pickImage(ImageSource source)async
   {
@@ -1141,7 +1010,6 @@ class _SettingState extends State<Setting>
         {
           print('IOS: $_imageFileName');
         }
-        //_imageFileName=pickedFile.path.split('/').last;
         _uploadAvatar(_imageFile);
       }
       else//web
@@ -1158,7 +1026,6 @@ class _SettingState extends State<Setting>
       setState(() 
       {
         avatarImageBytes=_imageBytes;
-        //this.avatarName=avatarName;
       });
     }
     else
@@ -1177,7 +1044,7 @@ class _SettingState extends State<Setting>
   {
     try
     {
-      final accessToken = await _storage.read(key: 'access_token');
+      final accessToken = await getAccessToken();
       if(accessToken!=null)
       {
         var uri=Uri.parse('http://120.126.16.222/gardeners/edit-avatar');
@@ -1278,5 +1145,165 @@ class _SettingState extends State<Setting>
         }
       }
     }
+  }
+  @override
+  Widget build(BuildContext context) 
+  {
+    return Scaffold
+    (
+      backgroundColor: Colors.white,
+      body:SafeArea
+      (
+        child:Center
+        (
+          child:Column
+          (
+            children:
+            [
+              Row
+              (
+                mainAxisAlignment: MainAxisAlignment.start,
+                children:<Widget>
+                [
+                  IconButton
+                  (
+                    tooltip: '返回上一頁',
+                    icon:const Icon(Icons.arrow_circle_left_outlined,size:30),
+                    onPressed: (){Navigator.of(context).pop();},
+                  ),
+                ],
+              ),
+              Row
+              (
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:
+                [
+                  const SizedBox(width: 20),
+                  if(avatarImageBytes!=null) 
+                    CircleAvatar
+                    (
+                      minRadius: 70,
+                      maxRadius: 70,
+                      backgroundImage: MemoryImage(avatarImageBytes!),
+                    ),
+                ],
+              ),
+              Row
+              (
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>
+                [
+                  IconButton
+                  (
+                    tooltip: '相簿上傳',
+                    icon:const Icon(Icons.photo_library,size:25), 
+                    onPressed:(){_pickImage(ImageSource.gallery);}
+                  ),
+                  IconButton
+                  (
+                    tooltip: '相機拍照',
+                    icon:const Icon(Icons.camera_alt,size:25),
+                    onPressed: () {_pickImage(ImageSource.camera);}
+                  ),
+                ],
+              ),
+              Row
+              (
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: 
+                [
+                  Column(children: [Text('目前姓名:  ${updatedFirstName??_GardenerSettingPageState.firstName}',),],),
+                  const Column(children: [SizedBox(width:30)],),
+                  Column(children: [Text('目前密碼:  ${updatedPassword??userPassword}',)],),
+                ],
+              ),
+              SizedBox
+              (
+                width:150,
+                height:33,
+                child: TextButton
+                (
+                  child: const Text
+                  (
+                    "修改資料",
+                    style:TextStyle(color:Colors.green),
+                  ),
+                  onPressed: () 
+                  {
+                    setState(() 
+                    {
+                      _showFields=true;
+                    });
+                  },
+                ),
+              ),
+              if(_showFields)
+                Column
+                (
+                  children: 
+                  [
+                    SizedBox
+                    (
+                      width:300,
+                      height:70,
+                      child:TextField
+                      (
+                        controller: _firstnameController,
+                        obscureText: false,
+                        decoration:const InputDecoration
+                        (
+                          prefixIcon: Icon(Icons.person),
+                          labelText: "更改姓名",
+                        ),
+                        maxLength: 10,
+                      ),
+                    ),
+                    SizedBox
+                    (
+                      width:300,
+                      height:70,
+                      child:TextField
+                      (
+                        controller: _passwordController,
+                        obscureText: !_showPassword,
+                        decoration:InputDecoration
+                        (
+                          prefixIcon: const Icon(Icons.lock),
+                          labelText: "更改密碼",
+                          suffixIcon: IconButton
+                          (
+                            icon:Icon
+                            (
+                              _showPassword
+                              ? Icons.visibility
+                              :Icons.visibility_off,
+                            ),
+                            onPressed: ()
+                            {
+                              setState(() 
+                              {
+                                _showPassword=!_showPassword;
+                              });
+                            },
+                          ),
+                        ),
+                        maxLength: 16,
+                      ),
+                    ),
+                    ElevatedButton
+                    (
+                      onPressed: ()
+                      {
+                        updateUserInfo();
+                      }, 
+                      child:const Text('確認修改'),
+                    )
+                  ],
+                ),
+            ],
+          ),
+         ),
+      ),
+    );
   }
 }
