@@ -1,4 +1,4 @@
-# XianGitclone---Not3 Project 多人即時手寫筆記軟體
+# Not3 Project 多人即時手寫筆記軟體
  放專案的地方
  <br></br>
 日期寫2023XXXX_XXXXX(做的重點或備份)
