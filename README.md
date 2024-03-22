@@ -7,3 +7,9 @@
 ## Reference Video Introduction
 
 https://www.youtube.com/watch?v=qTHvsBUKePM
+
+## Notion 個人開發過程紀錄
+https://highfalutin-plume-27d.notion.site/XianYu-ea4b0ce91668405e84fe5cd21e652e9a?pvs=4
+
+## iThome鐵人賽 Mobile Development --- Mobile Development組別 佳作 無職轉生～在資工系就拿出真本事٩(๑•̀ω•́๑)۶【Flutter Go in 30 Days】
+https://ithelp.ithome.com.tw/users/20151593/ironman/5953
